@@ -1,16 +1,73 @@
 
 generator client {
-  provider = "prisma-client"
-  output   = "../app/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider = "postgresql"
 }
 
+// datasource y client configurados para Supabase
+
 model Campaign {
-  id        Int      @id @default(autoincrement())
-  name      String
-  active    Boolean  @default(true)
-  createdAt DateTime @default(now())
+  id          String        @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime      @default(now())
+  
+  // El Cronicón: Notas de sesión
+  notes       SessionNote[]
+
+  // El Almacén: Inventario vinculado a la campaña
+  items       Item[]
+
+  // El Coliseo: Monstruos que están actualmente en la "mesa"
+  activeEnemies ActiveMonster[]
+}
+
+model SessionNote {
+  id         String   @id @default(cuid())
+  content    String   @db.Text
+  createdAt  DateTime @default(now())
+  campaignId String
+  campaign   Campaign @relation(fields: [campaignId], references: [id])
+}
+
+model Monster {
+  id           String   @id @default(cuid())
+  name         String
+  type         String   // Ej: Dragon, Undead
+  challenge    Float    // CR (Nivel de desafío)
+  maxHp        Int
+  ac           Int      // Clase de Armadura
+  stats        Json     // Fuerza, Destreza, etc.
+  abilities    Json?    // Habilidades especiales
+  
+  // Relación para saber en qué campañas "podría" aparecer
+  instances    ActiveMonster[]
+}
+
+model ActiveMonster {
+  id         String   @id @default(cuid())
+  currentHp  Int
+  initiative Int?
+  status     String[] // Ej: ["Poisoned", "Stunned"]
+  
+  monsterId  String
+  monster    Monster  @relation(fields: [monsterId], references: [id])
+  
+  campaignId String
+  campaign   Campaign @relation(fields: [campaignId], references: [id])
+}
+
+model Item {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  rarity      String   // Common, Rare, Legendary...
+  type        String   // Weapon, Potion, Gear
+  quantity    Int      @default(1)
+  
+  campaignId  String
+  campaign    Campaign @relation(fields: [campaignId], references: [id])
 }
