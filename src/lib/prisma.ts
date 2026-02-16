@@ -14,6 +14,7 @@ declare global {
   var prismaGlobal: undefined | ReturnType<typeof prismaClientSingleton>;
 }
 
+// Lógica Singleton para evitar conexiones fantasma en Development
 const prisma = globalThis.prismaGlobal ?? prismaClientSingleton();
 
 export default prisma;
