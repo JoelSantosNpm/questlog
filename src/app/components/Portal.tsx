@@ -4,6 +4,22 @@ import { Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+const portalVariants = cva(
+  "group relative flex-shrink-0 transition-transform duration-500 hover:scale-105",
+  {
+    variants: {
+      size: {
+        sm: "h-64 w-44 md:h-80 md:w-56",
+        default: "h-96 w-64 md:h-[450px] md:w-[300px]",
+        lg: "h-[500px] w-[350px] md:h-[600px] md:w-[420px]",
+      },
+    },
+    defaultVariants: {
+      size: "default",
+    },
+  },
+);
+
 // Estilo del Enlace/Contenedor Interno
 const linkVariants = cva(
   "absolute inset-0 z-30 flex h-full w-full flex-col items-center justify-center transition-all duration-700",
@@ -18,17 +34,17 @@ const linkVariants = cva(
   },
 );
 
-interface PortalProps extends VariantProps<typeof linkVariants> {
+interface PortalProps
+  extends
+    VariantProps<typeof portalVariants>,
+    VariantProps<typeof linkVariants> {
   campaignName?: string;
   href?: string;
 }
 
 export function Portal({ mode = "existing", campaignName, href }: PortalProps) {
   return (
-    <div
-      className={cn(
-        "group relative h-96 w-64 md:h-[450px] md:w-[300px] flex-shrink-0 transition-transform duration-500 hover:scale-105",
-      )}>
+    <div className={cn(portalVariants({ size: "default" }))}>
       {/* CAPA DE IMÁGENES */}
       <div className="absolute inset-0 overflow-hidden bg-black">
         <div className="relative h-full w-full [mask-image:radial-gradient(ellipse_at_center,black_50%,transparent_100%)]">
