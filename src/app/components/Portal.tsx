@@ -4,120 +4,117 @@ import { Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-const portalLinkVariants = cva(
-  "group absolute left-[50%] top-[50%] -translate-x-1/2 -translate-y-1/2 z-10 flex h-[70%] w-[80%] cursor-pointer flex-col items-center justify-center rounded-t-full border transition-all duration-300",
+/**
+ * CVA UNIFICADO: Toda la lógica de hover ocurre vía selectores de CSS
+ */
+const portalVariants = cva(
+  // Clases Base: El "group" en el padre es la clave
+  "group relative h-96 w-64 md:h-[450px] md:w-[300px] flex-shrink-0 transition-transform duration-500 hover:scale-105",
   {
     variants: {
-      variant: {
-        existing:
-          "border-white/5 opacity-0 group-hover/portal:opacity-100 hover:border-amber-500/50",
-        new: "border-white/20 opacity-100 hover:border-emerald-500/50",
+      mode: {
+        existing: "",
+        new: "",
       },
     },
     defaultVariants: {
-      variant: "existing",
+      mode: "existing",
     },
   },
 );
 
-const portalGlowVariants = cva(
-  "pointer-events-none absolute inset-0 z-10 rounded-t-full shadow-[0_0_60px_rgba(0,0,0,0)] transition-all duration-700",
+// Estilo del Enlace/Contenedor Interno
+const linkVariants = cva(
+  "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-30 flex h-[75%] w-[85%] flex-col items-center justify-center rounded-t-full border transition-all duration-700",
   {
     variants: {
-      variant: {
-        existing:
-          "group-hover:shadow-[inset_0_0_40px_rgba(217,119,6,0.6),0_0_60px_rgba(217,119,6,0.4)]",
-        new: "group-hover:shadow-[inset_0_0_40px_rgba(16,185,129,0.4),0_0_60px_rgba(16,185,129,0.2)]",
+      mode: {
+        existing: [
+          "border-transparent bg-black/0",
+          "group-hover:border-amber-500/40 group-hover:bg-amber-900/10",
+          "group-hover:shadow-[inset_0_0_40px_rgba(217,119,6,0.3),0_0_60px_rgba(217,119,6,0.2)]",
+        ],
+        new: [
+          "border-white/10 bg-white/5",
+          "group-hover:border-emerald-500/50 group-hover:bg-emerald-500/10",
+          "group-hover:shadow-[inset_0_0_40px_rgba(16,185,129,0.2)]",
+        ],
       },
     },
-    defaultVariants: {
-      variant: "existing",
-    },
+    defaultVariants: { mode: "existing" },
   },
 );
-
-interface PortalProps extends VariantProps<typeof portalLinkVariants> {
-  className?: string;
-  campaignName?: string;
-  href?: string;
-}
 
 export function Portal({
-  className = "",
-  variant = "existing",
-  campaignName = "Campaña",
-  href = "/coliseo",
-}: PortalProps) {
+  mode = "existing",
+  campaignName,
+  href,
+}: VariantProps<typeof portalVariants> & {
+  campaignName?: string;
+  href?: string;
+}) {
   return (
-    <div
-      className={cn(
-        "group/portal relative flex-shrink-0",
-        className || "h-96 w-64 md:h-[450px] md:w-[300px]",
-      )}>
-      {/* Contenedor interno que maneja la animación de escala al hacer hover */}
-      <div className="h-full w-full overflow-hidden rounded-t-full shadow-lg transition-transform duration-300 ease-in-out group-hover/portal:scale-105">
-        <div className="absolute inset-0 z-0 bg-black">
-          <div className="absolute inset-0 z-0 [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_100%)]">
-            <Image
-              src="/portal.png"
-              alt="Portal de Questlog"
-              fill
-              className={cn(
-                "object-contain object-center transition-opacity duration-400",
-                variant === "new"
-                  ? "opacity-50 grayscale"
-                  : "opacity-90 group-hover/portal:opacity-0",
-              )}
-              sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
-            />
-            {variant === "existing" && (
-              <Image
-                src="/portal_a_natural.png"
-                alt="Portal de Questlog Activo"
-                fill
-                className="object-contain object-center opacity-0 transition-opacity duration-400 group-hover/portal:opacity-90"
-                sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
-              />
+    <div className={portalVariants({ mode })}>
+      {/* CAPA DE IMÁGENES */}
+      <div className="absolute inset-0 overflow-hidden bg-black">
+        <div className="relative h-full w-full [mask-image:radial-gradient(ellipse_at_center,black_50%,transparent_100%)]">
+          {/* Imagen OFF: Se apaga en hover si es existing */}
+          <Image
+            src="/portal.png"
+            alt="Base"
+            fill
+            className={cn(
+              "object-cover transition-opacity duration-700",
+              mode === "new"
+                ? "opacity-30 grayscale"
+                : "opacity-80 group-hover:opacity-0",
             )}
-          </div>
-          {/* Gradiente sutil para oscurecer bordes */}
-          <div className="absolute inset-0 z-20 pointer-events-none bg-radial-[circle_at_center,_var(--tw-gradient-stops)] from-transparent via-black/40 to-black/80" />
-        </div>
+          />
 
-        {/* Link ajustado al contorno de la puerta */}
-        <Link
-          href={href || "#"}
-          className={cn(portalLinkVariants({ variant }))}>
-          {/* Contenedor del contenido (Texto) */}
-          <div className="relative z-20 flex flex-col items-center gap-2 text-center transition-all duration-300 group-hover:scale-110">
-            {variant === "existing" ? (
-              <>
-                <span className="text-lg font-bold text-amber-500 drop-shadow-md">
-                  {campaignName}
-                </span>
-                <span className="text-xl font-serif tracking-[0.15em] text-amber-100 drop-shadow-[0_2px_5px_rgba(217,119,6,0.8)] animate-pulse group-hover:text-white group-hover:drop-shadow-[0_0_15px_rgba(255,255,255,0.8)] transition-colors">
+          {/* Imagen ON: Se enciende en hover */}
+          {mode === "existing" && (
+            <Image
+              src="/portal_a_natural.png"
+              alt="Activo"
+              fill
+              className="absolute inset-0 object-cover opacity-0 transition-opacity duration-700 group-hover:opacity-100"
+            />
+          )}
+        </div>
+      </div>
+
+      {/* LINK Y CONTENIDO */}
+      <Link href={href || "#"} className={linkVariants({ mode })}>
+        <div className="relative z-40 flex flex-col items-center gap-3 text-center px-4">
+          {mode === "existing" ? (
+            <>
+              <span className="text-xs font-medium uppercase tracking-[0.3em] text-amber-500/80">
+                Campaña
+              </span>
+              <span className="text-2xl font-serif text-amber-100 drop-shadow-lg">
+                {campaignName}
+              </span>
+              {/* Texto ENTRAR animado con CSS puro */}
+              <div className="mt-4 flex items-center gap-2 opacity-0 translate-y-2 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
+                <span className="h-px w-8 bg-amber-500/50" />
+                <span className="text-xs tracking-widest text-amber-400">
                   ENTRAR
                 </span>
-                <span className="h-px w-0 bg-amber-500 group-hover:w-full transition-all duration-500 shadow-[0_0_10px_#f59e0b]" />
-              </>
-            ) : (
-              <>
-                <div className="mb-2 rounded-full bg-white/10 p-3 backdrop-blur-sm transition-colors group-hover:bg-emerald-500/20">
-                  <Plus className="h-8 w-8 text-white/70 group-hover:text-emerald-400" />
-                </div>
-                <span className="text-lg font-serif tracking-widest text-white/70 transition-colors group-hover:text-emerald-300">
-                  CREAR
-                  <br />
-                  CAMPAÑA
-                </span>
-              </>
-            )}
-          </div>
-
-          {/* Efecto de resplandor */}
-          <div className={cn(portalGlowVariants({ variant }))} />
-        </Link>
-      </div>
+                <span className="h-px w-8 bg-amber-500/50" />
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="rounded-full border border-white/20 p-4 transition-colors group-hover:border-emerald-500/50 group-hover:bg-emerald-500/10">
+                <Plus className="h-8 w-8 text-emerald-100/50 group-hover:text-emerald-400" />
+              </div>
+              <span className="mt-2 text-sm font-serif tracking-widest text-white/60 group-hover:text-emerald-200">
+                NUEVA AVENTURA
+              </span>
+            </>
+          )}
+        </div>
+      </Link>
     </div>
   );
 }
