@@ -9,6 +9,7 @@ const portalVariants = cva(
   {
     variants: {
       size: {
+        sm: "h-32 w-22 md:h-40 md:w-28",
         default: "h-64 w-44 md:h-80 md:w-56",
         lg: "h-96 w-64 md:h-[450px] md:w-[300px]",
       },
@@ -39,6 +40,7 @@ interface PortalProps
     VariantProps<typeof linkVariants> {
   campaignName?: string;
   href?: string;
+  className?: string;
 }
 
 export function Portal({
@@ -46,9 +48,10 @@ export function Portal({
   campaignName,
   href,
   size,
+  className,
 }: PortalProps) {
   return (
-    <div className={cn(portalVariants({ size }))}>
+    <div className={cn(portalVariants({ size, className }))}>
       {/* CAPA DE IMÁGENES */}
       <div className="absolute inset-0 overflow-hidden bg-black">
         <div className="relative h-full w-full [mask-image:radial-gradient(ellipse_at_center,black_50%,transparent_100%)]">
