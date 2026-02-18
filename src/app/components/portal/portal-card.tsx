@@ -1,6 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
-import { Portal } from "./Portal";
+import { Portal } from "./portal";
 
 interface PortalCardProps {
   index: number;
