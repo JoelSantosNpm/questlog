@@ -46,6 +46,8 @@ export function Portal({
             src="/portal.png"
             alt="Base"
             fill
+            priority
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className={cn(
               "object-cover transition-opacity duration-700",
               !isExisting
@@ -59,6 +61,8 @@ export function Portal({
             src="/portal_a_natural.png"
             alt="Activo"
             fill
+            priority
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="absolute inset-0 object-cover opacity-0 transition-opacity duration-700 group-hover:opacity-100"
           />
         </div>
