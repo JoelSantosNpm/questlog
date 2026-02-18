@@ -27,7 +27,7 @@ export const PortalCard = ({
       initial={false}
       animate={{
         x: offset * 380, // Reduced spacing for tighter cluster
-        y: Math.abs(offset) * 30, // Arch effect: side cards move up
+        y: Math.abs(offset) * 50, // Arch effect: side cards move up
         scale: isActive ? 1.15 : 0.85,
         rotateY: offset * -30, // Inward rotation -25
         z: Math.abs(offset) * -100, // Depth pushback -100
@@ -35,7 +35,7 @@ export const PortalCard = ({
       }}
       transition={{
         type: "spring",
-        stiffness: 260,
+        stiffness: 160,
         damping: 20,
       }}
       style={{
