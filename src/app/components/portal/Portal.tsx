@@ -20,41 +20,27 @@ const portalVariants = cva(
   },
 );
 
-// Estilo del Enlace/Contenedor Interno
-const linkVariants = cva(
-  "absolute inset-0 z-30 flex h-full w-full flex-col items-center justify-center transition-all duration-700",
-  {
-    variants: {
-      mode: {
-        existing: ["border-transparent bg-black/0"],
-        new: ["border-transparent bg-white/5"],
-      },
-    },
-    defaultVariants: { mode: "existing" },
-  },
-);
-
-interface PortalProps
-  extends
-    VariantProps<typeof portalVariants>,
-    VariantProps<typeof linkVariants> {
+interface PortalProps extends VariantProps<typeof portalVariants> {
+  variant?: "existing" | "new";
   campaignName?: string;
   href?: string;
   className?: string;
 }
 
 export function Portal({
-  mode = "existing",
+  variant = "existing",
   campaignName,
-  href,
+  href = "#",
   size,
   className,
 }: PortalProps) {
+  const isExisting = variant === "existing";
+
   return (
-    <div className={cn(portalVariants({ size, className }))}>
+    <div className={cn(portalVariants({ size }), className)}>
       {/* CAPA DE IMÁGENES */}
-      <div className="absolute inset-0 overflow-hidden bg-black">
-        <div className="relative h-full w-full [mask-image:radial-gradient(ellipse_at_center,black_50%,transparent_100%)]">
+      <div className="absolute inset-0 overflow-hidden bg-transparent">
+        <div className="relative h-full w-full [mask-image:radial-gradient(ellipse_at_center,black_50%,transparent_70%)]">
           {/* Imagen OFF: Se apaga en hover si es existing */}
           <Image
             src="/portal.png"
@@ -62,7 +48,7 @@ export function Portal({
             fill
             className={cn(
               "object-cover transition-opacity duration-700",
-              mode === "new"
+              !isExisting
                 ? "opacity-50 grayscale "
                 : "opacity-80 group-hover:opacity-0",
             )}
@@ -79,9 +65,11 @@ export function Portal({
       </div>
 
       {/* LINK Y CONTENIDO */}
-      <Link href={href || "#"} className={cn(linkVariants({ mode }))}>
-        <div className="relative z-40 flex flex-col items-center gap-3 text-center px-4">
-          {mode === "existing" ? (
+      <Link
+        href={href}
+        className="absolute inset-0 z-30 flex h-full w-full flex-col items-center justify-center border-transparent bg-black/0 transition-all duration-700">
+        <div className="relative z-40 flex flex-col items-center gap-3 px-4 text-center">
+          {isExisting ? (
             <>
               <span className="text-xs font-medium uppercase tracking-[0.3em] text-amber-500/80">
                 Campaña
@@ -89,8 +77,7 @@ export function Portal({
               <span className="text-2xl font-serif text-amber-100 drop-shadow-lg">
                 {campaignName}
               </span>
-              {/* Texto ENTRAR animado con CSS puro */}
-              <div className="mt-4 flex items-center gap-2 opacity-0 translate-y-2 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
+              <div className="mt-4 flex translate-y-2 items-center gap-2 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
                 <span className="h-px w-8 bg-amber-500/50" />
                 <span className="text-xs tracking-widest text-amber-400">
                   ENTRAR

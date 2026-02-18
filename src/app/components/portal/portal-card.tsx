@@ -8,7 +8,7 @@ interface PortalCardProps {
   campaign: {
     id: number;
     name: string;
-    mode: "existing" | "new";
+    variant: "existing" | "new";
   };
   onClick?: () => void;
 }
@@ -44,7 +44,11 @@ export const PortalCard = ({
       }}
       className="absolute cursor-pointer perspective-origin-center h-[500px] flex items-center justify-center"
       onClick={onClick}>
-      <Portal mode={campaign.mode} size={"lg"} campaignName={campaign.name} />
+      <Portal
+        variant={campaign.variant}
+        size={"lg"}
+        campaignName={campaign.name}
+      />
     </motion.div>
   );
 };

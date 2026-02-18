@@ -6,10 +6,10 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 
 const campaigns = [
-  { id: 1, name: "The Forgotten Caves", mode: "existing" as const },
-  { id: 2, name: "Eldarin Kingdom", mode: "existing" as const },
-  { id: 3, name: "Volcano Peak", mode: "existing" as const },
-  { id: 4, name: "New Campaign", mode: "new" as const },
+  { id: 1, name: "The Forgotten Caves", variant: "existing" as const },
+  { id: 2, name: "Eldarin Kingdom", variant: "existing" as const },
+  { id: 3, name: "Volcano Peak", variant: "existing" as const },
+  { id: 4, name: "New Campaign", variant: "new" as const },
 ];
 
 export const PortalCarousel = () => {
