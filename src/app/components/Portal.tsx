@@ -1,16 +1,16 @@
-import { LinkVariants, PortalLink } from "@/app/components/PortalLink";
 import { cn } from "@/shared/utils/styles";
 import { cva, type VariantProps } from "class-variance-authority";
+import { Plus } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 const portalVariants = cva(
   "group relative flex-shrink-0 transition-transform duration-500 hover:scale-105",
   {
     variants: {
       size: {
-        sm: "h-64 w-44 md:h-80 md:w-56",
-        default: "h-96 w-64 md:h-[450px] md:w-[300px]",
-        lg: "h-[500px] w-[350px] md:h-[600px] md:w-[420px]",
+        default: "h-64 w-44 md:h-80 md:w-56",
+        lg: "h-96 w-64 md:h-[450px] md:w-[300px]",
       },
     },
     defaultVariants: {
@@ -19,11 +19,26 @@ const portalVariants = cva(
   },
 );
 
+// Estilo del Enlace/Contenedor Interno
+const linkVariants = cva(
+  "absolute inset-0 z-30 flex h-full w-full flex-col items-center justify-center transition-all duration-700",
+  {
+    variants: {
+      mode: {
+        existing: ["border-transparent bg-black/0"],
+        new: ["border-transparent bg-white/5"],
+      },
+    },
+    defaultVariants: { mode: "existing" },
+  },
+);
+
 interface PortalProps
-  extends VariantProps<typeof portalVariants>, LinkVariants {
+  extends
+    VariantProps<typeof portalVariants>,
+    VariantProps<typeof linkVariants> {
   campaignName?: string;
   href?: string;
-  className?: string; // Permitir inyección de estilos
 }
 
 export function Portal({
@@ -31,10 +46,9 @@ export function Portal({
   campaignName,
   href,
   size,
-  className,
 }: PortalProps) {
   return (
-    <div className={cn(portalVariants({ size }), className)}>
+    <div className={cn(portalVariants({ size }))}>
       {/* CAPA DE IMÁGENES */}
       <div className="absolute inset-0 overflow-hidden bg-black">
         <div className="relative h-full w-full [mask-image:radial-gradient(ellipse_at_center,black_50%,transparent_100%)]">
@@ -46,7 +60,7 @@ export function Portal({
             className={cn(
               "object-cover transition-opacity duration-700",
               mode === "new"
-                ? "opacity-30 grayscale "
+                ? "opacity-50 grayscale "
                 : "opacity-80 group-hover:opacity-0",
             )}
           />
@@ -62,11 +76,37 @@ export function Portal({
       </div>
 
       {/* LINK Y CONTENIDO */}
-      <PortalLink
-        href={href || "#"}
-        mode={mode}
-        campaignName={campaignName || ""}
-      />
+      <Link href={href || "#"} className={cn(linkVariants({ mode }))}>
+        <div className="relative z-40 flex flex-col items-center gap-3 text-center px-4">
+          {mode === "existing" ? (
+            <>
+              <span className="text-xs font-medium uppercase tracking-[0.3em] text-amber-500/80">
+                Campaña
+              </span>
+              <span className="text-2xl font-serif text-amber-100 drop-shadow-lg">
+                {campaignName}
+              </span>
+              {/* Texto ENTRAR animado con CSS puro */}
+              <div className="mt-4 flex items-center gap-2 opacity-0 translate-y-2 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
+                <span className="h-px w-8 bg-amber-500/50" />
+                <span className="text-xs tracking-widest text-amber-400">
+                  ENTRAR
+                </span>
+                <span className="h-px w-8 bg-amber-500/50" />
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="rounded-full border border-white/20 p-4 transition-colors group-hover:border-emerald-300/50 group-hover:bg-emerald-900/40">
+                <Plus className="h-8 w-8 text-emerald-100/50 group-hover:text-emerald-300" />
+              </div>
+              <span className="mt-2 text-sm font-serif tracking-widest text-white/60 group-hover:text-emerald-200">
+                NUEVA AVENTURA
+              </span>
+            </>
+          )}
+        </div>
+      </Link>
     </div>
   );
 }
