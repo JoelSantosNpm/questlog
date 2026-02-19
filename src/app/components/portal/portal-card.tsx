@@ -4,6 +4,7 @@ import { Portal } from "./portal";
 
 interface PortalCardProps {
   position: number;
+  visibleRange?: number;
   campaign: {
     id: number;
     name: string;
@@ -11,7 +12,11 @@ interface PortalCardProps {
   };
 }
 
-export const PortalCard = ({ position, campaign }: PortalCardProps) => {
+export const PortalCard = ({
+  position,
+  visibleRange = 3,
+  campaign,
+}: PortalCardProps) => {
   const isActive = position === 0;
 
   return (
@@ -23,7 +28,7 @@ export const PortalCard = ({ position, campaign }: PortalCardProps) => {
         scale: isActive ? 1.15 : 0.85,
         rotateY: position * -30, // Inward rotation -25
         z: Math.abs(position) * -100, // Depth pushback -100
-        opacity: Math.abs(position) >= 3 ? 0 : 1,
+        opacity: Math.abs(position) >= visibleRange ? 0 : 1,
       }}
       transition={{
         type: "spring",
