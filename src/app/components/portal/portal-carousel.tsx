@@ -14,9 +14,9 @@ interface Campaign {
 const campaigns: Campaign[] = [
   { id: 1, name: "The Forgotten Caves", variant: "existing" },
   { id: 2, name: "Eldarin Kingdom", variant: "existing" },
-  { id: 3, name: "Volcano Peak", variant: "existing" },
-  { id: 4, name: "The Exit", variant: "existing" },
-  { id: 5, name: "Scape Room", variant: "existing" },
+  // { id: 3, name: "Volcano Peak", variant: "existing" },
+  // { id: 4, name: "The Exit", variant: "existing" },
+  // { id: 5, name: "Scape Room", variant: "existing" },
   // { id: 6, name: "The Golden Country", variant: "existing" },
   // { id: 7, name: "Unknown Path", variant: "existing" },
   // { id: 8, name: "Misty Forest", variant: "existing" },
@@ -29,6 +29,8 @@ type PortalCarouselItem = {
   campaign: Campaign;
   position: number;
 };
+
+const MAX_INDEX = Number.MAX_SAFE_INTEGER - 100; // Margen de seguridad para evitar overflow
 
 const getCircularCarousel = (
   allCampaigns: Campaign[],
@@ -109,6 +111,7 @@ export const PortalCarousel = () => {
         <div className="flex gap-8">
           <button
             onClick={handlePrev}
+            disabled={activeIndex <= -MAX_INDEX}
             className="group rounded-full border border-stone-700 bg-stone-900/80 p-4 text-amber-500 backdrop-blur-sm transition-all hover:bg-amber-500 hover:text-stone-900 disabled:opacity-30 disabled:hover:bg-stone-900/80 disabled:hover:text-amber-500"
             aria-label="Previous campaign">
             <ChevronLeft size={32} />
@@ -116,6 +119,7 @@ export const PortalCarousel = () => {
 
           <button
             onClick={handleNext}
+            disabled={activeIndex >= MAX_INDEX}
             className="group rounded-full border border-stone-700 bg-stone-900/80 p-4 text-amber-500 backdrop-blur-sm transition-all hover:bg-amber-500 hover:text-stone-900 disabled:opacity-30 disabled:hover:bg-stone-900/80 disabled:hover:text-amber-500"
             aria-label="Next campaign">
             <ChevronRight size={32} />
