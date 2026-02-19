@@ -25,6 +25,7 @@ interface PortalProps extends VariantProps<typeof portalVariants> {
   campaignName?: string;
   href?: string;
   className?: string;
+  isBright?: boolean;
 }
 
 export function Portal({
@@ -33,6 +34,7 @@ export function Portal({
   href = "#",
   size,
   className,
+  isBright = false,
 }: PortalProps) {
   const isExisting = variant === "existing";
 
@@ -52,7 +54,9 @@ export function Portal({
               "object-cover transition-opacity duration-700",
               !isExisting
                 ? "opacity-50 grayscale "
-                : "opacity-80 group-hover:opacity-0",
+                : isBright
+                  ? "opacity-80 group-hover:opacity-0"
+                  : "opacity-40 group-hover:opacity-0",
             )}
           />
 

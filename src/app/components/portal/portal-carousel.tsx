@@ -17,14 +17,18 @@ const campaigns: Campaign[] = [
   { id: 3, name: "Volcano Peak", variant: "existing" },
   { id: 4, name: "The Exit", variant: "existing" },
   { id: 5, name: "Scape Room", variant: "existing" },
-  { id: 6, name: "The Golden Country", variant: "existing" },
-  { id: 7, name: "Unknown Path", variant: "existing" },
-  { id: 8, name: "Misty Forest", variant: "existing" },
-  { id: 9, name: "Monk's Journey", variant: "existing" },
-  { id: 10, name: "New Campaign", variant: "new" },
+  // { id: 6, name: "The Golden Country", variant: "existing" },
+  // { id: 7, name: "Unknown Path", variant: "existing" },
+  // { id: 8, name: "Misty Forest", variant: "existing" },
+  // { id: 9, name: "Monk's Journey", variant: "existing" },
+  // { id: 10, name: "New Campaign", variant: "new" },
 ];
 
-type PortalCarouselItem = { campaign: Campaign; position: number };
+type PortalCarouselItem = {
+  key: string;
+  campaign: Campaign;
+  position: number;
+};
 
 const getCircularCarousel = (
   allCampaigns: Campaign[],
@@ -32,24 +36,23 @@ const getCircularCarousel = (
   visibleRange = 3,
 ): PortalCarouselItem[] => {
   const total = allCampaigns.length;
+
+  if (total === 0) return [];
+
+  const itemsToRender = visibleRange;
   const visibleItems: PortalCarouselItem[] = [];
 
-  const maxVisibleRange = Math.floor((total - 1) / 2);
+  for (let i = -itemsToRender; i <= itemsToRender; i++) {
+    // Usamos el índice "absoluto" infinito como key estable
+    const absoluteIndex = activeIndex + i;
 
-  if (maxVisibleRange < visibleRange)
-    return campaigns.map((campaign, index) => ({
-      campaign,
-      position: index - activeIndex, // Posición relativa al índice activo
-    }));
+    // Aritmética modular para obtener el índice real del array de datos
+    const dataIndex = ((absoluteIndex % total) + total) % total;
 
-  visibleRange = Math.min(visibleRange, maxVisibleRange);
-
-  for (let i = -visibleRange; i <= visibleRange; i++) {
-    // Aritmética modular para que el array sea circular
-    const index = (((activeIndex + i) % total) + total) % total; // (activeIndex + i + total) % total;
     visibleItems.push({
-      campaign: allCampaigns[index],
-      position: i, // pos relativa respecto al centro (0)
+      key: `carousel-item-${absoluteIndex}`,
+      campaign: allCampaigns[dataIndex],
+      position: i,
     });
   }
 
@@ -57,15 +60,31 @@ const getCircularCarousel = (
 };
 
 export const PortalCarousel = () => {
-  const [activeIndex, setActiveIndex] = useState(0); // Start at first existing
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const visibleItems = useMemo(() => {
-    return getCircularCarousel(campaigns, activeIndex);
-  }, [campaigns, activeIndex]);
+    return getCircularCarousel(campaigns, activeIndex, 3);
+  }, [activeIndex]);
 
-  const next = () => setActiveIndex(prev => (prev + 1) % campaigns.length);
-  const prev = () =>
-    setActiveIndex(prev => (prev - 1 + campaigns.length) % campaigns.length);
+  const handleNext = () => setActiveIndex(prev => prev + 1);
+  const handlePrev = () => setActiveIndex(prev => prev - 1);
+
+  // Derivamos el índice real (0..N-1) para mostrar los puntos indicadores
+  const currentIndicator =
+    ((activeIndex % campaigns.length) + campaigns.length) % campaigns.length;
+
+  const handleDotClick = (targetIndex: number) => {
+    const total = campaigns.length;
+    // Calculamos la diferencia entre el punto destino y el punto actual
+    const diff = targetIndex - currentIndicator;
+
+    // Lógica para encontrar el camino más corto en el círculo
+    let adjustedDiff = diff;
+    if (diff > total / 2) adjustedDiff -= total;
+    if (diff < -total / 2) adjustedDiff += total;
+
+    setActiveIndex(prev => prev + adjustedDiff);
+  };
 
   return (
     <div className="relative h-screen w-full flex flex-col items-center justify-center overflow-hidden bg-stone-950">
@@ -76,7 +95,7 @@ export const PortalCarousel = () => {
         <AnimatePresence>
           {visibleItems.map(item => (
             <PortalCard
-              key={item.campaign.id}
+              key={item.key} // Usamos la key compuesta para permitir duplicados virtuales
               position={item.position}
               campaign={item.campaign}
             />
@@ -89,14 +108,16 @@ export const PortalCarousel = () => {
         {/* Buttons */}
         <div className="flex gap-8">
           <button
-            onClick={prev}
-            className="group rounded-full border border-stone-700 bg-stone-900/80 p-4 text-amber-500 backdrop-blur-sm transition-all hover:bg-amber-500 hover:text-stone-900 disabled:opacity-30 disabled:hover:bg-stone-900/80 disabled:hover:text-amber-500">
+            onClick={handlePrev}
+            className="group rounded-full border border-stone-700 bg-stone-900/80 p-4 text-amber-500 backdrop-blur-sm transition-all hover:bg-amber-500 hover:text-stone-900 disabled:opacity-30 disabled:hover:bg-stone-900/80 disabled:hover:text-amber-500"
+            aria-label="Previous campaign">
             <ChevronLeft size={32} />
           </button>
 
           <button
-            onClick={next}
-            className="group rounded-full border border-stone-700 bg-stone-900/80 p-4 text-amber-500 backdrop-blur-sm transition-all hover:bg-amber-500 hover:text-stone-900 disabled:opacity-30 disabled:hover:bg-stone-900/80 disabled:hover:text-amber-500">
+            onClick={handleNext}
+            className="group rounded-full border border-stone-700 bg-stone-900/80 p-4 text-amber-500 backdrop-blur-sm transition-all hover:bg-amber-500 hover:text-stone-900 disabled:opacity-30 disabled:hover:bg-stone-900/80 disabled:hover:text-amber-500"
+            aria-label="Next campaign">
             <ChevronRight size={32} />
           </button>
         </div>
@@ -106,8 +127,13 @@ export const PortalCarousel = () => {
           {campaigns.map((_, i) => (
             <button
               key={i}
-              onClick={() => setActiveIndex(i)}
-              className={`h-2 rounded-full transition-all duration-300 ${i === activeIndex ? "w-8 bg-amber-500" : "w-2 bg-stone-700 hover:bg-stone-600"}`}
+              onClick={() => handleDotClick(i)}
+              className={`h-2 rounded-full transition-all duration-300 ${
+                i === currentIndicator
+                  ? "w-8 bg-amber-500"
+                  : "w-2 bg-stone-700 hover:bg-stone-600"
+              }`}
+              aria-label={`Go to campaign ${i + 1}`}
             />
           ))}
         </div>

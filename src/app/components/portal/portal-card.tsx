@@ -9,14 +9,9 @@ interface PortalCardProps {
     name: string;
     variant: "existing" | "new";
   };
-  onClick?: () => void;
 }
 
-export const PortalCard = ({
-  position,
-  campaign,
-  onClick,
-}: PortalCardProps) => {
+export const PortalCard = ({ position, campaign }: PortalCardProps) => {
   const isActive = position === 0;
 
   return (
@@ -32,19 +27,19 @@ export const PortalCard = ({
       }}
       transition={{
         type: "spring",
-        stiffness: 160,
+        stiffness: 70,
         damping: 20,
       }}
       style={{
         zIndex: isActive ? 50 : 50 - Math.abs(position),
         transformStyle: "preserve-3d",
       }}
-      className="absolute cursor-pointer perspective-origin-center h-[500px] flex items-center justify-center"
-      onClick={onClick}>
+      className="absolute cursor-pointer perspective-origin-center h-[500px] flex items-center justify-center">
       <Portal
         variant={campaign.variant}
         size={"lg"}
         campaignName={campaign.name}
+        isBright={isActive}
       />
     </motion.div>
   );
