@@ -97,10 +97,7 @@ Here's an overview of the key directories:
 - `npm run start`: Starts the production server.
 - `npm run lint`: Runs ESLint to check for code quality issues.
 
-## 🤝 Contributing
+## 🔒 Private Project
 
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📄 License
-
-This project is open source and available under the [MIT License](LICENSE).
+This is a private project. It is not open for contributions at this time.
+All rights reserved.

@@ -97,10 +97,7 @@ Aquí tienes un resumen de los directorios clave:
 - `npm run start`: Inicia el servidor de producción.
 - `npm run lint`: Ejecuta ESLint para comprobar problemas de calidad del código.
 
-## 🤝 Contribuir
+## 🔒 Proyecto Privado
 
-¡Las contribuciones son bienvenidas! Por favor, siéntete libre de enviar un Pull Request.
-
-## 📄 Licencia
-
-Este proyecto es de código abierto y está disponible bajo la [Licencia MIT](LICENSE).
+Este es un proyecto privado. No está abierto a contribuciones en este momento.
+Todos los derechos reservados.
