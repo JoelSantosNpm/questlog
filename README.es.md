@@ -2,37 +2,64 @@
 
 [🇺🇸 English](README.md) | [🇪🇸 Español](README.es.md)
 
-QuestLog es una aplicación web integral diseñada para Dungeon Masters y jugadores para gestionar sus campañas de Dungeons & Dragons (5e). Proporciona herramientas para el seguimiento del progreso de la historia, inventario, monstruos y encuentros de combate.
+**QuestLog** es una aplicación web integral, de alto rendimiento y estética Grimdark, diseñada para que Dungeon Masters y jugadores gestionen sus campañas de Dungeons & Dragons (5e).
 
-Construido con tecnologías web modernas, ofrece una interfaz rápida y receptiva para manejar datos complejos de campañas.
+Ofrece una interfaz inmersiva, rápida y reactiva para manejar todos los aspectos complejos de una campaña: seguimiento del progreso narrativo, control de inventarios, bibliotecas de monstruos y gestión de combates en tiempo real.
 
-## 🚀 Características
+> **Nota:** Este proyecto está en desarrollo activo. Para ver el estado actual, consulta [PROJECT_STATE.md](PROJECT_STATE.md).
 
-- **Gestión de Campañas**: Crea y organiza múltiples campañas en un solo lugar.
-- **Notas de Sesión (El Cronicón)**: Registra notas detalladas de cada sesión de juego para seguir el hilo de la historia.
-- **Sistema de Inventario (El Almacén)**: Gestiona el botín del grupo, objetos, rarezas y cantidades.
-- **Bestiario y Rastreador de Combate (El Coliseo)**:
-  - Mantén una biblioteca de monstruos con estadísticas (CR, CA, PV).
-  - Rastrea encuentros de combate activos con iniciativa y estado de salud actual.
+## 🚀 Características Principales
 
-## 🛠 Tecnologías
+### 1. El Portal (Gestión de Campañas)
 
-- **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
-- **Biblioteca**: [React 19](https://react.dev/)
-- **Base de Datos**: [PostgreSQL](https://www.postgresql.org/) (vía Supabase)
-- **ORM**: [Prisma](https://www.prisma.io/)
-- **Estilos**: [Tailwind CSS](https://tailwindcss.com/)
-- **Gestión de Estado**: [Zustand](https://github.com/pmndrs/zustand)
-- **Iconos**: [Lucide React](https://lucide.dev/)
+- **Interfaz 3D Inmersiva**: Carrusel circular con efecto de perspectiva para navegar entre campañas.
+- **Creación Rápida**: Plantillas predefinidas para nuevas aventuras.
 
-## 📦 Requisitos Previos
+### 2. El Cronicón (Notas de Sesión)
 
-Antes de comenzar, asegúrate de tener instalado lo siguiente:
+- **Bitácora Cronológica**: Registra eventos clave, NPCs y pistas.
+- **Búsqueda Inteligente**: Encuentra rápidamente detalles olvidados.
+
+### 3. El Almacén (Inventario)
+
+- **Control de Botín**: Gestión de objetos, pesos, rarezas y cantidades.
+- **Reparto de Tesoro**: Herramientas para dividir el oro y objetos entre el grupo.
+
+### 4. El Coliseo (Combate y Bestiario)
+
+- **Biblioteca de Monstruos**: Estadísticas completas (CR, CA, PV, Acciones).
+- **Rastreador de Iniciativa**: Gestión de turnos, puntos de vida y estados en tiempo real.
+
+## 🛠 Stack Tecnológico
+
+La arquitectura está diseñada para **rendimiento, escalabilidad y mantenibilidad**.
+
+- **Frontend**:
+  - [Next.js 16](https://nextjs.org/) (App Router, Server Components)
+  - [React 19](https://react.dev/)
+  - [TypeScript](https://www.typescriptlang.org/) (Strict Mode)
+  - [Tailwind CSS v4](https://tailwindcss.com/) (Estilos utilitarios)
+  - [Framer Motion](https://www.framer.com/motion/) (Animaciones complejas)
+  - [Lucide React](https://lucide.dev/) (Iconografía)
+
+- **Backend & Datos**:
+  - [PostgreSQL](https://www.postgresql.org/) (Base de datos relacional)
+  - [Prisma ORM](https://www.prisma.io/) (Acceso a datos Type-safe)
+  - [Supabase](https://supabase.com/) (Infraestructura DB)
+  - [Zustand](https://github.com/pmndrs/zustand) (Gestión de estado ligero)
+
+- **Calidad de Código**:
+  - [Jest](https://jestjs.io/) + Testing Library (Tests unitarios)
+  - ESLint + Prettier (Linting y formato)
+
+## 📦 Instalación y Desarrollo
+
+### Requisitos Previos
 
 - [Node.js](https://nodejs.org/) (v18 o superior)
-- [npm](https://www.npmjs.com/) u otro gestor de paquetes
+- [npm](https://www.npmjs.com/)
 
-## 🏁 Primeros Pasos
+### Pasos para Ejecutar
 
 1. **Clonar el repositorio:**
 
@@ -47,22 +74,61 @@ Antes de comenzar, asegúrate de tener instalado lo siguiente:
    npm install
    ```
 
-3. **Configuración del Entorno:**
-   Crea un archivo `.env` en el directorio raíz basado en `.env.example`.
+3. **Configurar Variables de Entorno:**
+   Crea un archivo `.env` en la raíz basado en el ejemplo (necesitarás una URL de conexión a PostgreSQL):
+
+   ```
+   DATABASE_URL="postgresql://user:password@localhost:5432/questlog"
+   ```
+
+4. **Inicializar Base de Datos:**
 
    ```bash
-   cp .env.example .env
+   npx prisma generate
+   npx prisma migrate dev
    ```
 
-   Rellena las cadenas de conexión a tu base de datos en `.env`:
-
-   ```env
-   # Conexión a Supabase vía connection pooling
-   DATABASE_URL="postgresql://usuario:contraseña@host:puerto/base_de_datos?pgbouncer=true"
-
-   # Conexión directa a la base de datos. Usado para migraciones
-   DIRECT_URL="postgresql://usuario:contraseña@host:puerto/base_de_datos"
+5. **Lanzar Servidor de Desarrollo:**
+   ```bash
+   npm run dev
    ```
+   Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
+
+## 🧪 Testing
+
+El proyecto cuenta con una suite de tests unitarios configurada con Jest.
+
+```bash
+# Ejecutar tests
+npm test
+
+# Ejecutar tests en modo watch
+npm test -- --watch
+```
+
+## 🤝 Contribución
+
+¡Las contribuciones son bienvenidas! Por favor, lee nuestras guías de contribución antes de enviar un Pull Request.
+
+---
+
+&copy; 2026 Questlog System. Licensed under MIT.
+
+Crea un archivo `.env` en el directorio raíz basado en `.env.example`.
+
+```bash
+cp .env.example .env
+```
+
+Rellena las cadenas de conexión a tu base de datos en `.env`:
+
+```env
+# Conexión a Supabase vía connection pooling
+DATABASE_URL="postgresql://usuario:contraseña@host:puerto/base_de_datos?pgbouncer=true"
+
+# Conexión directa a la base de datos. Usado para migraciones
+DIRECT_URL="postgresql://usuario:contraseña@host:puerto/base_de_datos"
+```
 
 4. **Configuración de la Base de Datos:**
    Ejecuta las migraciones de Prisma para crear el esquema de la base de datos.
