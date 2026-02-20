@@ -30,7 +30,7 @@ export default function RootLayout({
         )}
       >
         {/* Fondo Ambiental (Grimdark) */}
-        <div className='fixed inset-0 -z-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-neutral-900 via-neutral-950 to-black opacity-80' />
+        <div className='fixed inset-0 -z-10 bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-neutral-900 via-neutral-950 to-black opacity-80' />
 
         {/* Header Sticky */}
         <header className='sticky top-0 z-50 w-full border-b border-neutral-800/50 bg-neutral-950/80 backdrop-blur-md'>
