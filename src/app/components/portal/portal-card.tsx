@@ -39,7 +39,7 @@ export const PortalCard = ({
         zIndex: isActive ? 50 : 50 - Math.abs(position),
         transformStyle: "preserve-3d",
       }}
-      className="absolute cursor-pointer perspective-origin-center h-[500px] flex items-center justify-center">
+      className="absolute cursor-pointer perspective-origin-center h-125 flex items-center justify-center">
       <Portal
         variant={campaign.variant}
         size={"lg"}

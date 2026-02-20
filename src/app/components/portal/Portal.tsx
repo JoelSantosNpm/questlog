@@ -42,7 +42,7 @@ export function Portal({
     <div className={cn(portalVariants({ size }), className)}>
       {/* CAPA DE IMÁGENES */}
       <div className="absolute inset-0 overflow-hidden bg-transparent">
-        <div className="relative h-full w-full [mask-image:radial-gradient(ellipse_at_center,black_50%,transparent_70%)]">
+        <div className="relative h-full w-full mask-[radial-gradient(ellipse_at_center,black_50%,transparent_70%)]">
           {/* Imagen OFF: Se apaga en hover si es existing */}
           <Image
             src="/portal.png"
