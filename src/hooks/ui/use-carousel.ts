@@ -1,4 +1,4 @@
-// Hook personalizado para la lógica del carrusel
+// Hook personalizado para la lógica del carrusel estandar
 "use client";
 
 import { PortalCarouselItem } from "@/types/portal";
@@ -14,7 +14,7 @@ export interface CarouselOptions {
  * @param items Array de datos genérico T
  * @param options Configuración opcional
  */
-export const usePortalCarousel = <T>(
+export const useCarousel = <T>(
   items: T[],
   options?: CarouselOptions,
 ) => {

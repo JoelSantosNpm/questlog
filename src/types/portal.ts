@@ -6,8 +6,8 @@ export interface Campaign {
   variant: "existing" | "new";
 }
 
-export type PortalCarouselItem = {
+export type PortalCarouselItem<T = Campaign> = {
   key: string;
-  campaign: Campaign;
+  item: T;
   position: number;
 };

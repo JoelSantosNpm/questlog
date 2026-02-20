@@ -1,14 +1,16 @@
 // Layout del carrusel de portales
 "use client";
 
-import { PortalCard } from "./portal-card";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
-import { usePortalCarousel } from "../../../hooks/portal/use-portal-carousel";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { useCarousel } from "../../../hooks/ui/use-carousel";
 import { campaigns } from "../../data/mock-campaigns";
-import { PortalCarouselItem } from "@/types/portal";
+import { PortalCard } from "./portal-card";
 
 export const PortalCarousel = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
   const {
     visibleItems,
     handleNext,
@@ -17,24 +19,45 @@ export const PortalCarousel = () => {
     currentIndicator,
     canGoNext,
     canGoPrev,
-  } = usePortalCarousel(campaigns, campaigns.length > 3 ? 3 : 2);
+  } = useCarousel(campaigns);
 
-  console.log("visibleItems: ", visibleItems);
-  console.log("visibleRange: ", Math.floor((visibleItems.length - 1) / 2));
+  // Focus inicial para permitir navegación por teclado inmediata
+  useEffect(() => {
+    containerRef.current?.focus();
+  }, []);
+
+  // Manejador de teclado para accesibilidad
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowLeft" && canGoPrev) {
+      e.preventDefault();
+      handlePrev();
+    } else if (e.key === "ArrowRight" && canGoNext) {
+      e.preventDefault();
+      handleNext();
+    }
+  };
 
   return (
-    <div className="relative h-screen w-full flex flex-col items-center justify-center overflow-hidden bg-stone-950">
+    <section
+      ref={containerRef}
+      className="relative flex h-screen w-full flex-col items-center justify-center overflow-hidden bg-stone-950 outline-none"
+      onKeyDown={handleKeyDown}
+      tabIndex={0} // Hacemos que el contenedor sea focusable
+      aria-label="Selector de Campañas"
+      role="region"
+      aria-roledescription="carousel">
       {/* 3D Scene Container */}
       <div
-        className="relative flex h-[600px] w-full items-center justify-center"
-        style={{ perspective: "1000px" }}>
+        className="relative flex h-150 w-full items-center justify-center"
+        style={{ perspective: "1000px" }}
+        role="list">
         <AnimatePresence>
-          {visibleItems.map((item: PortalCarouselItem) => (
+          {visibleItems.map(item => (
             <PortalCard
               key={item.key} // Usamos la key compuesta para permitir duplicados virtuales
               position={item.position}
-              campaign={item.campaign}
-              visibleRange={Math.floor((visibleItems.length - 1) / 2)} // Pasamos el rango visible para controlar la opacidad
+              campaign={item.item} // .item tras refactorización genérica
+              visibleRange={Math.floor((visibleItems.length - 1) / 2)}
             />
           ))}
         </AnimatePresence>
@@ -79,7 +102,7 @@ export const PortalCarousel = () => {
       </div>
 
       {/* Optional: Background Ambience */}
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-stone-900 via-stone-950 to-black opacity-80" />
-    </div>
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-stone-900 via-stone-950 to-black opacity-80" />
+    </section>
   );
 };

@@ -20,40 +20,77 @@ const portalVariants = cva(
   },
 );
 
-interface PortalProps extends VariantProps<typeof portalVariants> {
-  variant?: "existing" | "new";
-  campaignName?: string;
-  href?: string;
+type PortalSize = VariantProps<typeof portalVariants>["size"];
+
+interface BasePortalProps {
+  size?: PortalSize;
   className?: string;
   isBright?: boolean;
+  priority?: boolean;
 }
 
-export function Portal({
-  variant = "existing",
-  campaignName,
-  href = "#",
-  size,
-  className,
-  isBright = false,
-}: PortalProps) {
+interface ExistingPortalProps extends BasePortalProps {
+  variant?: "existing";
+  campaignName: string;
+  href: string;
+}
+
+interface NewPortalProps extends BasePortalProps {
+  variant: "new";
+  campaignName?: never;
+  href?: string;
+}
+
+type PortalProps = ExistingPortalProps | NewPortalProps;
+
+function getImageSizes(size: PortalSize) {
+  switch (size) {
+    case "sm":
+      return "(max-width: 768px) 90px, 120px";
+    case "lg":
+      return "(max-width: 768px) 256px, 300px";
+    default:
+      return "(max-width: 768px) 176px, 224px";
+  }
+}
+
+export function Portal(props: PortalProps) {
+  const {
+    variant = "existing",
+    size = "default",
+    className,
+    isBright = false,
+    priority = false,
+  } = props;
+
+  // Casting seguro porque TS ya validó las props con la unión discriminada
   const isExisting = variant === "existing";
+  const campaignName = isExisting
+    ? (props as ExistingPortalProps).campaignName
+    : "";
+  const href = isExisting
+    ? (props as ExistingPortalProps).href
+    : (props.href ?? "/campaigns/new");
+
+  // Optimización de sizes para next/image
+  const imageSizes = getImageSizes(size);
 
   return (
     <div className={cn(portalVariants({ size }), className)}>
       {/* CAPA DE IMÁGENES */}
-      <div className="absolute inset-0 overflow-hidden bg-transparent">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden bg-transparent">
         <div className="relative h-full w-full mask-[radial-gradient(ellipse_at_center,black_50%,transparent_70%)]">
           {/* Imagen OFF: Se apaga en hover si es existing */}
           <Image
             src="/portal.png"
-            alt="Base"
+            alt=""
             fill
-            priority
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            priority={priority}
+            sizes={imageSizes}
             className={cn(
               "object-cover transition-opacity duration-700",
               !isExisting
-                ? "opacity-50 grayscale "
+                ? "opacity-50 grayscale"
                 : isBright
                   ? "opacity-80 group-hover:opacity-0"
                   : "opacity-40 group-hover:opacity-0",
@@ -63,10 +100,11 @@ export function Portal({
           {/* Imagen ON: Se enciende en hover */}
           <Image
             src="/portal_a_natural.png"
-            alt="Activo"
+            alt=""
             fill
-            priority
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            // La segunda imagen generalmente no necesita prioridad a menos que el portal sea muy prominente
+            priority={priority}
+            sizes={imageSizes}
             className="absolute inset-0 object-cover opacity-0 transition-opacity duration-700 group-hover:opacity-100"
           />
         </div>
@@ -75,7 +113,12 @@ export function Portal({
       {/* LINK Y CONTENIDO */}
       <Link
         href={href}
-        className="absolute inset-0 z-30 flex h-full w-full flex-col items-center justify-center border-transparent bg-black/0 transition-all duration-700">
+        className="absolute inset-0 z-30 flex h-full w-full flex-col items-center justify-center border-transparent bg-black/0 transition-all duration-700"
+        aria-label={
+          isExisting
+            ? `Entrar a campaña ${campaignName}`
+            : "Crear nueva aventura"
+        }>
         <div className="relative z-40 flex flex-col items-center gap-3 px-4 text-center">
           {isExisting ? (
             <>

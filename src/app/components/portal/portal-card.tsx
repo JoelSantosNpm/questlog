@@ -1,15 +1,12 @@
 "use client";
 import { motion } from "framer-motion";
 import { Portal } from "./portal";
+import { Campaign } from "@/types/portal";
 
 interface PortalCardProps {
   position: number;
   visibleRange?: number;
-  campaign: {
-    id: number;
-    name: string;
-    variant: "existing" | "new";
-  };
+  campaign: Campaign;
 }
 
 export const PortalCard = ({
@@ -18,6 +15,9 @@ export const PortalCard = ({
   campaign,
 }: PortalCardProps) => {
   const isActive = position === 0;
+
+  // Calculamos la opacidad basada en la posición
+  const opacity = Math.abs(position) >= visibleRange ? 0 : 1;
 
   return (
     <motion.div
@@ -28,7 +28,7 @@ export const PortalCard = ({
         scale: isActive ? 1.15 : 0.85,
         rotateY: position * -30, // Inward rotation -25
         z: Math.abs(position) * -100, // Depth pushback -100
-        opacity: Math.abs(position) >= visibleRange ? 0 : 1,
+        opacity,
       }}
       transition={{
         type: "spring",
@@ -39,13 +39,25 @@ export const PortalCard = ({
         zIndex: isActive ? 50 : 50 - Math.abs(position),
         transformStyle: "preserve-3d",
       }}
-      className="absolute cursor-pointer perspective-origin-center h-125 flex items-center justify-center">
-      <Portal
-        variant={campaign.variant}
-        size={"lg"}
-        campaignName={campaign.name}
-        isBright={isActive}
-      />
+      className="absolute flex h-125 cursor-pointer items-center justify-center perspective-origin-center">
+      {campaign.variant === "new" ? (
+        <Portal
+          variant="new"
+          size="lg"
+          isBright={isActive}
+          priority={isActive}
+          href="/campaigns/new"
+        />
+      ) : (
+        <Portal
+          variant="existing"
+          size="lg"
+          campaignName={campaign.name}
+          isBright={isActive}
+          priority={isActive}
+          href={`/campaigns/${campaign.id}`}
+        />
+      )}
     </motion.div>
   );
 };
