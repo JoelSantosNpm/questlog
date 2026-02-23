@@ -1,23 +1,19 @@
-"use client";
-import { motion } from "framer-motion";
-import { Portal } from "./portal";
-import { Campaign } from "@/types/portal";
+'use client'
+import { motion } from 'framer-motion'
+import { Portal } from './Portal'
+import { Campaign } from '@/types/portal'
 
 interface PortalCardProps {
-  position: number;
-  visibleRange?: number;
-  campaign: Campaign;
+  position: number
+  visibleRange?: number
+  campaign: Campaign
 }
 
-export const PortalCard = ({
-  position,
-  visibleRange = 3,
-  campaign,
-}: PortalCardProps) => {
-  const isActive = position === 0;
+export const PortalCard = ({ position, visibleRange = 3, campaign }: PortalCardProps) => {
+  const isActive = position === 0
 
   // Calculamos la opacidad basada en la posición
-  const opacity = Math.abs(position) >= visibleRange ? 0 : 1;
+  const opacity = Math.abs(position) >= visibleRange ? 0 : 1
 
   return (
     <motion.div
@@ -31,27 +27,28 @@ export const PortalCard = ({
         opacity,
       }}
       transition={{
-        type: "spring",
+        type: 'spring',
         stiffness: 70,
         damping: 20,
       }}
       style={{
         zIndex: isActive ? 50 : 50 - Math.abs(position),
-        transformStyle: "preserve-3d",
+        transformStyle: 'preserve-3d',
       }}
-      className="absolute flex h-125 cursor-pointer items-center justify-center perspective-origin-center">
-      {campaign.variant === "new" ? (
+      className='absolute flex h-125 cursor-pointer items-center justify-center perspective-origin-center'
+    >
+      {campaign.variant === 'new' ? (
         <Portal
-          variant="new"
-          size="lg"
+          variant='new'
+          size='lg'
           isBright={isActive}
           priority={isActive}
-          href="/campaigns/new"
+          href='/campaigns/new'
         />
       ) : (
         <Portal
-          variant="existing"
-          size="lg"
+          variant='existing'
+          size='lg'
           campaignName={campaign.name}
           isBright={isActive}
           priority={isActive}
@@ -59,5 +56,5 @@ export const PortalCard = ({
         />
       )}
     </motion.div>
-  );
-};
+  )
+}
