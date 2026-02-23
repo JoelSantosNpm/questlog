@@ -101,7 +101,7 @@ src/
 ### M1: El Despertar del Guardián (Auth & Infra) [EN PROGRESO]
 
 - [x] **DB Schema**: Tabla `User` (clerkId) y relaciones (Migrado).
-- [ ] **Issue #1: Configuración de Clerk y Middleware**
+- [x] **Issue #1: Configuración de Clerk y Middleware**
   - _AC:_ Paquete instalado, `.env` configurado, `middleware.ts` protegiendo rutas excepto `/`, `/sign-in` y `/sign-up`.
 - [ ] **Issue #2: UI para Autenticación**
   - _AC:_ Rutas `/sign-in` y `/sign-up` con componentes de Clerk y estética D&D.
