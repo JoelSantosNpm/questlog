@@ -9,11 +9,31 @@ datasource db {
 
 // datasource y client configurados para Supabase
 
+// 1. User Table (Clerk Integration)
+model User {
+  id        String     @id @default(cuid())
+  clerkId   String     @unique
+  email     String     @unique
+  name      String?
+  image     String?    // User avatar
+  
+  campaigns Campaign[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
 model Campaign {
-  id          String        @id @default(cuid())
+  id          String   @id @default(cuid())
   name        String
   description String?
-  createdAt   DateTime      @default(now())
+  imageUrl    String?  // Cover image for the campaign
+  
+  // Relation to User (DM)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   
   // El Cronicón: Notas de sesión
   notes       SessionNote[]
@@ -49,24 +69,40 @@ model Monster {
 
 model ActiveMonster {
   id         String   @id @default(cuid())
+  name       String?  // Optional override name (e.g. "Goblin Boss")
   currentHp  Int
+  maxHp      Int?     // Copied from base to allow unique max HP
   initiative Int?
-  status     String[] // Ej: ["Poisoned", "Stunned"]
+  status     String[] // ["Poisoned", "Stunned"]
   
+  // Link to base definition
   monsterId  String
   monster    Monster  @relation(fields: [monsterId], references: [id])
   
+  // Link to Campaign context (The "Active" session state)
   campaignId String
   campaign   Campaign @relation(fields: [campaignId], references: [id])
+
+  createdAt  DateTime @default(now())
 }
 
 model Item {
   id          String   @id @default(cuid())
   name        String
   description String?
+  
+  // Core RPG Stats
   rarity      String   // Common, Rare, Legendary...
   type        String   // Weapon, Potion, Gear
+  weight      Float?   // in lbs
+  value       Float?   // in Gold Pieces (gp)
+  image       String?  // Item icon/image URL
+  
+  // State
   quantity    Int      @default(1)
+  equipped    Boolean  @default(false)
+  attuned     Boolean  @default(false)
+  notes       String?  // Custom player notes
   
   campaignId  String
   campaign    Campaign @relation(fields: [campaignId], references: [id])

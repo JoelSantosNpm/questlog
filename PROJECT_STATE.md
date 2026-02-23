@@ -84,19 +84,45 @@ src/
 
 ---
 
-## 📝 Pendientes / Siguientes Pasos
+## �️ Roadmap de Funcionalidades
 
-1. **Integración de Datos:**
-   - Conectar `useCarousel` con datos reales de la base de datos (Prisma/PostgreSQL) en lugar de `mock-campaigns`.
-   - Implementar Server Actions para `getCampaigns`.
+### Sprint 1: Fundamentos y Autenticación
 
-2. **Página de Inicio (`page.tsx`):**
-   - Integrar el `<PortalCarousel />` en la página principal.
-   - Añadir pantallas de carga (Skeletons).
+- [ ] **Auth**: Integración de Clerk (@clerk/nextjs) y Webhooks.
+- [ ] **DB Schema**: Tabla `User` (clerkId) y relaciones con `Campaign`.
+- [ ] **Rutas Base**: `/sign-in`, `/sign-up`, `/dashboard`.
+- [ ] **Middleware**: Protección de rutas y gestión de sesión.
 
-3. **Detalle de Campaña:**
-   - Crear ruta dinámica `/campaigns/[id]`.
-   - Diseñar vista del dashboard de campaña.
+### Sprint 2: Core de Campaña & Log
 
-4. **Autenticación:**
-   - Integrar sistema de login para proteger las campañas.
+- [ ] **Dashboard**: Grid de visualización de campañas.
+- [ ] **Log System**: Ruta `/campaña/[id]/log` y componente `LogEntryCard`.
+- [ ] **CRUD Campaña**: Modal de creación y edición.
+
+### Sprint 3: Sistema de Inventario
+
+- [ ] **Schema Items**: Campos extendidos (peso, valor, imagen, atributos).
+- [ ] **UI Inventario**: Ruta `/campaña/[id]/inventario` y `InventoryGrid`.
+- [ ] **Interacción**: `ItemTooltip` y filtros por categoría.
+
+### Sprint 4: Bestiario & Gestión GM
+
+- [ ] **Schema Monstruos**: `Monster` vs `ActiveMonster`.
+- [ ] **Herramientas GM**: Sincronización con Supabase y Formularios.
+- [ ] **Rutas**: `/bestiario` y `/coliseo`.
+
+---
+
+## 📝 Siguientes Pasos Inmediatos (Sprint 1)
+
+1. **Instalación de Dependencias:**
+   - Instalar `@clerk/nextjs`.
+
+2. **Actualización de Base de Datos:**
+   - Modificar `schema.prisma` para incluir `User` y `Item` extendido.
+   - Ejecutar migración.
+
+3. **Configuración de Autenticación:**
+   - Añadir variables de entorno.
+   - Crear `middleware.ts`.
+   - Implementar páginas de Sign In/Sign Up.
