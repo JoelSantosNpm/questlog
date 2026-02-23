@@ -1,11 +1,11 @@
 # Estado del Proyecto: Questlog
 
-**Última actualización:** 20 de Febrero de 2026
-**Rama actual:** Implementar-layout
+**Última actualización:** 23 de Febrero de 2026
+**Rama actual:** compound-engineering
 
 ## 📌 Resumen de Progreso
 
-Se ha establecido la base arquitectónica de la interfaz de usuario (UI) con un tema "Grimdark" inmersivo y se ha implementado el componente central de navegación: el Carrusel de Portales 3D. El proyecto ahora cuenta con una configuración robusta de testing unitario.
+Se ha implementado el sistema de **Autenticación con Clerk** y la sincronización de usuarios con la base de datos (Lazy Sync). El esquema de Prisma se ha actualizado para soportar usuarios e inventarios extendidos. La arquitectura UI base (Grimdark) y el Carrusel 3D siguen activos.
 
 ---
 
@@ -19,6 +19,7 @@ Se ha establecido la base arquitectónica de la interfaz de usuario (UI) con un 
 - **Fuentes:** Google Fonts (`Inter` para UI, `MedievalSharp` para títulos).
 - **Animaciones:** Framer Motion (`AnimatePresence`, `motion`).
 - **Testing:** Jest + Testing Library configurado con soporte para TypeScript (`ts-jest` / `next/jest`).
+- **Auth & DB:** Clerk (Auth), Supabase (PostgreSQL), Prisma ORM.
 
 ### Layout Global (`src/app/layout.tsx`)
 
@@ -86,14 +87,14 @@ src/
 
 ## �️ Roadmap de Funcionalidades
 
-### Sprint 1: Fundamentos y Autenticación
+### Sprint 1: Fundamentos y Autenticación (Completado)
 
-- [ ] **Auth**: Integración de Clerk (@clerk/nextjs) y Webhooks.
-- [ ] **DB Schema**: Tabla `User` (clerkId) y relaciones con `Campaign`.
-- [ ] **Rutas Base**: `/sign-in`, `/sign-up`, `/dashboard`.
-- [ ] **Middleware**: Protección de rutas y gestión de sesión.
+- [x] **Auth**: Integración de Clerk (@clerk/nextjs) y Lazy Sync.
+- [x] **DB Schema**: Tabla `User` (clerkId) y relaciones con `Campaign`.
+- [x] **Rutas Base**: `/sign-in`, `/sign-up`, `/` (Protegida).
+- [x] **Middleware**: `proxy.ts` (Next.js 16 conventions) para seguridad.
 
-### Sprint 2: Core de Campaña & Log
+### Sprint 2: Core de Campaña & Log (En Progreso)
 
 - [ ] **Dashboard**: Grid de visualización de campañas.
 - [ ] **Log System**: Ruta `/campaña/[id]/log` y componente `LogEntryCard`.
@@ -113,16 +114,16 @@ src/
 
 ---
 
-## 📝 Siguientes Pasos Inmediatos (Sprint 1)
+## 📝 Siguientes Pasos Inmediatos (Sprint 2)
 
-1. **Instalación de Dependencias:**
-   - Instalar `@clerk/nextjs`.
+1. **Dashboard de Campañas:**
+   - Crear Server Action `getCampaigns` filtrando por `userId`.
+   - Reemplazar mock data en `useCarousel` con datos reales.
 
-2. **Actualización de Base de Datos:**
-   - Modificar `schema.prisma` para incluir `User` y `Item` extendido.
-   - Ejecutar migración.
+2. **Creación de Campañas:**
+   - Implementar Modal con formulario de creación.
+   - Server Action `createCampaign`.
 
-3. **Configuración de Autenticación:**
-   - Añadir variables de entorno.
-   - Crear `middleware.ts`.
-   - Implementar páginas de Sign In/Sign Up.
+3. **Bitácora de Aventuras:**
+   - Crear estructura de rutas `/campaign/[id]/log`.
+   - Diseñar `LogEntryCard`.
