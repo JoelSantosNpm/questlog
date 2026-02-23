@@ -5,7 +5,7 @@
 
 ## 📌 Resumen de Progreso
 
-Se ha implementado el sistema de **Autenticación con Clerk** y la sincronización de usuarios con la base de datos (Lazy Sync). El esquema de Prisma se ha actualizado para soportar usuarios e inventarios extendidos. La arquitectura UI base (Grimdark) y el Carrusel 3D siguen activos.
+Se ha establecido la arquitectura base y el sistema de navegación 3D. Actualmente se está integrando el sistema de **Autenticación con Clerk** y la persistencia de usuarios (En progreso). El esquema de base de datos ya soporta la tabla `User`.
 
 ---
 
@@ -87,14 +87,14 @@ src/
 
 ## �️ Roadmap de Funcionalidades
 
-### Sprint 1: Fundamentos y Autenticación (Completado)
+### Sprint 1: Fundamentos y Autenticación (En Progreso)
 
-- [x] **Auth**: Integración de Clerk (@clerk/nextjs) y Lazy Sync.
-- [x] **DB Schema**: Tabla `User` (clerkId) y relaciones con `Campaign`.
-- [x] **Rutas Base**: `/sign-in`, `/sign-up`, `/` (Protegida).
-- [x] **Middleware**: `proxy.ts` (Next.js 16 conventions) para seguridad.
+- [x] **DB Schema**: Tabla `User` (clerkId) y relaciones con `Campaign` (Migrado).
+- [ ] **Configuración**: Variables `CLERK_PUBLISHABLE_KEY` y `SECRET_KEY`.
+- [ ] **Auth**: Flujo de Login/Registro funcional.
+- [ ] **Middleware**: Protección y redirección correcta.
 
-### Sprint 2: Core de Campaña & Log (En Progreso)
+### Sprint 2: Core de Campaña & Log (Pendiente)
 
 - [ ] **Dashboard**: Grid de visualización de campañas.
 - [ ] **Log System**: Ruta `/campaña/[id]/log` y componente `LogEntryCard`.
@@ -114,16 +114,12 @@ src/
 
 ---
 
-## 📝 Siguientes Pasos Inmediatos (Sprint 2)
+## 📝 Siguientes Pasos Inmediatos (Sprint 1)
 
-1. **Dashboard de Campañas:**
-   - Crear Server Action `getCampaigns` filtrando por `userId`.
-   - Reemplazar mock data en `useCarousel` con datos reales.
+1. **Configuración de Autenticación:**
+   - Obtener claves API de Clerk (Dashboard) y configurar `.env`.
+   - Probar flujo de registro y creación de usuario en DB (Lazy Sync).
+   - Verificar redirecciones del Middleware.
 
-2. **Creación de Campañas:**
-   - Implementar Modal con formulario de creación.
-   - Server Action `createCampaign`.
-
-3. **Bitácora de Aventuras:**
-   - Crear estructura de rutas `/campaign/[id]/log`.
-   - Diseñar `LogEntryCard`.
+2. **Dashboard de Campañas (Sprint 2):**
+   - Una vez autenticado, conectar `PortalCarousel` con datos reales.
