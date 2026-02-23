@@ -87,30 +87,57 @@ src/
 
 ## �️ Roadmap de Funcionalidades
 
-### Sprint 1: Fundamentos y Autenticación (En Progreso)
+# 🛡️ Questlog Project State
 
-- [x] **DB Schema**: Tabla `User` (clerkId) y relaciones con `Campaign` (Migrado).
-- [ ] **Configuración**: Variables `CLERK_PUBLISHABLE_KEY` y `SECRET_KEY`.
-- [ ] **Auth**: Flujo de Login/Registro funcional.
-- [ ] **Middleware**: Protección y redirección correcta.
+## 📍 Estado Actual
 
-### Sprint 2: Core de Campaña & Log (Pendiente)
+**Milestone:** M1: El Despertar del Guardián (Auth & Infra)
+**Issue en curso:** Issue #1: Configuración técnica de Clerk y Middleware
 
-- [ ] **Dashboard**: Grid de visualización de campañas.
-- [ ] **Log System**: Ruta `/campaña/[id]/log` y componente `LogEntryCard`.
-- [ ] **CRUD Campaña**: Modal de creación y edición.
+---
 
-### Sprint 3: Sistema de Inventario
+## 🗺️ Roadmap Estratégico
 
-- [ ] **Schema Items**: Campos extendidos (peso, valor, imagen, atributos).
-- [ ] **UI Inventario**: Ruta `/campaña/[id]/inventario` y `InventoryGrid`.
-- [ ] **Interacción**: `ItemTooltip` y filtros por categoría.
+### M1: El Despertar del Guardián (Auth & Infra) [EN PROGRESO]
 
-### Sprint 4: Bestiario & Gestión GM
+- [x] **DB Schema**: Tabla `User` (clerkId) y relaciones (Migrado).
+- [ ] **Issue #1: Configuración de Clerk y Middleware**
+  - _AC:_ Paquete instalado, `.env` configurado, `middleware.ts` protegiendo rutas excepto `/`, `/sign-in` y `/sign-up`.
+- [ ] **Issue #2: UI para Autenticación**
+  - _AC:_ Rutas `/sign-in` y `/sign-up` con componentes de Clerk y estética D&D.
+- [ ] **Issue #3: Lazy Sync (Clerk -> Prisma)**
+  - _AC:_ Verificación de `userId` en Layout y creación automática en Supabase si no existe.
 
-- [ ] **Schema Monstruos**: `Monster` vs `ActiveMonster`.
-- [ ] **Herramientas GM**: Sincronización con Supabase y Formularios.
-- [ ] **Rutas**: `/bestiario` y `/coliseo`.
+### M2: El Salón de los Héroes (Gestión de Campañas) [PENDIENTE]
+
+- [ ] **Issue #4: Dashboard de Campañas (Vista Máster)**
+  - _AC:_ Fetch de Prisma + `PortalCarousel` conectado a datos reales.
+- [ ] **Issue #5: Formulario de Creación de Aventuras**
+  - _AC:_ Server Action + Zod para crear campañas vinculadas al usuario.
+
+### M3: El Tesoro y el Bestiario (Módulos de Datos) [PENDIENTE]
+
+- [ ] **Issue #6: Módulo de Inventario y Tesoros**
+  - _AC:_ CRUD de Items + Relación con `CampaignID`.
+- [ ] **Issue #7: Bestiario y Fichas de Monstruos**
+  - _AC:_ Buscador de monstruos + Ficha técnica (HP, AC, Stats).
+
+### M4: Las Crónicas del Coliseo (Live Tools) [PENDIENTE]
+
+- [ ] **Issue #8: Logbook de Sesión**
+  - _AC:_ Diario de campaña con persistencia y cronología.
+- [ ] **Issue #9: Gestor de Iniciativa (El Coliseo)**
+  - _AC:_ Herramienta de turnos para combate en vivo.
+- [ ] **Issue #10: Pulido y Despliegue**
+  - _AC:_ Optimización UI/UX y deploy en Vercel.
+
+---
+
+## 🛠️ Notas de Ingeniería (Compound Context)
+
+- **Tech Stack:** Next.js (App Router), Prisma, Supabase, Clerk, Tailwind.
+- **UI Estilo:** Gamificada, texturas de piedra, portales mágicos.
+- **Principio:** No se avanza de Issue hasta cumplir todos sus AC (Criterios de Aceptación).
 
 ---
 
