@@ -1,3 +1,4 @@
+import { AUTH_ROUTES } from '@/config/routes/auth'
 import { cn } from '@/shared/utils/styles'
 import { ClerkProvider, SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
 import type { Metadata } from 'next'
@@ -22,7 +23,13 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      signInUrl={AUTH_ROUTES.signIn}
+      signUpUrl={AUTH_ROUTES.signUp}
+      afterSignOutUrl={AUTH_ROUTES.signIn}
+      signInFallbackRedirectUrl={AUTH_ROUTES.afterSignIn}
+      signUpFallbackRedirectUrl={AUTH_ROUTES.afterSignUp}
+    >
       <html lang='es' className='dark h-full'>
         <body
           className={cn(
