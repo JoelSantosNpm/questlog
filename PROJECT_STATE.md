@@ -92,7 +92,8 @@ src/
 ## 📍 Estado Actual
 
 **Milestone:** M1: El Despertar del Guardián (Auth & Infra)
-**Issue en curso:** Issue #1: Configuración técnica de Clerk y Middleware
+**Issue completado:** Issue #2: UI para Autenticación (Login/Sign-up)
+**Siguiente:** Issue #3: Lazy Sync (Clerk -> Prisma) [PENDIENTE DE INICIO]
 
 ---
 
@@ -103,7 +104,7 @@ src/
 - [x] **DB Schema**: Tabla `User` (clerkId) y relaciones (Migrado).
 - [x] **Issue #1: Configuración de Clerk y Middleware**
   - _AC:_ Paquete instalado, `.env` configurado, `middleware.ts` protegiendo rutas excepto `/`, `/sign-in` y `/sign-up`.
-- [ ] **Issue #2: UI para Autenticación**
+- [x] **Issue #2: UI para Autenticación**
   - _AC:_ Rutas `/sign-in` y `/sign-up` con componentes de Clerk y estética D&D.
 - [ ] **Issue #3: Lazy Sync (Clerk -> Prisma)**
   - _AC:_ Verificación de `userId` en Layout y creación automática en Supabase si no existe.
