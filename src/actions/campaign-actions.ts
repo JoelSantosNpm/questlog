@@ -2,10 +2,10 @@
 
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
-import { auth } from '@clerk/nextjs'
+import { auth } from '@clerk/nextjs/server'
 
 export async function createCampaign(formData: FormData) {
-  const { userId } = auth()
+  const { userId } = await auth()
 
   if (!userId) {
     throw new Error('Unauthorized')
@@ -22,7 +22,7 @@ export async function createCampaign(formData: FormData) {
       name,
       user: {
         connect: {
-          id: userId,
+          clerkId: userId,
         },
       },
     },
