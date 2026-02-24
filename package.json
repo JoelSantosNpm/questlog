@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^6.38.1",
+    "@clerk/themes": "^2.4.55",
     "@heroicons/react": "^2.2.0",
     "@prisma/adapter-pg": "^7.4.0",
     "@prisma/client": "^7.4.0",
