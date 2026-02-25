@@ -2,35 +2,34 @@
 
 [🇺🇸 English](README.md) | [🇪🇸 Español](README.es.md)
 
-QuestLog is a comprehensive web application designed for Dungeon Masters and players to manage their Dungeons & Dragons (5e) campaigns. It provides tools for tracking story progression, inventory, monsters, and combat encounters.
+> **Status:** Active development. See [PROJECT_STATE.md](PROJECT_STATE.md) for the current milestone progress.
 
-Built with modern web technologies, it offers a fast and responsive interface for managing complex campaign data.
+**QuestLog** is a Grimdark-themed web application for Dungeon Masters to manage their D&D 5e campaigns. It provides tools for tracking narrative progression, inventory, bestiary, and combat encounters.
 
 ## 🚀 Features
 
-- **Campaign Management**: Create and organize multiple campaigns in one place.
-- **Session Notes (El Cronicón)**: Record detailed notes for each game session to keep track of the story.
-- **Inventory System (El Almacén)**: Manage party loot, items, rarities, and quantities.
-- **Bestiary & Combat Tracker (El Coliseo)**:
-  - Maintain a library of monsters with stats (CR, AC, HP).
-  - Track active combat encounters with initiative and current health status.
+- **The Portal**: 3D circular carousel for campaign navigation.
+- **Authentication (Clerk)**: Secure sign-in/sign-up with automatic user sync to the database.
+- **Session Notes (El Cronicón)**: Chronological session diary.
+- **Inventory System (El Almacén)**: Loot, items, rarities, and quantities.
+- **Bestiary & Combat Tracker (El Coliseo)**: Monster library + live initiative tracker.
 
 ## 🛠 Tech Stack
 
-- **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
-- **Library**: [React 19](https://react.dev/)
-- **Database**: [PostgreSQL](https://www.postgresql.org/) (via Supabase)
-- **ORM**: [Prisma](https://www.prisma.io/)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **State Management**: [Zustand](https://github.com/pmndrs/zustand)
-- **Icons**: [Lucide React](https://lucide.dev/)
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router, Server Components)
+- **Language**: [TypeScript](https://www.typescriptlang.org/) (Strict Mode)
+- **Auth**: [Clerk](https://clerk.com/) + [`@clerk/nextjs`](https://www.npmjs.com/package/@clerk/nextjs)
+- **Database**: [PostgreSQL](https://www.postgresql.org/) via [Supabase](https://supabase.com/)
+- **ORM**: [Prisma](https://www.prisma.io/) with `@prisma/adapter-pg`
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
+- **Animations**: [Framer Motion](https://www.framer.com/motion/)
+- **Testing**: [Jest](https://jestjs.io/) + Testing Library
 
 ## 📦 Prerequisites
 
-Before you begin, ensure you have the following installed:
-
-- [Node.js](https://nodejs.org/) (v18 or higher)
-- [npm](https://www.npmjs.com/) or another package manager
+- [Node.js](https://nodejs.org/) v18 or higher
+- A [Supabase](https://supabase.com/) project (PostgreSQL)
+- A [Clerk](https://clerk.com/) application
 
 ## 🏁 Getting Started
 
@@ -48,27 +47,25 @@ Before you begin, ensure you have the following installed:
    ```
 
 3. **Environment Setup:**
-   Create a `.env` file in the root directory based on `.env.example`.
 
-   ```bash
-   cp .env.example .env
-   ```
-
-   Fill in your database connection strings in `.env`:
+   Create a `.env` file in the root directory with the following variables:
 
    ```env
-   # Connect to Supabase via connection pooling
-   DATABASE_URL="postgresql://user:password@host:port/database?pgbouncer=true"
+   # Supabase / Prisma
+   DATABASE_URL_REMOTE="postgresql://user:password@host:port/database"
 
-   # Direct connection to the database. Used for migrations
-   DIRECT_URL="postgresql://user:password@host:port/database"
+   # Clerk Authentication
+   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_..."
+   CLERK_SECRET_KEY="sk_..."
+   NEXT_PUBLIC_CLERK_SIGN_IN_URL="/sign-in"
+   NEXT_PUBLIC_CLERK_SIGN_UP_URL="/sign-up"
    ```
 
 4. **Database Setup:**
-   Run Prisma migrations to create the database schema.
 
    ```bash
-   npx prisma migrate dev
+   npx prisma generate
+   npx prisma db push
    ```
 
 5. **Run the development server:**
@@ -77,27 +74,41 @@ Before you begin, ensure you have the following installed:
    npm run dev
    ```
 
-6. **Open the app:**
-   Navigate to [http://localhost:3000](http://localhost:3000) in your browser.
+   Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## 📂 Project Structure
 
-Here's an overview of the key directories:
-
-- `src/app/`: Application routes and pages (Next.js App Router).
-- `src/actions/`: Server Actions for handling form submissions and mutations.
-- `src/lib/`: Utility functions and shared configuration (e.g., Prisma client).
-- `prisma/`: Database schema (`schema.prisma`) and migration files.
-- `public/`: Static assets like images and fonts.
+```
+src/
+├── app/                        # Routes and pages (App Router)
+│   ├── components/portal/      # 3D Carousel
+│   ├── providers/              # ClerkProvider wrapper
+│   ├── sign-in/ & sign-up/     # Auth pages
+│   └── layout.tsx              # Root layout (includes AuthSync)
+├── components/auth/
+│   └── auth-sync.tsx           # Lazy Sync: Clerk → Prisma
+├── config/
+│   ├── clerk-theme.ts          # Custom Grimdark Clerk theme
+│   └── routes/auth.ts          # Public/protected route constants
+├── lib/
+│   └── prisma.ts               # Prisma singleton with PrismaPg adapter
+├── hooks/ui/                   # Generic UI hooks (useCarousel)
+├── types/                      # Shared TypeScript types
+prisma/
+│   └── schema.prisma           # DB schema
+└── src/proxy.ts                # Route protection middleware
+```
 
 ## 📜 Scripts
 
-- `npm run dev`: Starts the development server.
-- `npm run build`: Builds the application for production.
-- `npm run start`: Starts the production server.
-- `npm run lint`: Runs ESLint to check for code quality issues.
+| Command         | Description              |
+| --------------- | ------------------------ |
+| `npm run dev`   | Start development server |
+| `npm run build` | Build for production     |
+| `npm run start` | Start production server  |
+| `npm run lint`  | Run ESLint               |
+| `npm test`      | Run unit tests           |
 
 ## 🔒 Private Project
 
-This is a private project. It is not open for contributions at this time.
-All rights reserved.
+This is a private project. Not open for contributions at this time.
