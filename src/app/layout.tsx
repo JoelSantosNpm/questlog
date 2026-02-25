@@ -1,4 +1,5 @@
 import { AuthProvider } from '@/app/providers/auth-provider'
+import { AuthSync } from '@/components/auth/auth-sync'
 import { cn } from '@/shared/utils/styles'
 import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
 import type { Metadata } from 'next'
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
   description: 'Gestiona tus campañas de D&D con el poder de la piedra y el acero.',
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
@@ -32,6 +33,9 @@ export default function RootLayout({
             'flex min-h-screen flex-col bg-neutral-950 font-sans text-neutral-100 antialiased selection:bg-amber-500/30'
           )}
         >
+          {/* Sincronización de Usuario (Lazy Sync) */}
+          <AuthSync />
+
           {/* Fondo Ambiental (Grimdark) */}
           <div className='fixed inset-0 -z-10 bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-neutral-900 via-neutral-950 to-black opacity-80' />
 
