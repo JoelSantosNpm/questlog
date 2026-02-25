@@ -5,7 +5,7 @@
 
 ## 📌 Resumen de Progreso
 
-Arquitectura base, sistema de navegación 3D y **Milestone M1 (Auth & Infra)** completados al 75%. Las tareas M1-01 (Clerk config), M1-02 (Auth UI) y M1-03 (Lazy Sync a Supabase vía Prisma) están cerradas. Pendiente M1-04 (Clerk Webhooks para sync automático de actualizaciones y eliminaciones de usuario).
+Arquitectura base, sistema de navegación 3D y **Milestone M1 (Auth & Infra)** completados al 85%. Las tareas M1-01 (Clerk config), M1-02 (Auth UI) y M1-03 (Lazy Sync a Supabase vía Prisma) están cerradas. Se ha actualizado el esquema de Prisma para incluir `onDelete: Cascade` en las relaciones del usuario, preparando el terreno para la eliminación de cuentas. Pendiente M1-04 (Clerk Webhooks para sync automático de actualizaciones y eliminaciones de usuario).
 
 ---
 
@@ -128,7 +128,7 @@ src/
 
 ### M1: El Despertar del Guardián (Auth & Infra) [EN PROGRESO]
 
-- [x] **DB Schema**: Tabla `User` (clerkId) y relaciones (Migrado).
+- [x] **DB Schema**: Tabla `User` (clerkId) y relaciones (Migrado). Añadido `onDelete: Cascade` para `Campaign` y `Character`.
 - [x] **M1-01: Configuración de Clerk y Middleware**
   - _AC:_ Paquete instalado, `.env` configurado, `middleware.ts` protegiendo rutas excepto `/`, `/sign-in` y `/sign-up`.
 - [x] **M1-02: UI para Autenticación (Sign-in/Sign-up temático)**
