@@ -1,11 +1,11 @@
 # Estado del Proyecto: Questlog
 
-**Última actualización:** 23 de Febrero de 2026
-**Rama actual:** compound-engineering
+**Última actualización:** 25 de Febrero de 2026
+**Rama actual:** user-sync
 
 ## 📌 Resumen de Progreso
 
-Se ha establecido la arquitectura base y el sistema de navegación 3D. Actualmente se está integrando el sistema de **Autenticación con Clerk** y la persistencia de usuarios (En progreso). El esquema de base de datos ya soporta la tabla `User`.
+Arquitectura base, sistema de navegación 3D y **Milestone M1 (Auth & Infra)** completados al 75%. Las tareas M1-01 (Clerk config), M1-02 (Auth UI) y M1-03 (Lazy Sync a Supabase vía Prisma) están cerradas. Pendiente M1-04 (Clerk Webhooks para sync automático de actualizaciones y eliminaciones de usuario).
 
 ---
 
@@ -51,18 +51,30 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
   - Optimización de renderizado (elementos fuera de rango se ocultan).
   - Animaciones de entrada/salida suaves.
 
-### 2. Hooks y Lógica (`src/hooks/ui/`)
+### 2. Sistema de Autenticación (Clerk)
+
+- **Ubicación:** `src/config/`, `src/app/providers/`, `src/components/auth/`
+- **Archivos:**
+  - `src/config/clerk-theme.ts`: Tema Grimdark personalizado extendiendo el tema `dark` de Clerk.
+  - `src/config/routes/auth.ts`: Constantes de rutas públicas y protegidas.
+  - `src/app/providers/auth-provider.tsx`: Wrapper de `ClerkProvider` con tema y rutas configuradas.
+  - `src/components/auth/auth-sync.tsx`: Server Component que ejecuta el Lazy Sync en cada sesión.
+  - `src/proxy.ts`: Middleware de protección de rutas con `auth.protect()`.
+- **Rutas protegidas:** Todo excepto `/`, `/sign-in(.*)` y `/sign-up(.*)`.
+
+### 3. Hooks y Lógica (`src/hooks/ui/`)
 
 - **`useCarousel<T>`**: Hook genérico reutilizable para cualquier lógica de carrusel circular.
   - Gestión de índices segura.
   - Cálculo automático de rango visible basado en cantidad de elementos (5 vs 7).
   - Soporte para navegación por puntos (camino más corto).
 
-### 3. Utilidades (`src/lib/`)
+### 4. Utilidades (`src/lib/`)
 
 - **`carousel-utils.ts`**:
   - `getCircularCarousel`: Generador de arrays circulares con claves estables.
   - **Unit Tests:** `carousel-utils.test.ts` (Cobertura de casos borde, wrap-around, arrays vacíos).
+- **`prisma.ts`**: Singleton de Prisma Client con adaptador `PrismaPg` para conexión a Supabase.
 
 ---
 
@@ -71,16 +83,31 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
 ```
 src/
 ├── app/
-│   ├── components/portal/   # Componentes del Carrusel
-│   ├── layout.tsx           # Layout Grimdark Full-width
-│   └── globals.css          # Estilos globales
+│   ├── components/portal/       # Carrusel 3D (PortalCarousel, PortalCard, Portal)
+│   ├── providers/
+│   │   └── auth-provider.tsx    # ClerkProvider con tema Grimdark
+│   ├── sign-in/[[...sign-in]]/  # Página de login temática
+│   ├── sign-up/[[...sign-up]]/  # Página de registro temática
+│   ├── colosseum/               # Módulo El Coliseo (layout + page)
+│   ├── layout.tsx               # Root Layout (AuthSync incluido)
+│   └── globals.css              # Estilos globales
+├── components/
+│   └── auth/
+│       └── auth-sync.tsx        # Lazy Sync Clerk -> Prisma (Server Component)
+├── config/
+│   ├── clerk-theme.ts           # Tema dark personalizado para Clerk
+│   └── routes/auth.ts           # Constantes de rutas públicas/protegidas
 ├── hooks/
-│   └── ui/                  # Hooks de UI genéricos (useCarousel)
+│   └── ui/                      # Hooks genéricos (useCarousel)
 ├── lib/
-│   ├── carousel-utils.ts    # Lógica matemática del carrusel (+ tests)
-│   └── utils.ts             # Utilidades generales (cn)
-└── types/
-    └── portal.ts            # Definiciones de Tipos (Campaign, CarouselItem)
+│   ├── prisma.ts                # Singleton PrismaClient + adaptador PrismaPg
+│   ├── carousel-utils.ts        # Lógica matemática del carrusel (+ tests)
+│   └── carousel-utils.test.ts
+├── shared/utils/
+│   └── styles.ts                # Utilidad cn()
+├── types/
+│   └── portal.ts                # Tipos: Campaign, CarouselItem
+└── proxy.ts                     # Middleware de protección de rutas (Clerk)
 ```
 
 ---
@@ -92,8 +119,8 @@ src/
 ## 📍 Estado Actual
 
 **Milestone:** M1: El Despertar del Guardián (Auth & Infra)
-**Issue completado:** Issue #2: UI para Autenticación (Login/Sign-up)
-**Siguiente:** Issue #3: Lazy Sync (Clerk -> Prisma) [PENDIENTE DE INICIO]
+**Tarea completada:** M1-03: Lazy Sync (Clerk -> Prisma Upsert)
+**Siguiente:** M1-04: Sincronización Automática (Clerk Webhooks)
 
 ---
 
@@ -102,34 +129,36 @@ src/
 ### M1: El Despertar del Guardián (Auth & Infra) [EN PROGRESO]
 
 - [x] **DB Schema**: Tabla `User` (clerkId) y relaciones (Migrado).
-- [x] **Issue #1: Configuración de Clerk y Middleware**
+- [x] **M1-01: Configuración de Clerk y Middleware**
   - _AC:_ Paquete instalado, `.env` configurado, `middleware.ts` protegiendo rutas excepto `/`, `/sign-in` y `/sign-up`.
-- [x] **Issue #2: UI para Autenticación**
+- [x] **M1-02: UI para Autenticación (Sign-in/Sign-up temático)**
   - _AC:_ Rutas `/sign-in` y `/sign-up` con componentes de Clerk y estética D&D.
-- [ ] **Issue #3: Lazy Sync (Clerk -> Prisma)**
+- [x] **M1-03: Lazy Sync (Clerk -> Prisma Upsert)**
   - _AC:_ Verificación de `userId` en Layout y creación automática en Supabase si no existe.
+- [ ] **M1-04: Sincronización Automática (Clerk Webhooks)**
+  - _AC:_ Integración con svix, manejo de `user.deleted` y `user.updated`.
 
 ### M2: El Salón de los Héroes (Gestión de Campañas) [PENDIENTE]
 
-- [ ] **Issue #4: Dashboard de Campañas (Vista Máster)**
+- [ ] **M2-01: Dashboard de Campañas (Vista Máster)**
   - _AC:_ Fetch de Prisma + `PortalCarousel` conectado a datos reales.
-- [ ] **Issue #5: Formulario de Creación de Aventuras**
+- [ ] **M2-02: Formulario de Creación de Aventuras**
   - _AC:_ Server Action + Zod para crear campañas vinculadas al usuario.
 
 ### M3: El Tesoro y el Bestiario (Módulos de Datos) [PENDIENTE]
 
-- [ ] **Issue #6: Módulo de Inventario y Tesoros**
+- [ ] **M3-01: Módulo de Inventario y Tesoros**
   - _AC:_ CRUD de Items + Relación con `CampaignID`.
-- [ ] **Issue #7: Bestiario y Fichas de Monstruos**
+- [ ] **M3-02: Bestiario y Fichas de Monstruos**
   - _AC:_ Buscador de monstruos + Ficha técnica (HP, AC, Stats).
 
 ### M4: Las Crónicas del Coliseo (Live Tools) [PENDIENTE]
 
-- [ ] **Issue #8: Logbook de Sesión**
+- [ ] **M4-01: Logbook de Sesión**
   - _AC:_ Diario de campaña con persistencia y cronología.
-- [ ] **Issue #9: Gestor de Iniciativa (El Coliseo)**
+- [ ] **M4-02: Gestor de Iniciativa (El Coliseo)**
   - _AC:_ Herramienta de turnos para combate en vivo.
-- [ ] **Issue #10: Pulido y Despliegue**
+- [ ] **M4-03: Pulido y Despliegue**
   - _AC:_ Optimización UI/UX y deploy en Vercel.
 
 ---
@@ -142,12 +171,11 @@ src/
 
 ---
 
-## 📝 Siguientes Pasos Inmediatos (Sprint 1)
+## 📝 Siguientes Pasos Inmediatos
 
-1. **Configuración de Autenticación:**
-   - Obtener claves API de Clerk (Dashboard) y configurar `.env`.
-   - Probar flujo de registro y creación de usuario en DB (Lazy Sync).
-   - Verificar redirecciones del Middleware.
+1. **M1-04: Clerk Webhooks (Sync automático)**
+   - Configurar endpoint `/api/webhooks/clerk` protegido con `svix`.
+   - Manejar eventos `user.updated` y `user.deleted` para mantener la DB sincronizada.
 
-2. **Dashboard de Campañas (Sprint 2):**
-   - Una vez autenticado, conectar `PortalCarousel` con datos reales.
+2. **M2-01: Dashboard de Campañas** _(tras cerrar M1)_
+   - Conectar `PortalCarousel` con campañas reales desde Prisma.
