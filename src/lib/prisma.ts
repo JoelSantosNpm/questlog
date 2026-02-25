@@ -7,7 +7,6 @@ const connectionString = `${process.env.DATABASE_URL_REMOTE}`
 const prismaClientSingleton = () => {
   const pool = new Pool({
     connectionString,
-    ssl: { rejectUnauthorized: false },
   })
   const adapter = new PrismaPg(pool)
   return new PrismaClient({ adapter })
