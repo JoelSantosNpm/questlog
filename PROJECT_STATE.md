@@ -136,7 +136,13 @@ src/
 - [x] **M1-03: Lazy Sync (Clerk -> Prisma Upsert)**
   - _AC:_ Verificación de `userId` en Layout y creación automática en Supabase si no existe.
 - [ ] **M1-04: Sincronización Automática (Clerk Webhooks)**
-  - _AC:_ Integración con svix, manejo de `user.deleted` y `user.updated`.
+  - _AC:_ Integración con svix, manejo de `user.deleted` (cascada) y `user.updated` (sync).
+  - _Pasos:_
+    1. Instalar `svix` (Hecho).
+    2. Configurar `CLERK_WEBHOOK_SECRET` en `.env`.
+    3. Crear Route Handler (`api/webhooks/clerk`) con validación de firma.
+    4. Implementar lógica de Prisma para `user.created`, `user.updated`, `user.deleted`.
+    5. Testear localmente con ngrok y Dashboard de Clerk.
 
 ### M2: El Salón de los Héroes (Gestión de Campañas) [PENDIENTE]
 
