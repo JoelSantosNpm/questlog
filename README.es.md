@@ -67,6 +67,9 @@
    CLERK_SECRET_KEY="sk_..."
    NEXT_PUBLIC_CLERK_SIGN_IN_URL="/sign-in"
    NEXT_PUBLIC_CLERK_SIGN_UP_URL="/sign-up"
+
+   # Seeding de Base de Datos (Opcional)
+   SEED_USER_EMAIL="tu-email-de-desarrollo@ejemplo.com"
    ```
 
 4. **Inicializar Base de Datos:**
@@ -83,6 +86,21 @@
    ```
 
    Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
+
+## 🧪 Desarrollo y Datos de Prueba (Seeding)
+
+Dado que este proyecto utiliza Clerk para la autenticación, poblar la base de datos requiere vincular datos de prueba a un usuario real de Clerk.
+
+1.  Añade tu email de desarrollo al archivo `.env`:
+    ```env
+    SEED_USER_EMAIL=tu-email@ejemplo.com
+    ```
+2.  Ejecuta la aplicación (`npm run dev`) e inicia sesión con ese email para asegurar que el usuario existe en la base de datos.
+3.  Ejecuta el script de seed:
+    ```bash
+    npm run db:seed
+    ```
+    Esto limpiará datos de prueba anteriores y poblará tu cuenta con campañas y personajes de muestra.
 
 ## 📂 Estructura del Proyecto
 

@@ -168,6 +168,10 @@ src/
 - **Tech Stack:** Next.js (App Router), Prisma, Supabase, Clerk, Tailwind.
 - **UI Estilo:** Gamificada, texturas de piedra, portales mágicos.
 - **Principio:** No se avanza de Issue hasta cumplir todos sus AC (Criterios de Aceptación).
+- **Testing de Base de Datos:** Se ha creado un script `prisma/seed.ts` para poblar la base de datos con datos de prueba (mock data) vinculados a un usuario real de desarrollo.
+  - **Configuración:** Requiere definir `SEED_USER_EMAIL` en `.env`.
+  - **Uso:** Primero inicia sesión en la app para que el usuario se sincronice en la DB. Luego ejecuta `npm run db:seed`.
+  - **Resultado:** Borra campañas anteriores de ese usuario y crea nuevas campañas y personajes de prueba.
 
 ---
 
