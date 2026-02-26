@@ -76,8 +76,6 @@ export async function POST(req: Request) {
     await prisma.user.delete({
       where: { clerkId: id },
     })
-    // Nota: Gracias al "onDelete: Cascade" en tu schema,
-    // esto borrará automáticamente sus campañas y personajes.
   }
 
   return new Response('', { status: 200 })
