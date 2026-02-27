@@ -2,7 +2,12 @@ import { AUTH_ROUTES } from '@/config/routes/auth'
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 
-const isPublicRoute = createRouteMatcher(['/sign-in(.*)', '/sign-up(.*)', '/'])
+const isPublicRoute = createRouteMatcher([
+  '/api/webhooks/clerk(.*)',
+  '/sign-in(.*)',
+  '/sign-up(.*)',
+  '/',
+])
 
 export default clerkMiddleware(
   async (auth, request) => {

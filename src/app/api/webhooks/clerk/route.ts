@@ -4,6 +4,7 @@ import { WebhookEvent } from '@clerk/nextjs/server'
 import prisma from '@/lib/prisma'
 
 export async function POST(req: Request) {
+  console.log('📬 Nuevo webhook recibido de Clerk. Procesando...')
   // 1. Obtener el secreto del .env
   const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET
 
@@ -51,23 +52,38 @@ export async function POST(req: Request) {
   const eventType = evt.type
 
   if (eventType === 'user.created' || eventType === 'user.updated') {
-    const { id, email_addresses, first_name, image_url } = evt.data
+    const { id, email_addresses, first_name, username, image_url } = evt.data
     const email = email_addresses[0]?.email_address
 
-    await prisma.user.upsert({
+    const displayName = first_name || username || 'Héroe sin nombre'
+
+    const t0 = performance.now()
+    console.log('🚀 Iniciando comunicación con Supabase...')
+
+    const result = await prisma.user.upsert({
       where: { clerkId: id },
-      update: {
-        email: email,
-        name: first_name || '',
-        image: image_url,
-      },
-      create: {
-        clerkId: id,
-        email: email,
-        name: first_name || '',
-        image: image_url,
-      },
+      update: { name: first_name, image: image_url },
+      create: { clerkId: id, email: email, name: first_name, image: image_url },
     })
+
+    const t1 = performance.now()
+    console.log(`✅ Supabase respondió en ${Math.round(t1 - t0)}ms`)
+    console.log('Datos guardados:', result.name)
+
+    // await prisma.user.upsert({
+    //   where: { clerkId: id },
+    //   update: {
+    //     email: email,
+    //     name: displayName,
+    //     image: image_url,
+    //   },
+    //   create: {
+    //     clerkId: id,
+    //     email: email,
+    //     name: displayName,
+    //     image: image_url,
+    //   },
+    // })
   }
 
   if (eventType === 'user.deleted') {
