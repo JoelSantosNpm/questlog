@@ -34,8 +34,8 @@ model Campaign {
   imageUrl    String?
 
   // El Master (DM)
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gameMasterId String
+  gameMaster   User   @relation(fields: [gameMasterId], references: [id], onDelete: Cascade)
 
   // Relaciones de la mesa
   characters     Character[] // Los aventureros en esta mesa
@@ -52,8 +52,8 @@ model Character {
   name String
   
   // Relación con el Jugador (User)
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  playerId String
+  player   User   @relation(fields: [playerId], references: [id], onDelete: Cascade)
 
   // Relación con la Campaña
   campaignId String
