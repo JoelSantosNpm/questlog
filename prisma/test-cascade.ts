@@ -82,7 +82,16 @@ async function main() {
     },
   })
 
-  console.log('✅ Datos creados exitosamente.')
+  // LOGS DE CREACIÓN
+  console.log(`✅ GM creado: ${gm.id}`)
+  console.log(`✅ Jugador creado: ${player.id}`)
+  console.log(`✅ Campaña creada: ${campaign.id} (Dueño: GM)`)
+  console.log(`✅ Personaje creado: ${character.id} (Dueño: Jugador, Unido a: Campaña)`)
+  console.log(`✅ Item creado: ${item.id} (Dueño: Personaje)`)
+  console.log(`✅ Nota creada: ${note.id} (Dueño: Campaña)`)
+  console.log(`✅ Monstruo Activo creado: ${activeMonster.id} (Dueño: Campaña)`)
+
+  console.log('\n--- FASE 1 COMPLETADA ---\n')
 
   // ---------------------------------------------------------
   // 2. PRUEBA: Borrar Campaña
@@ -131,6 +140,78 @@ async function main() {
   console.log(
     `- Item tras borrar Personaje (Cascade expected): ${checkItemAfterUserDelete ? 'SOBREVIVIÓ ❌' : 'BORRADO ✅'}`
   )
+
+  // ---------------------------------------------------------
+  // 5. PRUEBA FINAL: Borrar GM (Cascade -> Campaña -> ...)
+  // ---------------------------------------------------------
+  console.log('\n🔥 PRUEBA FINAL: Borrando un GM con campaña activa...')
+
+  // Setup Mini-Escenario
+  const gm2 = await prisma.user.create({
+    data: {
+      clerkId: `gm2-${Date.now()}`,
+      email: `gm2-${Date.now()}@test.com`,
+      name: 'GM Sacrificio',
+    },
+  })
+  console.log(`✅ [Fase 5] GM Sacrificio creado: ${gm2.id}`)
+  const player2 = await prisma.user.create({
+    data: {
+      clerkId: `p2-${Date.now()}`,
+      email: `p2-${Date.now()}@test.com`,
+      name: 'Jugador Testigo',
+    },
+  })
+  console.log(`✅ [Fase 5] Jugador Testigo creado: ${player2.id}`)
+
+  const campaign2 = await prisma.campaign.create({
+    data: { name: 'Campaña Caduca', gameMasterId: gm2.id },
+  })
+  console.log(`✅ [Fase 5] Campaña Caduca creada: ${campaign2.id}`)
+
+  const note2 = await prisma.sessionNote.create({
+    data: { content: 'Nota de la campaña 2', campaignId: campaign2.id },
+  })
+
+  const char2 = await prisma.character.create({
+    data: {
+      name: 'Superviviente',
+      userId: player2.id,
+      campaignId: campaign2.id,
+      currentHp: 10,
+      maxHp: 10,
+      stats: {},
+    },
+  })
+  console.log(`✅ [Fase 5] Personaje 'Superviviente' creado: ${char2.id} (Unido a Campaña Caduca)`)
+
+  // ACTION: Delete GM
+  console.log('   Borrando GM2...')
+  await prisma.user.delete({ where: { id: gm2.id } })
+
+  // VERIFY
+  const checkCamp2 = await prisma.campaign.findUnique({ where: { id: campaign2.id } })
+  const checkNote2 = await prisma.sessionNote.findUnique({ where: { id: note2.id } })
+  const checkChar2 = await prisma.character.findUnique({ where: { id: char2.id } })
+
+  console.log(`- Campaña (Cascade expected): ${checkCamp2 ? 'SOBREVIVIÓ ❌' : 'BORRADO ✅'}`)
+  console.log(`- Nota (Cascade expected): ${checkNote2 ? 'SOBREVIVIÓ ❌' : 'BORRADO ✅'}`)
+  console.log(`- Personaje (SetNull expected): ${checkChar2 ? 'SOBREVIVIÓ ✅' : 'BORRADO ❌'}`)
+  if (checkChar2) console.log(`  > CampaignId: ${checkChar2.campaignId} (Esperado: null)`)
+
+  // Cleanup de esta fase
+  await prisma.user.delete({ where: { id: player2.id } })
+
+  // ---------------------------------------------------------
+  // 6. FINAL CLEANUP (Restos del test inicial)
+  // ---------------------------------------------------------
+  console.log('\n🧹 Limpiando GM inicial y Monster Base...')
+
+  await prisma.user.delete({ where: { id: gm.id } })
+  await prisma.monster.delete({ where: { id: baseMonster.id } })
+
+  console.log('✅ Limpieza completada.')
+  console.log('\n✨ TODAS LAS PRUEBAS FINALIZADAS CON ÉXITO.')
 }
 
 main()
