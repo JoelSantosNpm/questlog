@@ -100,6 +100,20 @@ Since this project uses Clerk for authentication, seeding the database requires 
     ```
     This will create a test campaign where `SEED_GM_EMAIL` is the Game Master, and assign a character to `SEED_PLAYER_EMAIL`.
 
+### Cascade Deletion Tests (Data Integrity)
+
+To verify that deletion rules (Cascade vs SetNull) are working correctly and data integrity is preserved (e.g., players keep their characters even if a campaign is deleted), you can run the test script:
+
+```bash
+npx tsx --env-file=.env prisma/test-cascade.ts
+```
+
+This script simulates a full scenario:
+
+1. Creates test users, campaign, characters, and items.
+2. Deletes the campaign and verifies that **characters survive** (SetNull) but notes and monsters are removed.
+3. Deletes the player user and verifies that **their character is removed** (Cascade).
+
 ## 📂 Project Structure
 
 ```

@@ -6,7 +6,55 @@
 
 **QuestLog** es una aplicación web de estética Grimdark para que los Dungeon Masters gestionen sus campañas de D&D 5e. Ofrece herramientas para el seguimiento narrativo, inventarios, bestiario y combates en tiempo real.
 
-## 🚀 Características Principales
+## �️ Modelo de Datos y Relaciones
+
+El esquema de base de datos (`prisma/schema.prisma`) define la estructura central de QuestLog. A continuación, se detallan las tablas principales y sus comportamientos de **integridad referencial (Cascada / SetNull)**.
+
+### Tablas Principales
+
+1.  **User**: Representa a un usuario registrado (Vía Clerk).
+    - `id`, `clerkId`, `email`, `name`, `image`, `plan`.
+    - Puede ser **Game Master (GM)** de múltiples campañas.
+    - Puede ser **Jugador** con múltiples personajes.
+    - Puede ser **Creador** de plantillas de personajes.
+
+2.  **Campaign**: La mesa de juego.
+    - Pertenece a un GM (`User`).
+    - Contiene Notas de Sesión, Monstruos Activos y Personajes vinculados.
+    - Relación de borrado en cascada con el usuario creador.
+
+3.  **Character**: El aventurero.
+    - Pertenece a un Jugador (`User`).
+    - Puede estar asignado a una Campaña (`Campaign`) o ser independiente.
+    - Puede basarse en una Plantilla (`CharacterTemplate`).
+    - Posee atributos propios (`currentHp`, `maxHp`, `stats`, `level`) y un Inventario (`Item[]`).
+
+4.  **CharacterTemplate**: Plantilla base para crear personajes (preparado para Marketplace).
+    - Define `baseStats`, `suggestedEquipment`, `price`, `version`.
+
+5.  **Item**: Objetos del inventario.
+    - Detalles completos: `rarity`, `type`, `weight`, `value`, `image`, `quantity`.
+    - Estado: `equipped`, `attuned`, `notes`.
+
+6.  **Monster / ActiveMonster**:
+    - `Monster`: Definición base de una criatura (`stats`, `abilities`, `challenge`).
+    - `ActiveMonster`: Instancia viva en una campaña (`currentHp`, `initiative`, `status`).
+
+### Comportamiento de Borrado en Cascada (Cascade Delete)
+
+El sistema implementa estrategias de borrado para mantener la consistencia de datos y evitar huérfanos no deseados, pero preservando lo importante:
+
+| Si borras...            | Se borra automáticamente (Cascade)                    | Se desvincula (SetNull - Sobrevive)                                                   |
+| :---------------------- | :---------------------------------------------------- | :------------------------------------------------------------------------------------ |
+| **User (GM/Jugador)**   | Sus Campañas, sus Personajes, sus Plantillas creadas. | -                                                                                     |
+| **Campaign**            | Notas de Sesión, Monstruos Activos en esa campaña.    | **Los Personajes** (Se mantienen vivos pero sin campaña asignada).                    |
+| **Character**           | Su Inventario (Items).                                | -                                                                                     |
+| **CharacterTemplate**   | -                                                     | **Los Personajes** creados con esa plantilla.                                         |
+| **Monster (Bestiario)** | -                                                     | **Los Monstruos Activos** (Se mantienen en la campaña pero pierden la ref. original). |
+
+> **Nota importante:** Si un GM borra una campaña, los personajes de los jugadores **NO se borran**. Simplemente, quedan "libres" y el jugador conserva su hoja de personaje.
+
+## �🚀 Características Principales
 
 - **El Portal**: Carrusel 3D circular para navegar entre campañas.
 - **Autenticación (Clerk)**: Login/registro seguro con sincronización automática de usuario a base de datos.
@@ -107,6 +155,20 @@ Dado que este proyecto utiliza Clerk para la autenticación, poblar la base de d
     npm run db:seed
     ```
     Esto poblará la base de datos con una campaña de prueba donde el usuario definido en `SEED_GM_EMAIL` será el Master, y `SEED_PLAYER_EMAIL` tendrá un personaje asignado.
+
+### Pruebas de Integridad (Borrado en Cascada)
+
+Para verificar que las reglas de borrado (Cascade vs SetNull) funcionan correctamente y proteger la integridad de los datos de los jugadores, puedes ejecutar el script de prueba:
+
+```bash
+npx tsx --env-file=.env prisma/test-cascade.ts
+```
+
+Este script simula un escenario completo:
+
+1. Crea usuarios, campaña, personajes e items de prueba.
+2. Borra la campaña y verifica que **los personajes sobrevivan** (SetNull) pero las notas y monstruos se eliminen.
+3. Borra el usuario jugador y verifica que **su personaje se elimine** (Cascade).
 
 ## 📂 Estructura del Proyecto
 
