@@ -69,7 +69,8 @@
    NEXT_PUBLIC_CLERK_SIGN_UP_URL="/sign-up"
 
    # Seeding de Base de Datos (Opcional)
-   SEED_USER_EMAIL="tu-email-de-desarrollo@ejemplo.com"
+   SEED_GM_EMAIL="tu-email-de-gm@ejemplo.com"
+   SEED_PLAYER_EMAIL="tu-email-de-player@ejemplo.com"
    ```
 
 4. **Inicializar Base de Datos:**
@@ -89,18 +90,23 @@
 
 ## 🧪 Desarrollo y Datos de Prueba (Seeding)
 
-Dado que este proyecto utiliza Clerk para la autenticación, poblar la base de datos requiere vincular datos de prueba a un usuario real de Clerk.
+Dado que este proyecto utiliza Clerk para la autenticación, poblar la base de datos requiere vincular datos de prueba a usuarios reales de Clerk.
 
-1.  Añade tu email de desarrollo al archivo `.env`:
+1.  Añade los emails de tus usuarios de desarrollo (GM y Jugador) al archivo `.env`:
+
     ```env
-    SEED_USER_EMAIL=tu-email@ejemplo.com
+    SEED_GM_EMAIL=tu-email-de-gm@ejemplo.com
+    SEED_PLAYER_EMAIL=tu-email-de-player@ejemplo.com
     ```
-2.  Ejecuta la aplicación (`npm run dev`) e inicia sesión con ese email para asegurar que el usuario existe en la base de datos.
+
+    _Nota: Pueden ser el mismo email si quieres que un solo usuario tenga ambos roles._
+
+2.  Ejecuta la aplicación (`npm run dev`) e inicia sesión con esos emails para asegurar que los registros de usuario existan en la base de datos (se crean al loguearse).
 3.  Ejecuta el script de seed:
     ```bash
     npm run db:seed
     ```
-    Esto limpiará datos de prueba anteriores y poblará tu cuenta con campañas y personajes de muestra.
+    Esto poblará la base de datos con una campaña de prueba donde el usuario definido en `SEED_GM_EMAIL` será el Master, y `SEED_PLAYER_EMAIL` tendrá un personaje asignado.
 
 ## 📂 Estructura del Proyecto
 

@@ -61,7 +61,8 @@
    NEXT_PUBLIC_CLERK_SIGN_UP_URL="/sign-up"
 
    # Database Seeding (Optional)
-   SEED_USER_EMAIL="your-dev-email@example.com"
+   SEED_GM_EMAIL="your-gm-email@example.com"
+   SEED_PLAYER_EMAIL="your-player-email@example.com"
    ```
 
 4. **Database Setup:**
@@ -81,18 +82,23 @@
 
 ## 🧪 Development & Seeding
 
-Since this project uses Clerk for authentication, seeding the database requires linking mock data to a real Clerk user.
+Since this project uses Clerk for authentication, seeding the database requires linking mock data to real Clerk users.
 
-1.  Add your development user email to `.env`:
+1.  Add your development user emails (GM and Player) to `.env`:
+
     ```env
-    SEED_USER_EMAIL=your-dev-email@example.com
+    SEED_GM_EMAIL=your-gm-email@example.com
+    SEED_PLAYER_EMAIL=your-player-email@example.com
     ```
-2.  Run the application (`npm run dev`) and sign in with that email to ensure the user record exists in the database.
+
+    _Note: These can be the same email if you want to test both roles with one account._
+
+2.  Run the application (`npm run dev`) and sign in with those emails to ensure the user records exist in the database (synced on login).
 3.  Run the seed script:
     ```bash
     npm run db:seed
     ```
-    This will clear previous test data for that user and populate your account with sample campaigns and characters.
+    This will create a test campaign where `SEED_GM_EMAIL` is the Game Master, and assign a character to `SEED_PLAYER_EMAIL`.
 
 ## 📂 Project Structure
 
