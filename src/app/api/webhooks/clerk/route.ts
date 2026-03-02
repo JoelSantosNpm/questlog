@@ -62,31 +62,25 @@ export async function POST(req: Request) {
 
     const result = await prisma.user.upsert({
       where: { clerkId: id },
-      update: { name: first_name, image: image_url },
-      create: { clerkId: id, email: email, name: first_name, image: image_url },
+      update: {
+        name: displayName,
+        image: image_url,
+      },
+      create: {
+        clerkId: id,
+        email: email,
+        name: displayName,
+        image: image_url,
+      },
     })
 
     const t1 = performance.now()
     console.log(`✅ Supabase respondió en ${Math.round(t1 - t0)}ms`)
     console.log('Datos guardados:', result.name)
-
-    // await prisma.user.upsert({
-    //   where: { clerkId: id },
-    //   update: {
-    //     email: email,
-    //     name: displayName,
-    //     image: image_url,
-    //   },
-    //   create: {
-    //     clerkId: id,
-    //     email: email,
-    //     name: displayName,
-    //     image: image_url,
-    //   },
-    // })
   }
 
   if (eventType === 'user.deleted') {
+    console.log('🗑️ Usuario eliminado en Clerk. Sincronizando eliminación en Supabase...')
     const { id } = evt.data
 
     await prisma.user.delete({
