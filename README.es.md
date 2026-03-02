@@ -164,11 +164,11 @@ Para verificar que las reglas de borrado (Cascade vs SetNull) funcionan correcta
 npx tsx --env-file=.env prisma/test-cascade.ts
 ```
 
-Este script simula un escenario completo:
+Este script simula varios escenarios críticos y genera logs detallados:
 
-1. Crea usuarios, campaña, personajes e items de prueba.
-2. Borra la campaña y verifica que **los personajes sobrevivan** (SetNull) pero las notas y monstruos se eliminen.
-3. Borra el usuario jugador y verifica que **su personaje se elimine** (Cascade).
+1.  **Borrado de Campaña**: Verifica que los personajes vinculados **sobrevivan** (SetNull), aunque las notas y monstruos se eliminen.
+2.  **Borrado de Jugador**: Verifica que si un usuario se da de baja, su personaje e inventario **se eliminen** (Cascade).
+3.  **Borrado de GM**: Verifica que si un GM elimina su cuenta, sus campañas desaparezcan, pero los personajes de _otros jugadores_ en esas mesas **sobrevivan**.
 
 ## 📂 Estructura del Proyecto
 

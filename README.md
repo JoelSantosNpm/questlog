@@ -108,11 +108,11 @@ To verify that deletion rules (Cascade vs SetNull) are working correctly and dat
 npx tsx --env-file=.env prisma/test-cascade.ts
 ```
 
-This script simulates a full scenario:
+This script simulates multiple critical scenarios with detailed logging:
 
-1. Creates test users, campaign, characters, and items.
-2. Deletes the campaign and verifies that **characters survive** (SetNull) but notes and monsters are removed.
-3. Deletes the player user and verifies that **their character is removed** (Cascade).
+1.  **Delete Campaign**: Verifies that linked characters **survive** (SetNull), even if notes and monsters are removed.
+2.  **Delete Player**: Verifies that if a user deletes their account, their character and inventory are **removed** (Cascade).
+3.  **Delete GM**: Verifies that if a GM deletes their account, their campaigns are removed, but characters from _other players_ in those tables **survive**.
 
 ## 📂 Project Structure
 
