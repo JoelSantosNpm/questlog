@@ -26,7 +26,17 @@ async function main() {
     data: {
       name: 'Personaje Test',
       campaignId: campaign.id,
-      playerId: player.id,
+      userId: player.id,
+      maxHp: 20,
+      currentHp: 18,
+      stats: {
+        str: 10,
+        dex: 12,
+        con: 14,
+        int: 8,
+        wis: 10,
+        cha: 12,
+      },
     },
   })
 
@@ -45,14 +55,14 @@ async function main() {
   const monster = await prisma.monster.create({
     data: {
       name: 'Goblin Cascada',
-      type: 'Goblin',
-      challenge: 0.25,
       maxHp: 20,
       ac: 15,
       stats: {
         str: 8,
         dex: 14,
       },
+      challenge: 0.25,
+      type: 'Goblin',
     },
   })
 
