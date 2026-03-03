@@ -59,6 +59,10 @@
    CLERK_SECRET_KEY="sk_..."
    NEXT_PUBLIC_CLERK_SIGN_IN_URL="/sign-in"
    NEXT_PUBLIC_CLERK_SIGN_UP_URL="/sign-up"
+
+   # Database Seeding (Optional)
+   SEED_GM_EMAIL="your-gm-email@example.com"
+   SEED_PLAYER_EMAIL="your-player-email@example.com"
    ```
 
 4. **Database Setup:**
@@ -75,6 +79,40 @@
    ```
 
    Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## 🧪 Development & Seeding
+
+Since this project uses Clerk for authentication, seeding the database requires linking mock data to real Clerk users.
+
+1.  Add your development user emails (GM and Player) to `.env`:
+
+    ```env
+    SEED_GM_EMAIL=your-gm-email@example.com
+    SEED_PLAYER_EMAIL=your-player-email@example.com
+    ```
+
+    _Note: These can be the same email if you want to test both roles with one account._
+
+2.  Run the application (`npm run dev`) and sign in with those emails to ensure the user records exist in the database (synced on login).
+3.  Run the seed script:
+    ```bash
+    npm run db:seed
+    ```
+    This will create a test campaign where `SEED_GM_EMAIL` is the Game Master, and assign a character to `SEED_PLAYER_EMAIL`.
+
+### Cascade Deletion Tests (Data Integrity)
+
+To verify that deletion rules (Cascade vs SetNull) are working correctly and data integrity is preserved (e.g., players keep their characters even if a campaign is deleted), you can run the test script:
+
+```bash
+npx tsx --env-file=.env prisma/test-cascade.ts
+```
+
+This script simulates multiple critical scenarios with detailed logging:
+
+1.  **Delete Campaign**: Verifies that linked characters **survive** (SetNull), even if notes and monsters are removed.
+2.  **Delete Player**: Verifies that if a user deletes their account, their character and inventory are **removed** (Cascade).
+3.  **Delete GM**: Verifies that if a GM deletes their account, their campaigns are removed, but characters from _other players_ in those tables **survive**.
 
 ## 📂 Project Structure
 
