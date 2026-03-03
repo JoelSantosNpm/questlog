@@ -51,8 +51,14 @@ export async function POST(req: Request) {
   const eventType = evt.type
 
   if (eventType === 'user.created' || eventType === 'user.updated') {
-    const { id, email_addresses, first_name, username, image_url } = evt.data
-    const email = email_addresses[0]?.email_address
+    const { id, email_addresses, first_name, username, image_url, primary_email_address_id } =
+      evt.data
+
+    // Buscar el email exacto marcado como primario en Clerk
+    const primaryEmailObj = email_addresses.find((email) => email.id === primary_email_address_id)
+    const email = primaryEmailObj
+      ? primaryEmailObj.email_address
+      : email_addresses[0]?.email_address
 
     if (!email) {
       console.error(`⚠️ Webhook Error: No email found for user ${id}`)
@@ -69,6 +75,7 @@ export async function POST(req: Request) {
       update: {
         name: displayName,
         image: image_url,
+        email: email,
       },
       create: {
         clerkId: id,
