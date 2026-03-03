@@ -26,8 +26,7 @@ export async function POST(req: Request) {
   }
 
   // 3. Obtener el cuerpo de la petición (body)
-  const payload = await req.json()
-  const body = JSON.stringify(payload)
+  const body = await req.text()
 
   // 4. Crear una nueva instancia de Svix con tu secreto
   const wh = new Webhook(WEBHOOK_SECRET)
@@ -54,6 +53,11 @@ export async function POST(req: Request) {
   if (eventType === 'user.created' || eventType === 'user.updated') {
     const { id, email_addresses, first_name, username, image_url } = evt.data
     const email = email_addresses[0]?.email_address
+
+    if (!email) {
+      console.error(`⚠️ Webhook Error: No email found for user ${id}`)
+      return new Response('Error: No email provided', { status: 400 })
+    }
 
     const displayName = first_name || username || 'Héroe sin nombre'
 
