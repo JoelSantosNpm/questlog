@@ -1,11 +1,11 @@
 # Estado del Proyecto: Questlog
 
-**Última actualización:** 25 de Febrero de 2026
-**Rama actual:** user-sync
+**Última actualización:** 2 de Marzo de 2026
+**Rama actual:** m1-04-clerk-data-sync
 
 ## 📌 Resumen de Progreso
 
-Arquitectura base, sistema de navegación 3D y **Milestone M1 (Auth & Infra)** completados al 85%. Las tareas M1-01 (Clerk config), M1-02 (Auth UI) y M1-03 (Lazy Sync a Supabase vía Prisma) están cerradas. Se ha actualizado el esquema de Prisma para incluir `onDelete: Cascade` en las relaciones del usuario, preparando el terreno para la eliminación de cuentas. Pendiente M1-04 (Clerk Webhooks para sync automático de actualizaciones y eliminaciones de usuario).
+Arquitectura base, sistema de navegación 3D y **Milestone M1 (Auth & Infra)** completados al 100%. Las tareas M1-01 (Clerk config), M1-02 (Auth UI), M1-03 (Lazy Sync) y M1-04 (Clerk Webhooks) están cerradas. El sistema de autenticación y sincronización de datos entre Clerk y Supabase (Prisma) es totalmente funcional, incluyendo la eliminación en cascada de usuarios.
 
 ---
 
@@ -118,15 +118,15 @@ src/
 
 ## 📍 Estado Actual
 
-**Milestone:** M1: El Despertar del Guardián (Auth & Infra)
-**Tarea completada:** M1-03: Lazy Sync (Clerk -> Prisma Upsert)
-**Siguiente:** M1-04: Sincronización Automática (Clerk Webhooks)
+**Milestone:** M2: El Salón de los Héroes (Gestión de Campañas)
+**Tarea completada:** M1-04: Sincronización Automática (Clerk Webhooks)
+**Siguiente:** M2-01: Dashboard de Campañas (Vista Máster)
 
 ---
 
 ## 🗺️ Roadmap Estratégico
 
-### M1: El Despertar del Guardián (Auth & Infra) [EN PROGRESO]
+### M1: El Despertar del Guardián (Auth & Infra) [COMPLETADO]
 
 - [x] **DB Schema**: Tabla `User` (clerkId) y relaciones (Migrado). Añadido `onDelete: Cascade` para `Campaign` y `Character`.
 - [x] **M1-01: Configuración de Clerk y Middleware**
@@ -135,14 +135,14 @@ src/
   - _AC:_ Rutas `/sign-in` y `/sign-up` con componentes de Clerk y estética D&D.
 - [x] **M1-03: Lazy Sync (Clerk -> Prisma Upsert)**
   - _AC:_ Verificación de `userId` en Layout y creación automática en Supabase si no existe.
-- [ ] **M1-04: Sincronización Automática (Clerk Webhooks)**
+- [x] **M1-04: Sincronización Automática (Clerk Webhooks)**
   - _AC:_ Integración con svix, manejo de `user.deleted` (cascada) y `user.updated` (sync).
   - _Pasos:_
     1. Instalar `svix` (Hecho).
-    2. Configurar `CLERK_WEBHOOK_SECRET` en `.env`.
-    3. Crear Route Handler (`api/webhooks/clerk`) con validación de firma.
-    4. Implementar lógica de Prisma para `user.created`, `user.updated`, `user.deleted`.
-    5. Testear localmente con ngrok y Dashboard de Clerk.
+    2. Configurar `CLERK_WEBHOOK_SECRET` en `.env`. (Hecho)
+    3. Crear Route Handler (`api/webhooks/clerk`) con validación de firma (Hecho).
+    4. Implementar lógica de Prisma para `user.created`, `user.updated`, `user.deleted` (Hecho).
+    5. Testear localmente con ngrok y Dashboard de Clerk. (Hecho)
 
 ### M2: El Salón de los Héroes (Gestión de Campañas) [PENDIENTE]
 
@@ -183,9 +183,9 @@ src/
 
 ## 📝 Siguientes Pasos Inmediatos
 
-1. **M1-04: Clerk Webhooks (Sync automático)**
-   - Configurar endpoint `/api/webhooks/clerk` protegido con `svix`.
-   - Manejar eventos `user.updated` y `user.deleted` para mantener la DB sincronizada.
+1. **M2-01: Dashboard de Campañas (Vista Máster)**
+   - Implementar fetching de datos reales con Prisma en el Dashboard.
+   - Conectar `PortalCarousel` con las campañas del usuario.
 
-2. **M2-01: Dashboard de Campañas** _(tras cerrar M1)_
-   - Conectar `PortalCarousel` con campañas reales desde Prisma.
+2. **M2-02: Creación de Campañas**
+   - Implementar Server Actions para crear nuevas campañas.
