@@ -51,8 +51,8 @@ async function main() {
     },
   })
 
-  // Crear monstruo
-  const monster = await prisma.monster.create({
+  // Crear monstruo template
+  const monster = await prisma.monsterTemplate.create({
     data: {
       name: 'Goblin Cascada',
       maxHp: 20,
@@ -71,8 +71,9 @@ async function main() {
     data: {
       name: 'Goblin Cascada',
       currentHp: 20,
+      maxHp: 20, // maxHp ahora es requerido en ActiveMonster
       campaignId: campaign.id,
-      monsterId: monster.id,
+      templateId: monster.id,
     },
   })
 

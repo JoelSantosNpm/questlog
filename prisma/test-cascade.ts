@@ -63,7 +63,7 @@ async function main() {
   })
 
   // Monstruo Activo (requiere un Monster base primero)
-  const baseMonster = await prisma.monster.create({
+  const baseMonster = await prisma.monsterTemplate.create({
     data: {
       name: 'Goblin Base',
       maxHp: 7,
@@ -78,7 +78,8 @@ async function main() {
     data: {
       campaignId: campaign.id,
       currentHp: 7,
-      monsterId: baseMonster.id,
+      maxHp: 7, // maxHp requerido
+      templateId: baseMonster.id,
     },
   })
 
@@ -208,7 +209,7 @@ async function main() {
   console.log('\n🧹 Limpiando GM inicial y Monster Base...')
 
   await prisma.user.delete({ where: { id: gm.id } })
-  await prisma.monster.delete({ where: { id: baseMonster.id } })
+  await prisma.monsterTemplate.delete({ where: { id: baseMonster.id } })
 
   console.log('✅ Limpieza completada.')
   console.log('\n✨ TODAS LAS PRUEBAS FINALIZADAS CON ÉXITO.')
