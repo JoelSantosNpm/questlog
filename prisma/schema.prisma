@@ -82,7 +82,7 @@ model Character {
   name String // Nombre elegido por el jugador
 
   userId String?
-  user   User?   @relation("PlayerCharacters", fields: [userId], references: [id], onDelete: SetNull)
+  user   User?   @relation("PlayerCharacters", fields: [userId], references: [id], onDelete: Cascade)
 
   campaignId String?
   campaign   Campaign? @relation(fields: [campaignId], references: [id], onDelete: SetNull)
