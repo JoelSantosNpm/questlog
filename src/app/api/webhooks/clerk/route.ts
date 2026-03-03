@@ -94,6 +94,10 @@ export async function POST(req: Request) {
     console.log('🗑️ Usuario eliminado en Clerk. Sincronizando eliminación en Supabase...')
     const { id } = evt.data
 
+    if (!id) {
+      return new Response('Error: No User ID found in deleted event', { status: 400 })
+    }
+
     await prisma.user.delete({
       where: { clerkId: id },
     })
