@@ -1,10 +1,22 @@
 import { PortalCarousel } from '@/app/components/portal/portal-carousel'
-import { campaigns } from '@/app/data/mock-campaigns'
+import { getUserCampaigns } from '@/app/data/campaign-queries'
+import { Campaign as PortalCampaign } from '@/types/portal'
 
-export default function Home() {
+export default async function Home() {
+  const dbCampaigns = await getUserCampaigns()
+
+  const allCampaigns: PortalCampaign[] = [
+    ...dbCampaigns,
+    {
+      id: 'new-campaign',
+      name: 'Nueva Campaña',
+      variant: 'new',
+    },
+  ]
+
   return (
     <div className='relative flex h-full w-full flex-col items-center justify-center overflow-hidden'>
-      <PortalCarousel campaigns={campaigns} />
+      <PortalCarousel campaigns={allCampaigns} />
     </div>
   )
 }
