@@ -20,7 +20,7 @@ export async function createCampaign(formData: FormData) {
   await prisma.campaign.create({
     data: {
       name,
-      user: {
+      gameMaster: {
         connect: {
           clerkId: userId,
         },

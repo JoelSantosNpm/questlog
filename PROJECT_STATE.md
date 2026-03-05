@@ -1,7 +1,7 @@
 # Estado del Proyecto: Questlog
 
-**Última actualización:** 2 de Marzo de 2026
-**Rama actual:** m1-04-clerk-data-sync
+**Última actualización:** 5 de Marzo de 2026
+**Rama actual:** m2-01-dashboard-de-campañas
 
 ## 📌 Resumen de Progreso
 
@@ -119,8 +119,8 @@ src/
 ## 📍 Estado Actual
 
 **Milestone:** M2: El Salón de los Héroes (Gestión de Campañas)
-**Tarea completada:** M1-04: Sincronización Automática (Clerk Webhooks)
-**Siguiente:** M2-01: Dashboard de Campañas (Vista Máster)
+**Tarea completada:** M2-01: Dashboard de Campañas (Vista Máster)
+**Siguiente:** M2-02: Formulario de Creación de Aventuras
 
 ---
 
@@ -144,10 +144,10 @@ src/
     4. Implementar lógica de Prisma para `user.created`, `user.updated`, `user.deleted` (Hecho).
     5. Testear localmente con ngrok y Dashboard de Clerk. (Hecho)
 
-### M2: El Salón de los Héroes (Gestión de Campañas) [PENDIENTE]
+### M2: El Salón de los Héroes (Gestión de Campañas) [EN PROGRESO]
 
-- [ ] **M2-01: Dashboard de Campañas (Vista Máster)**
-  - _AC:_ Fetch de Prisma + `PortalCarousel` conectado a datos reales.
+- [x] **M2-01: Dashboard de Campañas (Vista Máster)**
+  - _AC:_ Fetch de Prisma + `PortalCarousel` conectado a datos reales. Estado de "Vacío" implementado.
 - [ ] **M2-02: Formulario de Creación de Aventuras**
   - _AC:_ Server Action + Zod para crear campañas vinculadas al usuario.
 
@@ -183,9 +183,9 @@ src/
 
 ## 📝 Siguientes Pasos Inmediatos
 
-1. **M2-01: Dashboard de Campañas (Vista Máster)**
-   - Implementar fetching de datos reales con Prisma en el Dashboard.
-   - Conectar `PortalCarousel` con las campañas del usuario.
+1. **M2-02: Formulario de Creación de Aventuras**
+   - Implementar Server Action + Zod para crear campañas vinculadas al usuario.
+   - Completar página y lógica de nueva ruta `/campaign/new`.
 
-2. **M2-02: Creación de Campañas**
-   - Implementar Server Actions para crear nuevas campañas.
+2. **M3-01: Módulo de Inventario y Tesoros**
+   - Empezar modelo de inventario.
