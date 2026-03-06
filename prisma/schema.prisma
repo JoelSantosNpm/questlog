@@ -33,10 +33,15 @@ model User {
 // 2. CAMPAÑA (La Mesa con el Portal de Piedra)
 // ---------------------------------------------------------
 model Campaign {
-  id          String  @id @default(cuid())
-  name        String
-  description String?
-  imageUrl    String?
+  id            String  @id @default(cuid())
+  name          String
+  description   String?
+  imageUrl      String?
+  system        String  @default("D&D 5e")
+  landName      String?
+  startingPoint String?
+  atmosphere    String? @db.Text
+  rumors        String? @db.Text
 
   gameMasterId String
   gameMaster   User   @relation(fields: [gameMasterId], references: [id], onDelete: Cascade)
