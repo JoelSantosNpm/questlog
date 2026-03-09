@@ -43,7 +43,7 @@ export const PortalCard = ({ position, visibleRange = 3, campaign }: PortalCardP
           size='lg'
           isBright={isActive}
           priority={isActive}
-          href='/campaign/new'
+          href='/campaigns/create'
         />
       ) : (
         <Portal

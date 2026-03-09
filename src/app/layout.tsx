@@ -1,4 +1,4 @@
-import { AuthProvider } from '@/app/providers/auth-provider'
+import { AuthProvider } from '@/providers/auth-provider'
 import { AuthSync } from '@/components/auth/auth-sync'
 import { cn } from '@/shared/utils/styles'
 import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'

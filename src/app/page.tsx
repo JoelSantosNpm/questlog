@@ -1,5 +1,5 @@
-import { PortalCarousel } from '@/app/components/portal/portal-carousel'
-import { getUserCampaigns } from '@/app/data/campaign-queries'
+import { PortalCarousel } from '@/components/portal/portal-carousel'
+import { getUserCampaigns } from '@/data/campaign-queries'
 import { Campaign as PortalCampaign } from '@/types/portal'
 
 export default async function Home() {
