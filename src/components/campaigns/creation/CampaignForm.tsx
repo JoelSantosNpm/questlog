@@ -80,23 +80,26 @@ export default function CampaignForm() {
         className='w-full relative min-h-[50vh] flex flex-col justify-center'
       >
         {/* Historial de la narrativa */}
-        <div className='mb-8 space-y-4 text-center text-lg md:text-xl font-light tracking-wide text-zinc-300'>
+        <div className='mb-8 text-left text-lg md:text-xl font-light tracking-wide text-zinc-300 leading-relaxed'>
           <AnimatePresence initial={false}>
-            {completedSteps.map((step, idx) => (
-              <motion.div
+            {completedSteps.map((step) => (
+              <motion.span
                 key={step.id}
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 0.4, y: 0 }}
-                className='leading-relaxed'
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 0.4, x: 0 }}
+                className='inline' // Forzamos que se mantenga en línea
               >
-                {step.narrativeBefore}
-                <span className='text-amber-500 font-medium'>
+                <span>{step.narrativeBefore}</span>
+                <span className='text-amber-500 font-medium mx-1'>
                   {getValues(step.field as keyof CampaignFormValues) || '...'}
                 </span>
-                {step.narrativeAfter}
-              </motion.div>
+                <span>{step.narrativeAfter} </span>{' '}
+                {/* Espacio extra al final para el siguiente paso */}
+              </motion.span>
             ))}
           </AnimatePresence>
+
+          {/* Aquí iría el input del paso actual, también como un elemento inline */}
         </div>
 
         {/* Paso Actual */}
@@ -117,7 +120,7 @@ export default function CampaignForm() {
                 })}
                 onKeyDown={handleKeyDown}
                 placeholder={activeStep.placeholder}
-                className='bg-transparent border-none outline-none text-center text-amber-500 font-medium w-full min-w-[200px] placeholder:text-zinc-600/50 caret-amber-500 appearance-none focus:ring-0'
+                className='bg-transparent border-none outline-none text-center text-amber-500 font-medium w-full min-w-50 placeholder:text-zinc-600/50 caret-amber-500 appearance-none focus:ring-0'
                 autoComplete='off'
                 autoFocus
               />

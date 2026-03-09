@@ -22,7 +22,7 @@ export const CAMPAIGN_CREATION_STEPS: CampaignStep[] = [
     field: 'startingPoint',
     narrativeBefore: 'Los heroes se reúnen en un lugar conocido como ',
     narrativeAfter: ',',
-    placeholder: 'el lugar donde todo empieza',
+    placeholder: 'punto de partida',
     optional: true,
   },
   {
@@ -45,7 +45,7 @@ export const CAMPAIGN_CREATION_STEPS: CampaignStep[] = [
   {
     id: 'rumors',
     field: 'rumors',
-    narrativeBefore: 'Y no es de extrañar, pues son muchas las voces susurrando que ',
+    narrativeBefore: 'Y no es de extrañar, pues se oyen rumores de que ',
     narrativeAfter: '.',
     placeholder: 'un secreto o peligro que acecha',
     optional: true,
