@@ -11,31 +11,33 @@ export const CAMPAIGN_CREATION_STEPS: CampaignStep[] = [
   {
     id: 'name',
     field: 'name',
-    narrativeBefore: 'Esta crónica será recordada como ',
+    narrativeBefore:
+      'Todo comienza con un nombre que perdurará entre las leyendas. La aventura de ',
     narrativeAfter: '.',
     placeholder: 'el nombre de tu gesta',
     optional: false,
   },
   {
-    id: 'landName',
-    field: 'landName',
-    narrativeBefore: 'Nuestra historia nos transporta a los confines de ',
-    narrativeAfter: '.',
-    placeholder: 'un reino, un plano o una ciudad',
-    optional: true,
-  },
-  {
     id: 'startingPoint',
     field: 'startingPoint',
-    narrativeBefore: 'El destino aguarda a los héroes en ',
+    narrativeBefore: 'Los heroes se reúnen en un lugar conocido como ',
     narrativeAfter: ',',
     placeholder: 'el lugar donde todo empieza',
     optional: true,
   },
   {
+    id: 'landName',
+    field: 'landName',
+    narrativeBefore: 'ubicada en las lejanas tierras de ',
+    narrativeAfter: '.',
+    placeholder: 'un reino, una ciudad...',
+    optional: true,
+  },
+  {
     id: 'atmosphere',
     field: 'atmosphere',
-    narrativeBefore: ' donde se respira una atmósfera ',
+    narrativeBefore:
+      'Incluso allí el aire que respiran tiene un sabor único, como si el viento susurrara historias de antaño. El ambiente se siente ',
     narrativeAfter: '.',
     placeholder: 'describe el "vibe" del lugar',
     optional: true,
@@ -43,7 +45,7 @@ export const CAMPAIGN_CREATION_STEPS: CampaignStep[] = [
   {
     id: 'rumors',
     field: 'rumors',
-    narrativeBefore: 'Y entre las sombras, se rumorea que ',
+    narrativeBefore: 'Y no es de extrañar, pues son muchas las voces susurrando que ',
     narrativeAfter: '.',
     placeholder: 'un secreto o peligro que acecha',
     optional: true,
