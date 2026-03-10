@@ -1,9 +1,13 @@
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { CAMPAIGN_CREATION_STEPS } from '@/config/campaign-steps'
 import { CampaignFormValues } from '../types'
+import { createCampaign } from '@/actions/campaign-actions'
+import { sileo, Toaster } from 'sileo'
 
 export function useCampaignForm() {
+  const router = useRouter()
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
 
   const {
@@ -20,8 +24,25 @@ export function useCampaignForm() {
   const isLastStep = currentStepIndex === CAMPAIGN_CREATION_STEPS.length - 1
 
   const onSubmit: SubmitHandler<CampaignFormValues> = async (data) => {
-    console.log('Portal abriendo con datos:', data)
-    // TODO: Connect to server action or API
+    // console.log('Portal abriendo con datos:', data)
+    try {
+      const response = await createCampaign({
+        name: data.name,
+        location: data.location,
+      })
+
+      if (response.success) {
+        sileo.success({ title: response.message })
+        router.push('/colosseum')
+      } else {
+        sileo.error({
+          title: response.message || 'Error al crear la campaña',
+          description: 'Inténtalo de nuevo más tarde.',
+        })
+      }
+    } catch (error) {
+      sileo.error({ title: 'Ocurrió un error inesperado al intentar crear la campaña' })
+    }
   }
 
   const nextStep = async () => {
