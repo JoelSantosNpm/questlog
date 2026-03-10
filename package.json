@@ -27,6 +27,7 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-hook-form": "^7.71.2",
+    "sileo": "^0.1.5",
     "svix": "^1.86.0",
     "tailwind-merge": "^3.4.1",
     "zustand": "^5.0.11"
