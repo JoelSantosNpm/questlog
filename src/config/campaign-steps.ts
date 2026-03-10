@@ -20,7 +20,7 @@ export const CAMPAIGN_CREATION_STEPS: CampaignStep[] = [
   {
     id: 'startingPoint',
     field: 'startingPoint',
-    narrativeBefore: 'Los heroes se reúnen en un lugar conocido como ',
+    narrativeBefore: 'Los héroes se reúnen en un lugar conocido como ',
     narrativeAfter: ',',
     placeholder: 'punto de partida',
     optional: true,
@@ -37,7 +37,7 @@ export const CAMPAIGN_CREATION_STEPS: CampaignStep[] = [
     id: 'atmosphere',
     field: 'atmosphere',
     narrativeBefore:
-      'Incluso allí el aire que respiran tiene un sabor único, como si el viento susurrara historias de antaño. El ambiente se siente ',
+      'Incluso allí el aire que respiran tiene un sabor único, como si el viento susurrara historias de antaño. La atmósfera es ',
     narrativeAfter: '.',
     placeholder: 'describe el "vibe" del lugar',
     optional: true,
