@@ -38,10 +38,9 @@ model Campaign {
   description   String?
   imageUrl      String?
   system        String  @default("D&D 5e")
-  landName      String?
-  startingPoint String?
-  atmosphere    String? @db.Text
-  rumors        String? @db.Text
+  location      String?
+  nextSession   DateTime?
+  isPrivate     Boolean @default(true)
 
   gameMasterId String
   gameMaster   User   @relation(fields: [gameMasterId], references: [id], onDelete: Cascade)
@@ -49,6 +48,7 @@ model Campaign {
   characters     Character[] // onDelete: SetNull (Persistencia del héroe)
   notes          SessionNote[] // onDelete: Cascade
   activeMonsters ActiveMonster[] // onDelete: Cascade
+  quests         Quest[] // onDelete: Cascade
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -98,7 +98,8 @@ model Character {
   level     Int    @default(1)
   currentHp Int
   maxHp     Int
-  ac        Int? // Clase de Armadura actual
+  tempHp    Int    @default(0)
+  ac        Int    @default(10) // Clase de Armadura actual
   stats     Json // Sus stats evolucionados
   inventory Item[] // Su mochila personal
 
@@ -123,9 +124,10 @@ model Item {
   image    String?
 
   // State
-  equipped Boolean @default(false)
-  attuned  Boolean @default(false)
-  notes    String?
+  equipped           Boolean @default(false)
+  isAttuned          Boolean @default(false)
+  requiresAttunement Boolean @default(false)
+  notes              String?
 
   characterId String
   character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
@@ -194,3 +196,22 @@ model ActiveMonster {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// ---------------------------------------------------------
+// 9. MISIONES (Quests)
+// ---------------------------------------------------------
+model Quest {
+  id               String   @id @default(cuid())
+  title            String
+  description      String?  @db.Text
+  isCompleted      Boolean  @default(false)
+  visibleToPlayers Boolean  @default(false)
+  priority         String   @default("NORMAL")
+
+  campaignId       String
+  campaign         Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
