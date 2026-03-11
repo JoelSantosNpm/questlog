@@ -52,7 +52,7 @@ export const PortalCard = ({ position, visibleRange = 3, campaign }: PortalCardP
           campaignName={campaign.name}
           isBright={isActive}
           priority={isActive}
-          href={`/campaign/${campaign.id}`}
+          href={`/campaigns/${campaign.id}`}
         />
       )}
     </motion.div>
