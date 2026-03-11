@@ -52,6 +52,7 @@ export async function createCampaign(data: CreateCampaignDTO): Promise<ActionRes
       },
     })
 
+    revalidatePath('/portals') // Revalidación de los portales
     revalidatePath('/colosseum') // Revalidación del dashboard
     revalidatePath('/') // Revalidación global por si acaso
 

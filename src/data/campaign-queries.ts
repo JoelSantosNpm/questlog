@@ -25,3 +25,18 @@ export async function getUserCampaigns(): Promise<PortalCampaign[]> {
     variant: 'existing',
   }))
 }
+
+export async function getCampaignById(id: string) {
+  const { userId } = await auth()
+
+  if (!userId) return null
+
+  return prisma.campaign.findFirst({
+    where: {
+      id,
+      gameMaster: {
+        clerkId: userId,
+      },
+    },
+  })
+}

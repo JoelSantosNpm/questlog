@@ -31,9 +31,9 @@ export function useCampaignForm() {
         location: data.location,
       })
 
-      if (response.success) {
-        sileo.success({ title: response.message })
-        router.push('/colosseum')
+      if (response.success && response.data) {
+        sileo.success({ title: 'Portal forjado', description: response.message })
+        router.push(`/campaigns/${response.data.id}`)
       } else {
         sileo.error({
           title: response.message || 'Error al crear la campaña',

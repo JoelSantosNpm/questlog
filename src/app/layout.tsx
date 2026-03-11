@@ -4,6 +4,7 @@ import { cn } from '@/shared/utils/styles'
 import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
 import type { Metadata } from 'next'
 import { Inter, MedievalSharp } from 'next/font/google'
+import { Toaster } from 'sileo'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -72,6 +73,7 @@ export default async function RootLayout({
               Forjando leyendas en la oscuridad.
             </p>
           </footer>
+          <Toaster />
         </body>
       </html>
     </AuthProvider>

@@ -1,4 +1,6 @@
 import { auth } from '@clerk/nextjs/server'
+import { getCampaignById } from '@/data/campaign-queries'
+import { notFound } from 'next/navigation'
 import Link from 'next/link'
 
 interface PageProps {
@@ -10,12 +12,20 @@ export default async function CampaignPage({ params }: PageProps) {
 
   const { id } = await params
 
+  const campaign = await getCampaignById(id)
+
+  if (!campaign) {
+    notFound()
+  }
+
   return (
     <div className='min-h-[calc(100vh-8rem)] p-6 text-foreground text-center md:text-left'>
       <div className='mx-auto max-w-5xl space-y-12'>
         <div className='flex flex-wrap items-center justify-between gap-6 border-b border-stone-800 pb-6'>
           <div>
-            <h1 className='font-medieval text-4xl font-bold text-amber-500'>Gestionando Campaña</h1>
+            <h1 className='font-medieval text-4xl font-bold text-amber-500'>
+              Campaña: {campaign.name}
+            </h1>
             <p className='mt-2 text-neutral-400'>
               ID: <span className='font-mono text-sm text-neutral-500'>{id}</span>
             </p>
