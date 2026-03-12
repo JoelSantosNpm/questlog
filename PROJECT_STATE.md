@@ -1,11 +1,12 @@
 # Estado del Proyecto: Questlog
 
-**Última actualización:** 5 de Marzo de 2026
-**Rama actual:** m2-01-dashboard-de-campañas
+**Última actualización:** 12 de Marzo de 2026
+**Rama actual:** m2-02-formulario-campaña
 
 ## 📌 Resumen de Progreso
 
-Arquitectura base, sistema de navegación 3D y **Milestone M1 (Auth & Infra)** completados al 100%. Las tareas M1-01 (Clerk config), M1-02 (Auth UI), M1-03 (Lazy Sync) y M1-04 (Clerk Webhooks) están cerradas. El sistema de autenticación y sincronización de datos entre Clerk y Supabase (Prisma) es totalmente funcional, incluyendo la eliminación en cascada de usuarios.
+Arquitectura base y **Milestone M1 (Auth & Infra)** completados.
+Hemos completado **M2-01 (Dashboard)** y **M2-02 (Formulario de Creación de Aventuras)**. Se diseñó una Landing page, una interfaz de atrezzo para las campañas, y un sofisticado _wizard_ animado usando framer-motion, zustand, react-hook-form y sileo para la creación de la narrativa.
 
 ---
 
@@ -144,12 +145,12 @@ src/
     4. Implementar lógica de Prisma para `user.created`, `user.updated`, `user.deleted` (Hecho).
     5. Testear localmente con ngrok y Dashboard de Clerk. (Hecho)
 
-### M2: El Salón de los Héroes (Gestión de Campañas) [EN PROGRESO]
+### M2: El Salón de los Héroes (Gestión de Campañas) [COMPLETADO]
 
 - [x] **M2-01: Dashboard de Campañas (Vista Máster)**
   - _AC:_ Fetch de Prisma + `PortalCarousel` conectado a datos reales. Estado de "Vacío" implementado.
-- [ ] **M2-02: Formulario de Creación de Aventuras**
-  - _AC:_ Server Action + Zod para crear campañas vinculadas al usuario.
+- [x] **M2-02: Formulario de Creación de Aventuras**
+  - _AC:_ Implementación de React Hook Form + Zustand + Framer Motion (LazyLoad) para la creación paso-a-paso de campañas vinculadas al usuario. Redirección automática y Toast temáticas con Sileo.
 
 ### M3: El Tesoro y el Bestiario (Módulos de Datos) [PENDIENTE]
 
@@ -183,9 +184,19 @@ src/
 
 ## 📝 Siguientes Pasos Inmediatos
 
-1. **M2-02: Formulario de Creación de Aventuras**
-   - Implementar Server Action + Zod para crear campañas vinculadas al usuario.
-   - Completar página y lógica de nueva ruta `/campaign/new`.
-
-2. **M3-01: Módulo de Inventario y Tesoros**
+1. **M3-01: Módulo de Inventario y Tesoros**
    - Empezar modelo de inventario.
+   - Reflejar objetos en el dashboard individual `[id]` de cada aventura.
+
+2. **M3-02: Bestiario y Fichas de Monstruos**
+   - Buscador de monstruos + Ficha técnica (HP, AC, Stats).
+
+---
+
+## 🏗️ Principios Aprendidos / Refactorizaciones
+
+- **Compound Components & Estado:** Evitar _prop-drilling_ usando `FormProvider` y extrayendo lógicas visuales de navegación de interfaces animadas hacia **Zustand**. Esto facilita aislar el DOM que maneja tags ruidosos como `<form>` y concentrar el _submit_ lejos de los mapeos visuales.
+- **Micro-Interactividad:** Integrar un `isTransitioning` lock en los formularios multicapa para evitar que el usuario de doble-clic y colapse el árbol reactivo durante las animaciones de Framer Motion.
+- **Optimización de Bundle:** Mover `motion` a `<LazyMotion features={domAnimation}>` y `m.div` en UI cargadas globalmente para ahorrar severos picos de ~30kb en renderizados iniciales.
+- **Accesibilidad:** No utilizar `autoFocus` nativo en componentes renderizados condicionalmente ya que rompe el flujo interpretativo de los screen-readers.
+- **Secuencialidad vs Paralelismo:** Promesas que no dependen una de otra como llamadas a `auth()` y extracción de `params` asincrónicos o DB, agruparlas de forma segura en un `Promise.all()`.
