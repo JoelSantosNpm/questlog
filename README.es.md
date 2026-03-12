@@ -67,6 +67,7 @@ El sistema implementa estrategias de borrado para mantener la consistencia de da
 - **Frontend**:
   - [Next.js 16](https://nextjs.org/) (App Router, Server Components)
   - [TypeScript](https://www.typescriptlang.org/) (Strict Mode)
+  - [Zustand](https://zustand-demo.pmnd.rs/) & [React Hook Form](https://react-hook-form.com/)
   - [Tailwind CSS v4](https://tailwindcss.com/)
   - [Framer Motion](https://www.framer.com/motion/)
 

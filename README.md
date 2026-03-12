@@ -21,6 +21,7 @@
 - **Auth**: [Clerk](https://clerk.com/) + [`@clerk/nextjs`](https://www.npmjs.com/package/@clerk/nextjs)
 - **Database**: [PostgreSQL](https://www.postgresql.org/) via [Supabase](https://supabase.com/)
 - **ORM**: [Prisma](https://www.prisma.io/) with `@prisma/adapter-pg`
+- **State Management**: [Zustand](https://zustand-demo.pmnd.rs/) & [React Hook Form](https://react-hook-form.com/)
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
 - **Animations**: [Framer Motion](https://www.framer.com/motion/)
 - **Testing**: [Jest](https://jestjs.io/) + Testing Library
