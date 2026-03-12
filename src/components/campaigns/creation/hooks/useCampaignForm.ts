@@ -1,25 +1,25 @@
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useForm, SubmitHandler } from 'react-hook-form'
+import { useForm, useFormContext, SubmitHandler } from 'react-hook-form'
 import { CAMPAIGN_CREATION_STEPS } from '@/config/campaign-steps'
 import { CampaignFormValues } from '../types'
 import { createCampaign } from '@/actions/campaign-actions'
 import { notifyCampaignCreation } from '@/lib/notifications'
+import { useCampaignStore } from '../store/campaignStore'
 
-export function useCampaignForm() {
+export function useInitCampaignForm() {
+  const methods = useForm<CampaignFormValues>({ mode: 'onChange' })
+  return methods
+}
+
+export function useCampaignActions() {
   const router = useRouter()
-  const [currentStepIndex, setCurrentStepIndex] = useState(0)
-  const [isTransitioning, setIsTransitioning] = useState(false)
+  const { trigger, handleSubmit } = useFormContext<CampaignFormValues>()
 
-  const {
-    register,
-    handleSubmit,
-    trigger,
-    getValues,
-    formState: { errors },
-  } = useForm<CampaignFormValues>({
-    mode: 'onChange',
-  })
+  const currentStepIndex = useCampaignStore((state) => state.currentStepIndex)
+  const isTransitioning = useCampaignStore((state) => state.isTransitioning)
+  const setIsTransitioning = useCampaignStore((state) => state.setIsTransitioning)
+  const advanceStep = useCampaignStore((state) => state.advanceStep)
+  const storeSkipStep = useCampaignStore((state) => state.skipStep)
 
   const activeStep = CAMPAIGN_CREATION_STEPS[currentStepIndex]
   const isLastStep = currentStepIndex === CAMPAIGN_CREATION_STEPS.length - 1
@@ -45,7 +45,6 @@ export function useCampaignForm() {
         router.push(`/campaigns/${campaign.id}`)
       }
     } catch (error) {
-      // El error ya es manejado por el toast
       console.error(error)
     }
   }
@@ -58,8 +57,7 @@ export function useCampaignForm() {
 
     if (isValid || activeStep.optional) {
       if (!isLastStep) {
-        setCurrentStepIndex((prev) => prev + 1)
-        // Damos tiempo a la animación para completarse (salida + entada ~ 2.6s)
+        advanceStep()
         setTimeout(() => setIsTransitioning(false), 2600)
       } else {
         setIsTransitioning(false)
@@ -83,24 +81,18 @@ export function useCampaignForm() {
     if (isTransitioning) return
     if (activeStep.optional && !isLastStep) {
       setIsTransitioning(true)
-      setCurrentStepIndex((prev) => prev + 1)
+      storeSkipStep()
       setTimeout(() => setIsTransitioning(false), 2600)
     }
   }
 
-  const completedSteps = CAMPAIGN_CREATION_STEPS.slice(0, currentStepIndex)
-
   return {
-    register,
-    handleSubmit,
-    errors,
-    getValues,
     activeStep,
     isLastStep,
     nextStep,
     handleFormSubmit,
     skipStep,
-    completedSteps,
+    completedSteps: CAMPAIGN_CREATION_STEPS.slice(0, currentStepIndex),
     isTransitioning,
   }
 }

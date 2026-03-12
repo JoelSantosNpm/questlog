@@ -1,32 +1,17 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { UseFormRegister, FieldErrors, UseFormGetValues } from 'react-hook-form'
-import { CampaignStep } from '@/config/campaign-steps'
+import { useFormContext } from 'react-hook-form'
 import { CampaignFormValues } from './types'
 import { StepControls } from './StepControls'
+import { useCampaignActions } from './hooks/useCampaignForm'
 
-interface NarrativeBlockProps {
-  completedSteps: CampaignStep[]
-  activeStep: CampaignStep
-  getValues: UseFormGetValues<CampaignFormValues>
-  register: UseFormRegister<CampaignFormValues>
-  errors: FieldErrors<CampaignFormValues>
-  disabled?: boolean
-  isLastStep: boolean
-  onNext: () => void
-  onSkip: () => void
-}
+export function NarrativeBlock() {
+  const {
+    register,
+    getValues,
+    formState: { errors },
+  } = useFormContext<CampaignFormValues>()
+  const { completedSteps, activeStep, isTransitioning: disabled } = useCampaignActions()
 
-export function NarrativeBlock({
-  completedSteps,
-  activeStep,
-  getValues,
-  register,
-  errors,
-  disabled,
-  isLastStep,
-  onNext,
-  onSkip,
-}: NarrativeBlockProps) {
   return (
     <div className='mb-8 text-center text-lg md:text-xl font-light tracking-wide text-zinc-300 leading-relaxed max-w-2xl mx-auto'>
       {/* Todo el texto (historial + activo) fluye como un solo párrafo inline */}
@@ -93,12 +78,7 @@ export function NarrativeBlock({
             <span className='mr-1'>{activeStep.narrativeAfter}</span>
 
             {/* Controles renderizados simultáneamente con el bloque de texto */}
-            <StepControls
-              isLastStep={isLastStep}
-              isOptional={activeStep.optional}
-              onNext={onNext}
-              onSkip={onSkip}
-            />
+            <StepControls />
           </motion.div>
         </AnimatePresence>
       </div>

@@ -1,24 +1,16 @@
-interface StepControlsProps {
-  isLastStep: boolean
-  isOptional: boolean
-  onNext: () => void
-  onSkip: () => void
-  disabled?: boolean
-}
+import { useCampaignActions } from './hooks/useCampaignForm'
 
-export function StepControls({
-  isLastStep,
-  isOptional,
-  onNext,
-  onSkip,
-}: StepControlsProps) {
+export function StepControls() {
+  const { isLastStep, activeStep, nextStep, skipStep } = useCampaignActions()
+  const isOptional = activeStep.optional
+
   return (
     <div className='mt-12 flex items-center justify-center w-full'>
       <div className='flex items-center justify-center gap-6'>
         {isOptional && !isLastStep && (
           <button
             type='button'
-            onClick={onSkip}
+            onClick={skipStep}
             className='px-4 py-2 rounded-md text-sm text-zinc-500 hover:text-zinc-300 transition-colors'
           >
             Saltar este paso
@@ -28,7 +20,7 @@ export function StepControls({
         {!isLastStep ? (
           <button
             type='button'
-            onClick={onNext}
+            onClick={nextStep}
             className='px-8 py-3 rounded-full bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-200 border border-zinc-700/50 shadow-lg backdrop-blur-sm transition-all flex items-center gap-2 group'
           >
             Continuar
