@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { UseFormRegister, FieldErrors, UseFormGetValues } from 'react-hook-form'
 import { CampaignStep } from '@/config/campaign-steps'
 import { CampaignFormValues } from './types'
+import { StepControls } from './StepControls'
 
 interface NarrativeBlockProps {
   completedSteps: CampaignStep[]
@@ -9,7 +10,10 @@ interface NarrativeBlockProps {
   getValues: UseFormGetValues<CampaignFormValues>
   register: UseFormRegister<CampaignFormValues>
   errors: FieldErrors<CampaignFormValues>
-  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void
+  disabled?: boolean
+  isLastStep: boolean
+  onNext: () => void
+  onSkip: () => void
 }
 
 export function NarrativeBlock({
@@ -18,7 +22,10 @@ export function NarrativeBlock({
   getValues,
   register,
   errors,
-  onKeyDown,
+  disabled,
+  isLastStep,
+  onNext,
+  onSkip,
 }: NarrativeBlockProps) {
   return (
     <div className='mb-8 text-center text-lg md:text-xl font-light tracking-wide text-zinc-300 leading-relaxed max-w-2xl mx-auto'>
@@ -31,7 +38,8 @@ export function NarrativeBlock({
               key={step.id}
               initial={{ opacity: 0 }}
               animate={{ opacity: 0.4 }}
-              className='inline transition-opacity duration-500'
+              transition={{ duration: 2 }}
+              className='inline'
             >
               <span>{step.narrativeBefore}</span>
               <span className='text-amber-500 font-medium px-1'>
@@ -47,10 +55,9 @@ export function NarrativeBlock({
           <motion.div
             key={activeStep.id}
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            className='block text-xl md:text-2xl text-zinc-100 relative transition-opacity duration-500 mt-4'
+            animate={{ opacity: 1, transition: { duration: 2 } }}
+            exit={{ opacity: 0, transition: { duration: 0.6 } }}
+            className='block text-xl md:text-2xl text-zinc-100 relative mt-4'
           >
             <span>{activeStep.narrativeBefore}</span>
             <span className='relative inline-block border-b-2 border-amber-500/30 focus-within:border-amber-500 transition-colors px-1 mx-1 min-w-[200px]'>
@@ -59,7 +66,7 @@ export function NarrativeBlock({
                 {...register(activeStep.field as keyof CampaignFormValues, {
                   required: !activeStep.optional ? 'Este campo es vital para tu crónica.' : false,
                 })}
-                onKeyDown={onKeyDown}
+                disabled={disabled}
                 placeholder={activeStep.placeholder}
                 className='bg-transparent border-none outline-none text-center text-amber-500 font-medium w-full placeholder:text-zinc-600/50 caret-amber-500 appearance-none focus:ring-0 px-1'
                 autoComplete='off'
@@ -84,6 +91,14 @@ export function NarrativeBlock({
               )}
             </span>
             <span className='mr-1'>{activeStep.narrativeAfter}</span>
+
+            {/* Controles renderizados simultáneamente con el bloque de texto */}
+            <StepControls
+              isLastStep={isLastStep}
+              isOptional={activeStep.optional}
+              onNext={onNext}
+              onSkip={onSkip}
+            />
           </motion.div>
         </AnimatePresence>
       </div>

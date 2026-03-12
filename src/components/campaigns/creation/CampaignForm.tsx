@@ -2,28 +2,26 @@
 
 import React from 'react'
 import { NarrativeBlock } from './NarrativeBlock'
-import { StepControls } from './StepControls'
 import { useCampaignForm } from './hooks/useCampaignForm'
 
 export default function CampaignForm() {
   const {
     register,
-    handleSubmit,
     errors,
     getValues,
     activeStep,
     isLastStep,
     nextStep,
-    handleKeyDown,
+    handleFormSubmit,
     skipStep,
-    onSubmit,
     completedSteps,
+    isTransitioning,
   } = useCampaignForm()
 
   return (
     <div className='w-full max-w-3xl mx-auto p-6 flex flex-col items-center'>
       <form
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleFormSubmit}
         className='w-full relative min-h-[50vh] flex flex-col justify-center'
       >
         <NarrativeBlock
@@ -32,12 +30,8 @@ export default function CampaignForm() {
           getValues={getValues}
           register={register}
           errors={errors}
-          onKeyDown={handleKeyDown}
-        />
-
-        <StepControls
+          disabled={isTransitioning}
           isLastStep={isLastStep}
-          isOptional={activeStep.optional}
           onNext={nextStep}
           onSkip={skipStep}
         />

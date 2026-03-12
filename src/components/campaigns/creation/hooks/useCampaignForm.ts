@@ -4,11 +4,12 @@ import { useForm, SubmitHandler } from 'react-hook-form'
 import { CAMPAIGN_CREATION_STEPS } from '@/config/campaign-steps'
 import { CampaignFormValues } from '../types'
 import { createCampaign } from '@/actions/campaign-actions'
-import { sileo, Toaster } from 'sileo'
+import { notifyCampaignCreation } from '@/lib/notifications'
 
 export function useCampaignForm() {
   const router = useRouter()
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
+  const [isTransitioning, setIsTransitioning] = useState(false)
 
   const {
     register,
@@ -24,49 +25,66 @@ export function useCampaignForm() {
   const isLastStep = currentStepIndex === CAMPAIGN_CREATION_STEPS.length - 1
 
   const onSubmit: SubmitHandler<CampaignFormValues> = async (data) => {
-    // console.log('Portal abriendo con datos:', data)
-    try {
+    const createPromise = async () => {
       const response = await createCampaign({
         name: data.name,
         location: data.location,
       })
 
-      if (response.success && response.data) {
-        sileo.success({ title: 'Portal forjado', description: response.message })
-        router.push(`/campaigns/${response.data.id}`)
-      } else {
-        sileo.error({
-          title: response.message || 'Error al crear la campaña',
-          description: 'Inténtalo de nuevo más tarde.',
-        })
+      if (!response.success || !response.data) {
+        throw new Error(response.message || 'Error al esculpir la campaña')
+      }
+
+      return response.data
+    }
+
+    try {
+      const campaign = await notifyCampaignCreation(createPromise())
+
+      if (campaign) {
+        router.push(`/campaigns/${campaign.id}`)
       }
     } catch (error) {
-      sileo.error({ title: 'Ocurrió un error inesperado al intentar crear la campaña' })
+      // El error ya es manejado por el toast
+      console.error(error)
     }
   }
 
   const nextStep = async () => {
+    if (isTransitioning) return
+    setIsTransitioning(true)
+
     const isValid = await trigger(activeStep.field as keyof CampaignFormValues)
 
     if (isValid || activeStep.optional) {
       if (!isLastStep) {
         setCurrentStepIndex((prev) => prev + 1)
+        // Damos tiempo a la animación para completarse (salida + entada ~ 2.6s)
+        setTimeout(() => setIsTransitioning(false), 2600)
       } else {
+        setIsTransitioning(false)
         handleSubmit(onSubmit)()
       }
+    } else {
+      setIsTransitioning(false)
     }
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    if (!isLastStep) {
       e.preventDefault()
       nextStep()
+      return
     }
+    handleSubmit(onSubmit)(e)
   }
 
   const skipStep = () => {
+    if (isTransitioning) return
     if (activeStep.optional && !isLastStep) {
+      setIsTransitioning(true)
       setCurrentStepIndex((prev) => prev + 1)
+      setTimeout(() => setIsTransitioning(false), 2600)
     }
   }
 
@@ -80,9 +98,9 @@ export function useCampaignForm() {
     activeStep,
     isLastStep,
     nextStep,
-    handleKeyDown,
+    handleFormSubmit,
     skipStep,
-    onSubmit,
     completedSteps,
+    isTransitioning,
   }
 }
