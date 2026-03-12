@@ -8,9 +8,7 @@ interface PageProps {
 }
 
 export default async function CampaignPage({ params }: PageProps) {
-  await auth.protect()
-
-  const { id } = await params
+  const [, { id }] = await Promise.all([auth.protect(), params])
 
   const campaign = await getCampaignById(id)
 
