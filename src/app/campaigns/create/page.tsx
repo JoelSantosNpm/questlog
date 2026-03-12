@@ -1,4 +1,4 @@
-import CampaignForm from '@/components/campaigns/creation/CampaignForm'
+import CampaignCreationProvider from '@/components/campaigns/creation/CampaignCreationProvider'
 import { MysticBackground } from '@/components/shared/ui/MysticBackground'
 
 export default function CreateCampaignPage() {
@@ -23,7 +23,7 @@ export default function CreateCampaignPage() {
           <div className='absolute -inset-y-10 left-1/2 -translate-x-1/2 w-full max-w-4xl border-y border-zinc-800/50 pointer-events-none' />
           <div className='absolute inset-0 bg-gradient-to-b from-zinc-950/0 via-zinc-900/10 to-zinc-950/0 pointer-events-none' />
 
-          <CampaignForm />
+          <CampaignCreationProvider />
         </div>
       </div>
     </div>
