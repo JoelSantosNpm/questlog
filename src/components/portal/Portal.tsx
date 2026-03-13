@@ -68,7 +68,7 @@ export function Portal(props: PortalProps) {
   const campaignName = isExisting ? (props as ExistingPortalProps).campaignName : ''
   const href = isExisting
     ? (props as ExistingPortalProps).href
-    : (props.href ?? '/campaigns/create')
+    : (props.href ?? '/campaigns/creation')
 
   // Optimización de sizes para next/image
   const imageSizes = getImageSizes(size)

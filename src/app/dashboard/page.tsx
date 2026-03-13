@@ -16,7 +16,7 @@ export default async function DashboardPage() {
 
       <div className='grid gap-6 sm:grid-cols-2'>
         <Link
-          href='/portals'
+          href='/campaigns/portals'
           className='group flex flex-col justify-between space-y-4 rounded-xl border border-stone-800 bg-stone-900/50 p-6 transition-colors hover:border-amber-900/50 hover:bg-stone-800/80'
         >
           <div className='space-y-2'>
