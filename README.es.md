@@ -64,20 +64,17 @@ El sistema implementa estrategias de borrado para mantener la consistencia de da
 
 ## 📸 Capturas de Pantalla
 
-<table>
-  <tr>
-    <td align="center" width="50%">
-      <strong>El Portal — Selección de Campaña</strong><br/><br/>
-      <img src="public/screenshots/campaign-portals.png" alt="El Portal — Selección de Campaña" />
-      <br/><sub>Navega entre tus campañas a través de un carrusel 3D de portales de piedra</sub>
-    </td>
-    <td align="center" width="50%">
-      <strong>Formulario de Creación de Campaña</strong><br/><br/>
-      <img src="public/screenshots/campaign-creation.png" alt="Formulario de Creación de Campaña" />
-      <br/><sub>Un formulario multipaso narrativo que teje tus respuestas en lore</sub>
-    </td>
-  </tr>
-</table>
+### El Portal — Selección de Campaña
+
+![El Portal — Selección de Campaña](public/screenshots/campaign-portals.png)
+
+> Navega entre tus campañas a través de un carrusel 3D de portales de piedra
+
+### Formulario de Creación de Campaña
+
+![Formulario de Creación de Campaña](public/screenshots/campaign-creation.png)
+
+> Un formulario multipaso narrativo que teje tus respuestas en lore
 
 ## 🛠 Stack Tecnológico
 

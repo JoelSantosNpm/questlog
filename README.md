@@ -16,20 +16,17 @@
 
 ## 📸 Screenshots
 
-<table>
-  <tr>
-    <td align="center" width="50%">
-      <strong>The Portal — Campaign Selection</strong><br/><br/>
-      <img src="public/screenshots/campaign-portals.png" alt="The Portal — Campaign Selection" />
-      <br/><sub>Navigate your campaigns through a 3D stone portal carousel</sub>
-    </td>
-    <td align="center" width="50%">
-      <strong>Campaign Creation Form</strong><br/><br/>
-      <img src="public/screenshots/campaign-creation.png" alt="Campaign Creation Form" />
-      <br/><sub>A narrative-driven multi-step form that weaves your input into lore</sub>
-    </td>
-  </tr>
-</table>
+### The Portal — Campaign Selection
+
+![The Portal — Campaign Selection](public/screenshots/campaign-portals.png)
+
+> Navigate your campaigns through a 3D stone portal carousel
+
+### Campaign Creation Form
+
+![Campaign Creation Form](public/screenshots/campaign-creation.png)
+
+> A narrative-driven multi-step form that weaves your input into lore
 
 ## 🛠 Tech Stack
 
