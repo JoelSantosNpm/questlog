@@ -3,12 +3,12 @@ import { MysticBackground } from '@/components/shared/ui/MysticBackground'
 
 export default function CreateCampaignPage() {
   return (
-    <div className='min-h-screen bg-zinc-950 text-zinc-300 flex flex-col items-center justify-center font-serif antialiased relative overflow-hidden'>
+    <div className='py-5 bg-zinc-950 text-zinc-300 flex flex-col items-center justify-center font-serif antialiased relative overflow-hidden'>
       {/* Fondo místico estilo "Portal de Piedra" */}
       <MysticBackground />
 
       <div className='relative z-10 w-full animate-in fade-in zoom-in duration-1000'>
-        <div className='text-center mb-16 space-y-4'>
+        <div className='text-center space-y-4'>
           <h1 className='text-4xl md:text-5xl lg:text-6xl font-light tracking-widest text-zinc-100 uppercase font-serif drop-shadow-md pb-2'>
             Invocar Portal
           </h1>

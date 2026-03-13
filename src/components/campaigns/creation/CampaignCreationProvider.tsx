@@ -16,7 +16,7 @@ export default function CampaignCreationProvider() {
 
   return (
     <FormProvider {...methods}>
-      <div className='w-full max-w-3xl mx-auto p-6 flex flex-col items-center'>
+      <div className='w-full max-w-3xl mx-auto p-3 flex flex-col items-center'>
         <CampaignCreationForm />
       </div>
     </FormProvider>
