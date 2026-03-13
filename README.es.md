@@ -62,6 +62,23 @@ El sistema implementa estrategias de borrado para mantener la consistencia de da
 - **El Almacén**: Control de botín, objetos, rarezas y cantidades.
 - **El Coliseo**: Biblioteca de monstruos + rastreador de iniciativa en vivo.
 
+## 📸 Capturas de Pantalla
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <strong>El Portal — Selección de Campaña</strong><br/><br/>
+      <img src="public/screenshots/campaign-portals.png" alt="El Portal — Selección de Campaña" />
+      <br/><sub>Navega entre tus campañas a través de un carrusel 3D de portales de piedra</sub>
+    </td>
+    <td align="center" width="50%">
+      <strong>Formulario de Creación de Campaña</strong><br/><br/>
+      <img src="public/screenshots/campaign-creation.png" alt="Formulario de Creación de Campaña" />
+      <br/><sub>Un formulario multipaso narrativo que teje tus respuestas en lore</sub>
+    </td>
+  </tr>
+</table>
+
 ## 🛠 Stack Tecnológico
 
 - **Frontend**:
@@ -264,10 +281,12 @@ model Item {
 ```
 src/
 ├── app/                        # Rutas y páginas (App Router)
-│   ├── campaigns/              # Páginas de campañas (lista, detalle, creación)
+│   ├── campaigns/              # Páginas de campañas
+│   │   ├── page.tsx            # Carrusel de portales (selección de campaña)
+│   │   ├── creation/           # Formulario de creación
+│   │   └── [id]/               # Detalle de campaña
 │   ├── colosseum/              # Rastreador de combate (El Coliseo)
 │   ├── dashboard/              # Dashboard principal
-│   ├── portals/                # Página del carrusel de portales
 │   ├── sign-in/ & sign-up/     # Páginas de autenticación
 │   └── layout.tsx              # Root layout (incluye AuthSync)
 ├── actions/

@@ -14,6 +14,23 @@
 - **Inventory System (El Almacén)**: Loot, items, rarities, and quantities.
 - **Bestiary & Combat Tracker (El Coliseo)**: Monster library + live initiative tracker.
 
+## 📸 Screenshots
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <strong>The Portal — Campaign Selection</strong><br/><br/>
+      <img src="public/screenshots/campaign-portals.png" alt="The Portal — Campaign Selection" />
+      <br/><sub>Navigate your campaigns through a 3D stone portal carousel</sub>
+    </td>
+    <td align="center" width="50%">
+      <strong>Campaign Creation Form</strong><br/><br/>
+      <img src="public/screenshots/campaign-creation.png" alt="Campaign Creation Form" />
+      <br/><sub>A narrative-driven multi-step form that weaves your input into lore</sub>
+    </td>
+  </tr>
+</table>
+
 ## 🛠 Tech Stack
 
 - **Framework**: [Next.js 16](https://nextjs.org/) (App Router, Server Components)
@@ -209,10 +226,12 @@ model Item {
 ```
 src/
 ├── app/                        # Routes and pages (App Router)
-│   ├── campaigns/              # Campaign pages (list, detail, creation)
+│   ├── campaigns/              # Campaign pages
+│   │   ├── page.tsx            # Portal carousel (campaign selection)
+│   │   ├── creation/           # Campaign creation form
+│   │   └── [id]/               # Campaign detail
 │   ├── colosseum/              # Combat tracker (El Coliseo)
 │   ├── dashboard/              # Main dashboard
-│   ├── portals/                # Portal carousel page
 │   ├── sign-in/ & sign-up/     # Auth pages
 │   └── layout.tsx              # Root layout (includes AuthSync)
 ├── actions/
