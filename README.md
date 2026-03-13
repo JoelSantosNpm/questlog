@@ -21,10 +21,13 @@
 - **Auth**: [Clerk](https://clerk.com/) + [`@clerk/nextjs`](https://www.npmjs.com/package/@clerk/nextjs)
 - **Database**: [PostgreSQL](https://www.postgresql.org/) via [Supabase](https://supabase.com/)
 - **ORM**: [Prisma](https://www.prisma.io/) with `@prisma/adapter-pg`
-- **State Management**: [Zustand](https://zustand-demo.pmnd.rs/) & [React Hook Form](https://react-hook-form.com/)
+- **State Management**:
+  - [Zustand](https://zustand-demo.pmnd.rs/) — client-side state for multi-step flows (e.g. campaign creation: step index, transitions)
+  - [React Hook Form](https://react-hook-form.com/) — form validation and field management, integrated with Zustand via a Context provider
+- **Compiler**: [React Compiler](https://react.dev/learn/react-compiler) (`babel-plugin-react-compiler`) — automatic memoization of components and values; no manual `useMemo`/`useCallback` needed. Run `npx -y react-doctor@latest .` to audit project health.
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
 - **Animations**: [Framer Motion](https://www.framer.com/motion/)
-- **Testing**: [Jest](https://jestjs.io/) + Testing Library
+- **Testing**: [Jest](https://jestjs.io/) + [Testing Library](https://testing-library.com/)
 
 ## 📦 Prerequisites
 
@@ -115,38 +118,146 @@ This script simulates multiple critical scenarios with detailed logging:
 2.  **Delete Player**: Verifies that if a user deletes their account, their character and inventory are **removed** (Cascade).
 3.  **Delete GM**: Verifies that if a GM deletes their account, their campaigns are removed, but characters from _other players_ in those tables **survive**.
 
-## 📂 Project Structure
+## � Data Model
+
+Central campaign schema and its relationships with characters, monsters, items, and quests.
+
+```prisma
+model Campaign {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  imageUrl    String?
+  system      String  @default("D&D 5e")
+  location    String?
+  isPrivate   Boolean @default(true)
+
+  gameMasterId String
+  gameMaster   User   @relation(fields: [gameMasterId], references: [id], onDelete: Cascade)
+
+  characters     Character[]    // onDelete: SetNull  — heroes survive campaign deletion
+  notes          SessionNote[]  // onDelete: Cascade
+  activeMonsters ActiveMonster[] // onDelete: Cascade
+  quests         Quest[]         // onDelete: Cascade
+}
+
+model ActiveMonster {
+  id        String  @id @default(cuid())
+  name      String? // Optional alias (e.g. "One-Eyed Goblin")
+  currentHp Int
+  initiative Int?
+  status    String[] // e.g. ["Poisoned", "Blinded"]
+
+  templateId String?
+  template   MonsterTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+
+  campaignId String
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+}
+
+model MonsterTemplate {
+  id        String  @id @default(cuid())
+  name      String
+  type      String  // e.g. "Humanoid", "Dragon"
+  challenge Float   @default(1.0)
+  maxHp     Int
+  ac        Int
+  stats     Json
+  abilities Json?
+
+  isPublished Boolean @default(false)
+  price       Float   @default(0.0) // Future marketplace
+
+  instances ActiveMonster[]
+}
+
+model Character {
+  id         String   @id @default(cuid())
+  name       String
+  level      Int      @default(1)
+  currentHp  Int
+  maxHp      Int
+  stats      Json
+
+  userId     String?
+  user       User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  campaignId String?
+  campaign   Campaign? @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+
+  inventory  Item[]   // onDelete: Cascade
+}
+
+model Item {
+  id       String  @id @default(cuid())
+  name     String
+  quantity Int     @default(1)
+  rarity   String? // Common, Rare, Legendary...
+  type     String? // Weapon, Potion, Gear
+  value    Float?  // in Gold Pieces (gp)
+  equipped Boolean @default(false)
+
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+}
+```
+
+> **Key rule:** Deleting a `Campaign` removes notes, active monsters, and quests (Cascade), but characters are only **unlinked** (SetNull) — players never lose their heroes.
+
+## �📂 Project Structure
 
 ```
 src/
 ├── app/                        # Routes and pages (App Router)
-│   ├── components/portal/      # 3D Carousel
-│   ├── providers/              # ClerkProvider wrapper
+│   ├── campaigns/              # Campaign pages (list, detail, creation)
+│   ├── colosseum/              # Combat tracker (El Coliseo)
+│   ├── dashboard/              # Main dashboard
+│   ├── portals/                # Portal carousel page
 │   ├── sign-in/ & sign-up/     # Auth pages
 │   └── layout.tsx              # Root layout (includes AuthSync)
-├── components/auth/
-│   └── auth-sync.tsx           # Lazy Sync: Clerk → Prisma
+├── actions/
+│   └── campaign-actions.ts     # Server Actions (create campaign, etc.)
+├── components/
+│   ├── auth/
+│   │   └── auth-sync.tsx       # Lazy Sync: Clerk → Prisma
+│   ├── campaigns/creation/     # Multi-step campaign creation form
+│   │   ├── CampaignCreationProvider.tsx  # RHF + Zustand context root
+│   │   ├── CampaignCreationForm.tsx      # Animated narrative form
+│   │   ├── StepControls.tsx             # Next/Skip/Submit step buttons
+│   │   ├── hooks/useCampaignForm.ts      # Form & step logic
+│   │   └── store/campaignStore.ts        # Zustand step state
+│   ├── portal/                 # 3D carousel components
+│   └── shared/ui/              # Reusable UI components
 ├── config/
+│   ├── campaign-steps.ts       # Step definitions for campaign creation
 │   ├── clerk-theme.ts          # Custom Grimdark Clerk theme
 │   └── routes/auth.ts          # Public/protected route constants
+├── data/
+│   └── campaign-queries.ts     # Prisma read queries
 ├── lib/
-│   └── prisma.ts               # Prisma singleton with PrismaPg adapter
+│   ├── prisma.ts               # Prisma singleton with PrismaPg adapter
+│   └── notifications.ts        # Toast notification helpers
 ├── hooks/ui/                   # Generic UI hooks (useCarousel)
-├── types/                      # Shared TypeScript types
+├── providers/                  # App-level providers (AuthProvider)
+└── types/                      # Shared TypeScript types
 prisma/
-│   └── schema.prisma           # DB schema
-└── src/proxy.ts                # Route protection middleware
+├── schema.prisma               # DB schema
+├── seed.ts                     # DB seeding script
+└── test-cascade.ts             # Cascade deletion integrity tests
+src/proxy.ts                    # Route protection middleware
 ```
 
 ## 📜 Scripts
 
-| Command         | Description              |
-| --------------- | ------------------------ |
-| `npm run dev`   | Start development server |
-| `npm run build` | Build for production     |
-| `npm run start` | Start production server  |
-| `npm run lint`  | Run ESLint               |
-| `npm test`      | Run unit tests           |
+| Command                        | Description                |
+| ------------------------------ | -------------------------- |
+| `npm run dev`                  | Start development server   |
+| `npm run build`                | Build for production       |
+| `npm run start`                | Start production server    |
+| `npm run lint`                 | Run ESLint                 |
+| `npm test`                     | Run unit tests             |
+| `npm run db:seed`              | Seed the database          |
+| `npx -y react-doctor@latest .` | Audit React project health |
 
 ## 🔒 Private Project
 
