@@ -1,12 +1,18 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { FormProvider } from 'react-hook-form'
 import { CampaignCreationForm } from './CampaignCreationForm'
 import { useInitCampaignForm } from './hooks/useCampaignForm'
+import { useCampaignStore } from './store/campaignStore'
 
 export default function CampaignCreationProvider() {
   const methods = useInitCampaignForm()
+  const reset = useCampaignStore((state) => state.reset)
+
+  useEffect(() => {
+    reset()
+  }, [reset])
 
   return (
     <FormProvider {...methods}>
