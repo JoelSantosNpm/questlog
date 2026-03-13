@@ -1,4 +1,7 @@
+'use client'
+
 import { m, LazyMotion, domAnimation, AnimatePresence } from 'framer-motion'
+import { useEffect, useRef } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { CampaignFormValues } from './types'
 import { StepControls } from './StepControls'
@@ -16,6 +19,14 @@ export function CampaignCreationForm() {
     isTransitioning: disabled,
     handleFormSubmit,
   } = useCampaignActions()
+
+  const inputRef = useRef<HTMLInputElement | null>(null)
+
+  useEffect(() => {
+    if (!disabled) {
+      inputRef.current?.focus()
+    }
+  }, [activeStep.id, disabled])
 
   return (
     <form
@@ -63,6 +74,10 @@ export function CampaignCreationForm() {
                         ? 'Este campo es vital para tu crónica.'
                         : false,
                     })}
+                    ref={(el) => {
+                      register(activeStep.field as keyof CampaignFormValues).ref(el)
+                      inputRef.current = el
+                    }}
                     disabled={disabled}
                     placeholder={activeStep.placeholder}
                     className='bg-transparent border-none outline-none text-center text-amber-500 font-medium w-full placeholder:text-zinc-600/50 caret-amber-500 appearance-none focus:ring-0 px-1'
