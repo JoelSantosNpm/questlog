@@ -55,14 +55,9 @@ export function useCampaignActions() {
 
     const isValid = await trigger(activeStep.field as keyof CampaignFormValues)
 
-    if (isValid || activeStep.optional) {
-      if (!isLastStep) {
-        advanceStep()
-        setTimeout(() => setIsTransitioning(false), 2600)
-      } else {
-        setIsTransitioning(false)
-        handleSubmit(onSubmit)()
-      }
+    if ((isValid || activeStep.optional) && !isLastStep) {
+      advanceStep()
+      setTimeout(() => setIsTransitioning(false), 2600)
     } else {
       setIsTransitioning(false)
     }
@@ -72,6 +67,10 @@ export function useCampaignActions() {
     if (!isLastStep) {
       e.preventDefault()
       nextStep()
+      return
+    }
+    if (isTransitioning) {
+      e.preventDefault()
       return
     }
     handleSubmit(onSubmit)(e)
