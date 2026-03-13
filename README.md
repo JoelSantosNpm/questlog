@@ -1,6 +1,6 @@
 # QuestLog - RPG Campaign Manager
 
-[🇺🇸 English](README.md) | [🇪🇸 Español](README.es.md)
+**🇺🇸 English** | [🇪🇸 Español](README.es.md)
 
 > **Status:** Active development. See [PROJECT_STATE.md](PROJECT_STATE.md) for the current milestone progress.
 
