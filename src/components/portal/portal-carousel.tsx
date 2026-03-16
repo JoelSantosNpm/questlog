@@ -4,9 +4,9 @@
 import { AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useEffect, useRef } from 'react'
-import { useCarousel } from '../../../hooks/ui/use-carousel'
 import { Campaign } from '@/types/portal'
 import { PortalCard } from './portal-card'
+import { useCarousel } from '@/hooks/ui/use-carousel'
 
 interface PortalCarouselProps {
   campaigns: Campaign[]
@@ -94,9 +94,9 @@ export const PortalCarousel = ({ campaigns }: PortalCarouselProps) => {
 
         {/* Indicator Dots */}
         <div className='flex items-center gap-3'>
-          {campaigns.map((_, i) => (
+          {campaigns.map((campaign, i) => (
             <button
-              key={i}
+              key={campaign.id}
               onClick={() => handleDotClick(i)}
               className={`h-2 rounded-full transition-all duration-300 ${
                 i === currentIndicator ? 'w-8 bg-amber-500' : 'w-2 bg-stone-700 hover:bg-stone-600'

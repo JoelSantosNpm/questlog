@@ -66,7 +66,9 @@ export function Portal(props: PortalProps) {
   // Casting seguro porque TS ya validó las props con la unión discriminada
   const isExisting = variant === 'existing'
   const campaignName = isExisting ? (props as ExistingPortalProps).campaignName : ''
-  const href = isExisting ? (props as ExistingPortalProps).href : (props.href ?? '/campaign/new')
+  const href = isExisting
+    ? (props as ExistingPortalProps).href
+    : (props.href ?? '/campaigns/creation')
 
   // Optimización de sizes para next/image
   const imageSizes = getImageSizes(size)
