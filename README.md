@@ -41,7 +41,7 @@
 - **Compiler**: [React Compiler](https://react.dev/learn/react-compiler) (`babel-plugin-react-compiler`) — automatic memoization of components and values; no manual `useMemo`/`useCallback` needed. Run `npx -y react-doctor@latest .` to audit project health.
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
 - **Animations**: [Framer Motion](https://www.framer.com/motion/)
-- **Testing**: [Jest](https://jestjs.io/) + [Testing Library](https://testing-library.com/)
+- **Testing**: [Vitest](https://vitest.dev/) + [Testing Library](https://testing-library.com/) (unit & integration) · [Playwright](https://playwright.dev/) (E2E)
 
 ## 📦 Prerequisites
 
@@ -117,6 +117,36 @@ Since this project uses Clerk for authentication, seeding the database requires 
     npm run db:seed
     ```
     This will create a test campaign where `SEED_GM_EMAIL` is the Game Master, and assign a character to `SEED_PLAYER_EMAIL`.
+
+## 🧪 Testing
+
+The project uses a two-layer testing strategy:
+
+| Layer              | Tool                       | Scope                                                                     | Command            |
+| ------------------ | -------------------------- | ------------------------------------------------------------------------- | ------------------ |
+| Unit & Integration | Vitest 4 + Testing Library | Pure utils, Zustand store, React components with mocked server actions    | `npm run test:run` |
+| End-to-End         | Playwright (Chromium)      | Full browser flows: Portal carousel navigation + campaign creation wizard | `npm run test:e2e` |
+
+### Commands
+
+```bash
+npm run test          # Vitest in watch mode (development)
+npm run test:run      # Vitest single run (CI)
+npm run test:coverage # Vitest run with v8 coverage report
+npm run test:e2e      # Playwright E2E (headless)
+npm run test:e2e:ui   # Playwright E2E with interactive UI
+```
+
+### Running E2E tests
+
+E2E tests require the app to be running (the `webServer` config in `playwright.config.ts` starts it automatically) and one extra environment variable:
+
+```env
+# .env — required for Playwright auth via @clerk/testing
+E2E_CLERK_USER_EMAIL=your-test-user@example.com
+```
+
+The user must already exist in Clerk and have logged in to the app at least once (to trigger the lazy sync to the database). The `CLERK_SECRET_KEY` already in your `.env` is reused — no extra keys needed.
 
 ### Cascade Deletion Tests (Data Integrity)
 

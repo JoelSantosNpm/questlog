@@ -1,6 +1,6 @@
 # Estado del Proyecto: Questlog
 
-**Última actualización:** 16 de Marzo de 2026
+**Última actualización:** 17 de Marzo de 2026
 **Rama actual:** m2-03-testing-la-creación-de-campañas
 
 ## 📌 Resumen de Progreso
@@ -19,8 +19,9 @@ Hemos completado **M2-01 (Dashboard)** y **M2-02 (Formulario de Creación de Ave
 - **Estilos:** Tailwind CSS v4 + `cn()` utility para gestión de clases condicionales.
 - **Fuentes:** Google Fonts (`Inter` para UI, `MedievalSharp` para títulos).
 - **Animaciones:** Framer Motion (`AnimatePresence`, `motion`).
-- **Testing (Unit/Integration):** Vitest + Testing Library (`@testing-library/react`, `@testing-library/jest-dom`).
-- **Testing (E2E):** Playwright con configuración básica (`playwright.config.ts`).
+- **Testing (Unit/Integration):** Vitest 4.x + Testing Library. Config: `vitest.config.ts`. Setup: `vitest.setup.ts`.
+  - Tests existentes: `src/lib/carousel-utils.test.ts` (6), `src/components/campaigns/creation/CampaignCreationForm.test.tsx` (6). Total: 12 tests.
+- **Testing (E2E):** Playwright con auth via `@clerk/testing`. Config: `playwright.config.ts`. Tests: `e2e/portal-de-piedra.spec.ts` (3 tests: AC 3.1, 3.2, 3.3). Requiere `E2E_CLERK_USER_EMAIL` en `.env`.
 - **Auth & DB:** Clerk (Auth), Supabase (PostgreSQL), Prisma ORM.
 
 ### Layout Global (`src/app/layout.tsx`)
@@ -121,8 +122,8 @@ src/
 ## 📍 Estado Actual
 
 **Milestone:** M2: El Salón de los Héroes (Gestión de Campañas)
-**Tarea completada:** M2-02: Formulario de Creación de Aventuras
-**En progreso:** M2-03: Testing de la Creación de Campañas
+**Tarea completada:** M2-03: Testing de la Creación de Campañas
+**Siguiente:** M3-01: Módulo de Inventario y Tesoros
 
 ---
 
@@ -152,18 +153,19 @@ src/
   - _AC:_ Fetch de Prisma + `PortalCarousel` conectado a datos reales. Estado de "Vacío" implementado.
 - [x] **M2-02: Formulario de Creación de Aventuras**
   - _AC:_ Implementación de React Hook Form + Zustand + Framer Motion (LazyLoad) para la creación paso-a-paso de campañas vinculadas al usuario. Redirección automática y Toast temáticas con Sileo.
-- [ ] **M2-03: Testing de la Creación de Campañas**
-  - _AC 1.1:_ El proyecto debe estar libre de dependencias de Jest.
-  - _AC 1.2:_ Vitest configurado y ejecutando los tests existentes exitosamente.
-  - _AC 1.3:_ Playwright inicializado con `playwright.config.ts` básico.
-  - _AC 2.1:_ Test de integración: verifica que el `FormProvider` envuelve correctamente los inputs.
-  - _AC 2.2:_ Test de integración: formulario no se envía y muestra errores si falta el nombre.
-  - _AC 2.3:_ Test de integración: simula envío exitoso y verifica que el store recibe los datos correctos.
-  - _AC 3.1:_ E2E: carga de la Home y renderizado del Portal de Piedra.
-  - _AC 3.2:_ E2E: navegación por el carrusel de campañas.
-  - _AC 3.3:_ E2E: flujo completo Abrir Modal → Rellenar Datos → Guardar → campaña visible en UI.
-  - _AC 4.1:_ Comandos `npm run test` (Vitest) y `npm run test:e2e` (Playwright) operativos.
-  - _AC 4.2:_ README actualizado con la estrategia de testing.
+- [x] **M2-03: Testing de la Creación de Campañas**
+  - _AC 1.1:_ ✅ Proyecto libre de Jest (`jest`, `ts-jest`, `jest-environment-jsdom`, `@types/jest` desinstalados).
+  - _AC 1.2:_ ✅ Vitest 4.x configurado (`vitest.config.ts` + `vitest.setup.ts`) — 12/12 tests pasando.
+  - _AC 1.3:_ ✅ Playwright inicializado (`playwright.config.ts`) con proyecto `setup` de auth y proyecto `chromium`.
+  - _AC 2.1:_ ✅ Test de integración: `FormProvider` envuelve correctamente los inputs del formulario.
+  - _AC 2.2:_ ✅ Test de integración: error de validación visible + store no avanza si el nombre está vacío.
+  - _AC 2.3:_ ✅ Test de integración: `createCampaign` es llamada con los datos correctos al hacer submit en último paso.
+  - _AC 3.1:_ ✅ E2E: carga de la Home pública + renderizado del `region` del Portal de Piedra en `/campaigns`.
+  - _AC 3.2:_ ✅ E2E: navegación con botones Next/Prev y teclas ←→ del carrusel.
+  - _AC 3.3:_ ✅ E2E: flujo completo Dot → Portal “Nueva Aventura” → Wizard (nombre + location) → redirect a `/campaigns/{id}` → campaña visible en el carrusel.
+  - _AC 4.1:_ ✅ Scripts `npm run test`, `npm run test:run`, `npm run test:e2e`, `npm run test:e2e:ui` operativos.
+  - _AC 4.2:_ ✅ README (EN + ES) actualizado con la estrategia de testing y variables de entorno necesarias.
+  - _Nota:_ Los tests E2E requieren `E2E_CLERK_USER_EMAIL` en `.env` (usuario existente en Clerk + lazy sync hecho).
 
 ### M3: El Tesoro y el Bestiario (Módulos de Datos) [PENDIENTE]
 
@@ -197,21 +199,11 @@ src/
 
 ## 📝 Siguientes Pasos Inmediatos
 
-1. **M2-03: Testing de la Creación de Campañas** ← EN PROGRESO
-   - Desinstalar Jest y sus dependencias.
-   - Instalar y configurar Vitest + jsdom.
-   - Migrar `carousel-utils.test.ts` a Vitest.
-   - Añadir tests unitarios: `cn()`, `campaignStore`, `useCarousel`.
-   - Añadir test de integración: `CampaignCreationForm` con mocks de server action.
-   - Inicializar Playwright y añadir tests E2E del Portal de Piedra.
-   - Actualizar `package.json` con scripts `test` y `test:e2e`.
-   - Actualizar README con la estrategia de testing.
-
-2. **M3-01: Módulo de Inventario y Tesoros**
-   - Empezar modelo de inventario.
+1. **M3-01: Módulo de Inventario y Tesoros** ← SIGUIENTE
+   - Empezar modelo de inventario en Prisma.
    - Reflejar objetos en el dashboard individual `[id]` de cada aventura.
 
-3. **M3-02: Bestiario y Fichas de Monstruos**
+2. **M3-02: Bestiario y Fichas de Monstruos**
    - Buscador de monstruos + Ficha técnica (HP, AC, Stats).
 
 ---
