@@ -95,7 +95,8 @@ El sistema implementa estrategias de borrado para mantener la consistencia de da
   - [Prisma ORM](https://www.prisma.io/) con `@prisma/adapter-pg`
 
 - **Calidad de Código**:
-  - [Jest](https://jestjs.io/) + [Testing Library](https://testing-library.com/)
+  - [Vitest](https://vitest.dev/) + [Testing Library](https://testing-library.com/) — tests unitarios e integración
+  - [Playwright](https://playwright.dev/) — tests End-to-End
   - ESLint + Prettier
 
 ## 📦 Requisitos Previos
@@ -172,6 +173,36 @@ Dado que este proyecto utiliza Clerk para la autenticación, poblar la base de d
     npm run db:seed
     ```
     Esto poblará la base de datos con una campaña de prueba donde el usuario definido en `SEED_GM_EMAIL` será el Master, y `SEED_PLAYER_EMAIL` tendrá un personaje asignado.
+
+## 🧪 Testing
+
+El proyecto usa una estrategia de testing en dos capas:
+
+| Capa                   | Herramienta                | Ámbito                                                                          | Comando            |
+| ---------------------- | -------------------------- | ------------------------------------------------------------------------------- | ------------------ |
+| Unitario e Integración | Vitest 4 + Testing Library | Utils puras, Zustand store, componentes React con server actions mockeadas      | `npm run test:run` |
+| End-to-End             | Playwright (Chromium)      | Flujos reales en navegador: carrusel del Portal + wizard de creación de campaña | `npm run test:e2e` |
+
+### Comandos
+
+```bash
+npm run test          # Vitest en modo watch (desarrollo)
+npm run test:run      # Vitest pasada única (CI)
+npm run test:coverage # Vitest con informe de cobertura v8
+npm run test:e2e      # Playwright E2E (headless)
+npm run test:e2e:ui   # Playwright E2E con interfaz interactiva
+```
+
+### Ejecutar los tests E2E
+
+Los tests E2E necesitan la app corriendo (el `webServer` de `playwright.config.ts` la levanta automáticamente) y una variable de entorno adicional:
+
+```env
+# .env — necesario para la autenticación en Playwright via @clerk/testing
+E2E_CLERK_USER_EMAIL=tu-usuario-de-prueba@ejemplo.com
+```
+
+El usuario debe existir en Clerk y haber iniciado sesión en la app al menos una vez (para que el lazy sync a la base de datos se haya ejecutado). La `CLERK_SECRET_KEY` que ya tienes en `.env` se reutiliza — no hace falta ninguna clave adicional.
 
 ### Pruebas de Integridad (Borrado en Cascada)
 

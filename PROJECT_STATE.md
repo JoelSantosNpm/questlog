@@ -1,7 +1,7 @@
 # Estado del Proyecto: Questlog
 
-**Última actualización:** 12 de Marzo de 2026
-**Rama actual:** m2-02-formulario-campaña
+**Última actualización:** 17 de Marzo de 2026
+**Rama actual:** m2-03-testing-la-creación-de-campañas
 
 ## 📌 Resumen de Progreso
 
@@ -19,7 +19,9 @@ Hemos completado **M2-01 (Dashboard)** y **M2-02 (Formulario de Creación de Ave
 - **Estilos:** Tailwind CSS v4 + `cn()` utility para gestión de clases condicionales.
 - **Fuentes:** Google Fonts (`Inter` para UI, `MedievalSharp` para títulos).
 - **Animaciones:** Framer Motion (`AnimatePresence`, `motion`).
-- **Testing:** Jest + Testing Library configurado con soporte para TypeScript (`ts-jest` / `next/jest`).
+- **Testing (Unit/Integration):** Vitest 4.x + Testing Library. Config: `vitest.config.ts`. Setup: `vitest.setup.ts`.
+  - Tests existentes: `src/lib/carousel-utils.test.ts` (6), `src/components/campaigns/creation/CampaignCreationForm.test.tsx` (6). Total: 12 tests.
+- **Testing (E2E):** Playwright con auth via `@clerk/testing`. Config: `playwright.config.ts`. Tests: `e2e/portal-de-piedra.spec.ts` (3 tests: AC 3.1, 3.2, 3.3). Requiere `E2E_CLERK_USER_EMAIL` en `.env`.
 - **Auth & DB:** Clerk (Auth), Supabase (PostgreSQL), Prisma ORM.
 
 ### Layout Global (`src/app/layout.tsx`)
@@ -120,8 +122,8 @@ src/
 ## 📍 Estado Actual
 
 **Milestone:** M2: El Salón de los Héroes (Gestión de Campañas)
-**Tarea completada:** M2-01: Dashboard de Campañas (Vista Máster)
-**Siguiente:** M2-02: Formulario de Creación de Aventuras
+**Tarea completada:** M2-03: Testing de la Creación de Campañas
+**Siguiente:** M3-01: Módulo de Inventario y Tesoros
 
 ---
 
@@ -131,13 +133,13 @@ src/
 
 - [x] **DB Schema**: Tabla `User` (clerkId) y relaciones (Migrado). Añadido `onDelete: Cascade` para `Campaign` y `Character`.
 - [x] **M1-01: Configuración de Clerk y Middleware**
-  - _AC:_ Paquete instalado, `.env` configurado, `middleware.ts` protegiendo rutas excepto `/`, `/sign-in` y `/sign-up`.
+  - _AC:_ ✅ Paquete instalado, `.env` configurado, `middleware.ts` protegiendo rutas excepto `/`, `/sign-in` y `/sign-up`.
 - [x] **M1-02: UI para Autenticación (Sign-in/Sign-up temático)**
-  - _AC:_ Rutas `/sign-in` y `/sign-up` con componentes de Clerk y estética D&D.
+  - _AC:_ ✅ Rutas `/sign-in` y `/sign-up` con componentes de Clerk y estética D&D.
 - [x] **M1-03: Lazy Sync (Clerk -> Prisma Upsert)**
-  - _AC:_ Verificación de `userId` en Layout y creación automática en Supabase si no existe.
+  - _AC:_ ✅ Verificación de `userId` en Layout y creación automática en Supabase si no existe.
 - [x] **M1-04: Sincronización Automática (Clerk Webhooks)**
-  - _AC:_ Integración con svix, manejo de `user.deleted` (cascada) y `user.updated` (sync).
+  - _AC:_ ✅ Integración con svix, manejo de `user.deleted` (cascada) y `user.updated` (sync).
   - _Pasos:_
     1. Instalar `svix` (Hecho).
     2. Configurar `CLERK_WEBHOOK_SECRET` en `.env`. (Hecho)
@@ -148,9 +150,22 @@ src/
 ### M2: El Salón de los Héroes (Gestión de Campañas) [COMPLETADO]
 
 - [x] **M2-01: Dashboard de Campañas (Vista Máster)**
-  - _AC:_ Fetch de Prisma + `PortalCarousel` conectado a datos reales. Estado de "Vacío" implementado.
+  - _AC:_ ✅ Fetch de Prisma + `PortalCarousel` conectado a datos reales. Estado de "Vacío" implementado.
 - [x] **M2-02: Formulario de Creación de Aventuras**
-  - _AC:_ Implementación de React Hook Form + Zustand + Framer Motion (LazyLoad) para la creación paso-a-paso de campañas vinculadas al usuario. Redirección automática y Toast temáticas con Sileo.
+  - _AC:_ ✅ Implementación de React Hook Form + Zustand + Framer Motion (LazyLoad) para la creación paso-a-paso de campañas vinculadas al usuario. Redirección automática y Toast temáticas con Sileo.
+- [x] **M2-03: Testing de la Creación de Campañas**
+  - _AC 1.1:_ ✅ Proyecto libre de Jest (`jest`, `ts-jest`, `jest-environment-jsdom`, `@types/jest` desinstalados).
+  - _AC 1.2:_ ✅ Vitest 4.x configurado (`vitest.config.ts` + `vitest.setup.ts`) — 12/12 tests pasando.
+  - _AC 1.3:_ ✅ Playwright inicializado (`playwright.config.ts`) con proyecto `setup` de auth y proyecto `chromium`.
+  - _AC 2.1:_ ✅ Test de integración: `FormProvider` envuelve correctamente los inputs del formulario.
+  - _AC 2.2:_ ✅ Test de integración: error de validación visible + store no avanza si el nombre está vacío.
+  - _AC 2.3:_ ✅ Test de integración: `createCampaign` es llamada con los datos correctos al hacer submit en último paso.
+  - _AC 3.1:_ ✅ E2E: carga de la Home pública + renderizado del `region` del Portal de Piedra en `/campaigns`.
+  - _AC 3.2:_ ✅ E2E: navegación con botones Next/Prev y teclas ←→ del carrusel.
+  - _AC 3.3:_ ✅ E2E: flujo completo Dot → Portal “Nueva Aventura” → Wizard (nombre + location) → redirect a `/campaigns/{id}` → campaña visible en el carrusel.
+  - _AC 4.1:_ ✅ Scripts `npm run test`, `npm run test:run`, `npm run test:e2e`, `npm run test:e2e:ui` operativos.
+  - _AC 4.2:_ ✅ README (EN + ES) actualizado con la estrategia de testing y variables de entorno necesarias.
+  - _Nota:_ Los tests E2E requieren `E2E_CLERK_USER_EMAIL` en `.env` (usuario existente en Clerk + lazy sync hecho).
 
 ### M3: El Tesoro y el Bestiario (Módulos de Datos) [PENDIENTE]
 
@@ -184,8 +199,8 @@ src/
 
 ## 📝 Siguientes Pasos Inmediatos
 
-1. **M3-01: Módulo de Inventario y Tesoros**
-   - Empezar modelo de inventario.
+1. **M3-01: Módulo de Inventario y Tesoros** ← SIGUIENTE
+   - Empezar modelo de inventario en Prisma.
    - Reflejar objetos en el dashboard individual `[id]` de cada aventura.
 
 2. **M3-02: Bestiario y Fichas de Monstruos**

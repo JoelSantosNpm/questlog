@@ -108,7 +108,7 @@ model Character {
 }
 
 // ---------------------------------------------------------
-// 5. INVENTARIO (Recuperada con todos sus campos)
+// 5. INVENTARIO 
 // ---------------------------------------------------------
 model Item {
   id          String  @id @default(cuid())

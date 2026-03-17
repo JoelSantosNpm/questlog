@@ -43,3 +43,8 @@ next-env.d.ts
 /src/generated/prisma
 
 /generated/prisma
+
+# playwright
+e2e/.auth/
+playwright-report/
+test-results/
