@@ -133,13 +133,13 @@ src/
 
 - [x] **DB Schema**: Tabla `User` (clerkId) y relaciones (Migrado). Añadido `onDelete: Cascade` para `Campaign` y `Character`.
 - [x] **M1-01: Configuración de Clerk y Middleware**
-  - _AC:_ Paquete instalado, `.env` configurado, `middleware.ts` protegiendo rutas excepto `/`, `/sign-in` y `/sign-up`.
+  - _AC:_ ✅ Paquete instalado, `.env` configurado, `middleware.ts` protegiendo rutas excepto `/`, `/sign-in` y `/sign-up`.
 - [x] **M1-02: UI para Autenticación (Sign-in/Sign-up temático)**
-  - _AC:_ Rutas `/sign-in` y `/sign-up` con componentes de Clerk y estética D&D.
+  - _AC:_ ✅ Rutas `/sign-in` y `/sign-up` con componentes de Clerk y estética D&D.
 - [x] **M1-03: Lazy Sync (Clerk -> Prisma Upsert)**
-  - _AC:_ Verificación de `userId` en Layout y creación automática en Supabase si no existe.
+  - _AC:_ ✅ Verificación de `userId` en Layout y creación automática en Supabase si no existe.
 - [x] **M1-04: Sincronización Automática (Clerk Webhooks)**
-  - _AC:_ Integración con svix, manejo de `user.deleted` (cascada) y `user.updated` (sync).
+  - _AC:_ ✅ Integración con svix, manejo de `user.deleted` (cascada) y `user.updated` (sync).
   - _Pasos:_
     1. Instalar `svix` (Hecho).
     2. Configurar `CLERK_WEBHOOK_SECRET` en `.env`. (Hecho)
@@ -150,9 +150,9 @@ src/
 ### M2: El Salón de los Héroes (Gestión de Campañas) [COMPLETADO]
 
 - [x] **M2-01: Dashboard de Campañas (Vista Máster)**
-  - _AC:_ Fetch de Prisma + `PortalCarousel` conectado a datos reales. Estado de "Vacío" implementado.
+  - _AC:_ ✅ Fetch de Prisma + `PortalCarousel` conectado a datos reales. Estado de "Vacío" implementado.
 - [x] **M2-02: Formulario de Creación de Aventuras**
-  - _AC:_ Implementación de React Hook Form + Zustand + Framer Motion (LazyLoad) para la creación paso-a-paso de campañas vinculadas al usuario. Redirección automática y Toast temáticas con Sileo.
+  - _AC:_ ✅ Implementación de React Hook Form + Zustand + Framer Motion (LazyLoad) para la creación paso-a-paso de campañas vinculadas al usuario. Redirección automática y Toast temáticas con Sileo.
 - [x] **M2-03: Testing de la Creación de Campañas**
   - _AC 1.1:_ ✅ Proyecto libre de Jest (`jest`, `ts-jest`, `jest-environment-jsdom`, `@types/jest` desinstalados).
   - _AC 1.2:_ ✅ Vitest 4.x configurado (`vitest.config.ts` + `vitest.setup.ts`) — 12/12 tests pasando.
