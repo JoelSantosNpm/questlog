@@ -167,12 +167,35 @@ src/
   - _AC 4.2:_ ✅ README (EN + ES) actualizado con la estrategia de testing y variables de entorno necesarias.
   - _Nota:_ Los tests E2E requieren `E2E_CLERK_USER_EMAIL` en `.env` (usuario existente en Clerk + lazy sync hecho).
 
-### M3: El Tesoro y el Bestiario (Módulos de Datos) [PENDIENTE]
+### M3: La Forja de la Enciclopedia (Datos, Imágenes y Estructuras) [EN PROGRESO]
 
-- [ ] **M3-01: Módulo de Inventario y Tesoros**
-  - _AC:_ CRUD de Items + Relación con `CampaignID`.
-- [ ] **M3-02: Bestiario y Fichas de Monstruos**
-  - _AC:_ Buscador de monstruos + Ficha técnica (HP, AC, Stats).
+- [ ] **M3-00: Infraestructura de Imágenes (Storage)**
+  - _AC 1:_ ✅ Bucket `questlog-assets` creado en Supabase (Público).
+  - _AC 2:_ ✅ Políticas RLS configuradas (SELECT: anon, INSERT/UPDATE/DELETE: owner).
+  - _AC 3:_ ✅ `next.config.ts` actualizado con `remotePatterns` para el hostname de Supabase.
+  - _AC 4:_ Componente `ImageUploader` con validación (máx 2MB), previsualización y retorno de Public URL.
+  - _AC 5:_ Sistema de placeholder estilo "boceto a carboncillo" para `imageUrl: null`.
+
+- [ ] **M3-01: Reestructuración de Datos (Atómicos vs JSON)**
+  - _Objetivo:_ Eliminar campos `Json` de estadísticas para permitir filtrado y búsquedas eficientes en DB.
+  - _Cambios Prisma:_
+    - `MonsterTemplate`, `ActiveMonster`, `CharacterTemplate`, `Character`: Eliminar `stats` JSON -> Agregar columnas `strength`, `dexterity`, `constitution`, `intelligence`, `wisdom`, `charisma`, `ac`, `speed`, `initiativeBonus`, `perception`.
+    - Estandarizar gestión de `maxHp` y `currentHp`.
+    - Tabla `Item`: Añadir `templateId`, cambiar `rarity` a Enum.
+    - Nuevas Tablas: `ItemTemplate`, `AccessGrant` (Permisos compartidos), Enums (`Rarity`, `AccessType`).
+    - `Campaign`: Añadir `parentCampaignId` e `imageUrl`.
+
+- [ ] **M3-02: Hub de la Enciclopedia y Navegación**
+  - _AC:_ Página `/encyclopedia` con pestañas (Bestiario, Museo, Registro) y filtros (Mis Creaciones | Públicos | Compartidos).
+
+- [ ] **M3-03: Bestiario y Fichas de Monstruos**
+  - _AC:_ Formulario unificado para `MonsterTemplate` (Librería) y `ActiveMonster` (Instancia de Campaña) con stats atómicos y upload de imagen.
+
+- [ ] **M3-04: Módulo de Inventario y Museo**
+  - _AC:_ CRUD de objetos con visualización temática según rareza y gestión de posesión (Personaje vs Mundo).
+
+- [ ] **M3-05: Registro de Personajes (Template & Instance)**
+  - _AC:_ Gestión de NPCs y Héroes con stats completos, nivel y vinculación de inventario inicial.
 
 ### M4: Las Crónicas del Coliseo (Live Tools) [PENDIENTE]
 
