@@ -1,7 +1,8 @@
 'use client'
 
-import { supabase } from '@/lib/supabase'
+import { getSupabaseClient } from '@/lib/supabase'
 import { cn } from '@/shared/utils/styles'
+import { useAuth } from '@clerk/nextjs'
 import { Loader2, Upload, X } from 'lucide-react'
 import Image from 'next/image'
 import { ChangeEvent, useRef, useState } from 'react'
@@ -13,6 +14,7 @@ interface ImageUploaderProps {
 }
 
 export default function ImageUploader({ onUpload, label, className }: ImageUploaderProps) {
+  const { getToken, userId } = useAuth()
   const [isUploading, setIsUploading] = useState(false)
   const [preview, setPreview] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -20,7 +22,7 @@ export default function ImageUploader({ onUpload, label, className }: ImageUploa
 
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (!file) return
+    if (!file || !userId) return
 
     // Validaciones
     if (file.size > 2 * 1024 * 1024) {
@@ -36,13 +38,26 @@ export default function ImageUploader({ onUpload, label, className }: ImageUploa
     setError(null)
     setIsUploading(true)
 
-    // Crear preview local
+    // Preview local instantáneo
     const localPreview = URL.createObjectURL(file)
     setPreview(localPreview)
 
     try {
-      const fileName = `assets/${Date.now()}-${file.name.replace(/\s+/g, '_')}`
-      const { error: uploadError } = await supabase.storage
+      // 1. Obtener el token de Clerk para Supabase
+      const supabaseToken = await getToken({ template: 'supabase' })
+      
+      if (!supabaseToken) {
+        throw new Error('No se pudo obtener el token de autenticación')
+      }
+
+      // 2. Obtener cliente autenticado mediante helper limpio
+      const authenticatedSupabase = getSupabaseClient(supabaseToken)
+
+      // 3. Subir el archivo (organizado por userId)
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${userId}/${Date.now()}.${fileExt}`
+      
+      const { error: uploadError } = await authenticatedSupabase.storage
         .from('questlog-assets')
         .upload(fileName, file, {
           cacheControl: '3600',
@@ -51,10 +66,10 @@ export default function ImageUploader({ onUpload, label, className }: ImageUploa
 
       if (uploadError) throw uploadError
 
-      // Obtener URL Pública
+      // 4. Obtener URL Pública
       const {
         data: { publicUrl },
-      } = supabase.storage.from('questlog-assets').getPublicUrl(fileName)
+      } = authenticatedSupabase.storage.from('questlog-assets').getPublicUrl(fileName)
 
       onUpload(publicUrl)
     } catch (err: unknown) {
