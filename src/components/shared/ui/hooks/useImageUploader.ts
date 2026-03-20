@@ -1,8 +1,9 @@
 'use client'
 
 import { StorageService } from '@/services/storage-service'
+import { FileValidationSchema } from '@/shared/schemas/storage'
 import { useAuth } from '@clerk/nextjs'
-import { ChangeEvent, DragEvent, useCallback, useEffect, useRef, useState } from 'react'
+import { ChangeEvent, useCallback, useEffect, useRef, useState, KeyboardEvent, MouseEvent } from 'react'
 import { sileo } from 'sileo'
 
 interface UseImageUploaderProps {
@@ -17,7 +18,6 @@ export function useImageUploader({ onUpload, category }: UseImageUploaderProps) 
   const [preview, setPreview] = useState<string | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
-  const [isDragging, setIsDragging] = useState(false)
   
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -43,18 +43,13 @@ export function useImageUploader({ onUpload, category }: UseImageUploaderProps) 
   const processFile = useCallback((selectedFile: File) => {
     clearStates()
 
-    if (selectedFile.size > 2 * 1024 * 1024) {
+    // VALIDACIÓN CON ZOD
+    const result = FileValidationSchema.safeParse(selectedFile)
+    
+    if (!result.success) {
       sileo.error({
-        title: 'Archivo demasiado pesado',
-        description: 'La imagen excede el límite de 2MB. Reduce su tamaño.',
-      })
-      return
-    }
-
-    if (!selectedFile.type.startsWith('image/')) {
-      sileo.error({
-        title: 'Material no apto',
-        description: 'El archivo debe ser una imagen (JPG, PNG, WebP).',
+        title: 'Anomalía en el Archivo',
+        description: result.error.issues[0].message,
       })
       return
     }
@@ -74,22 +69,7 @@ export function useImageUploader({ onUpload, category }: UseImageUploaderProps) 
     fileInputRef.current?.click()
   }
 
-  const handleDrag = (e: DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    if (e.type === 'dragenter' || e.type === 'dragover') setIsDragging(true)
-    else if (e.type === 'dragleave') setIsDragging(false)
-  }
-
-  const handleDrop = (e: DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setIsDragging(false)
-    const droppedFile = e.dataTransfer.files?.[0]
-    if (droppedFile) processFile(droppedFile)
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
       handleClick()
@@ -130,7 +110,7 @@ export function useImageUploader({ onUpload, category }: UseImageUploaderProps) 
     }
   }
 
-  const handleReset = (e: React.MouseEvent) => {
+  const handleReset = (e: MouseEvent) => {
     e.stopPropagation()
     clearStates()
   }
@@ -140,14 +120,12 @@ export function useImageUploader({ onUpload, category }: UseImageUploaderProps) 
     preview,
     isUploading,
     isSuccess,
-    isDragging,
     fileInputRef,
     handleFileSelect,
     handleClick,
-    handleDrag,
-    handleDrop,
     handleKeyDown,
     handleUpload,
-    handleReset
+    handleReset,
+    processFile
   }
 }
