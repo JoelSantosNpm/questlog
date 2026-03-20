@@ -33,21 +33,29 @@ export default function ImageUploader({
 
   // 1. Selección y Previsualización Local
   const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
+    // Limpiamos estados anteriores ante un nuevo intento
+    setFile(null)
+    setPreview(null)
+    setIsSuccess(false)
+    setError(null)
+    onUpload('')
+
     const selectedFile = e.target.files?.[0]
     if (!selectedFile) return
 
     // Validaciones básicas
     if (selectedFile.size > 2 * 1024 * 1024) {
       setError('El archivo supera el tamaño máximo de 2MB')
+      // Resetear input para permitir re-selección
+      if (fileInputRef.current) fileInputRef.current.value = ''
       return
     }
     if (!selectedFile.type.startsWith('image/')) {
       setError('El archivo no es una imagen válida')
+      if (fileInputRef.current) fileInputRef.current.value = ''
       return
     }
 
-    setError(null)
-    setIsSuccess(false)
     setFile(selectedFile)
     
     // Crear preview local instantáneo
@@ -55,7 +63,17 @@ export default function ImageUploader({
     setPreview(localPreview)
   }
 
-  // 2. Subida Real a Supabase (Bajo Demanda)
+  const handleInputClick = () => {
+    if (isUploading || isSuccess) return
+    
+    // Resetear el valor del input nativo antes de abrir el diálogo
+    // Esto asegura que si el usuario selecciona el mismo archivo tras un error, el evento change se dispare
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+    fileInputRef.current?.click()
+  }
+
   const handleUpload = async () => {
     if (!file || !userId) return
 
