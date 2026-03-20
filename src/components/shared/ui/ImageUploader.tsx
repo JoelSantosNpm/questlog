@@ -3,9 +3,10 @@
 import { StorageService } from '@/services/storage-service'
 import { cn } from '@/shared/utils/styles'
 import { useAuth } from '@clerk/nextjs'
-import { Check, CloudUpload, Loader2, Upload, X } from 'lucide-react'
+import { CloudUpload, Loader2, Upload, X } from 'lucide-react'
 import Image from 'next/image'
 import { ChangeEvent, DragEvent, useCallback, useEffect, useRef, useState } from 'react'
+import { sileo } from 'sileo'
 
 interface ImageUploaderProps {
   onUpload: (url: string) => void
@@ -14,94 +15,112 @@ interface ImageUploaderProps {
   className?: string
 }
 
-export default function ImageUploader({ 
-  onUpload, 
-  category = 'assets', 
-  label, 
-  className 
+export default function ImageUploader({
+  onUpload,
+  category = 'assets',
+  label,
+  className,
 }: ImageUploaderProps) {
   const { getToken, userId } = useAuth()
-  
+
   // Estados
   const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [isDragging, setIsDragging] = useState(false)
-  
+
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // OPTIMIZACIÓN 1: Gestión de memoria (Revocar URLs de blobs)
-  useEffect(() => {
-    // Si la preview cambia o el componente se desmonta, liberamos la memoria
-    return () => {
-      if (preview) {
-        URL.revokeObjectURL(preview)
-      }
+  // Limpieza total de estados
+  const clearStates = useCallback(() => {
+    setFile(null)
+    if (preview) {
+      URL.revokeObjectURL(preview)
+      setPreview(null)
     }
-  }, [preview])
-
-  // Lógica común de validación y preview
-  const processFile = useCallback((selectedFile: File) => {
-    if (selectedFile.size > 2 * 1024 * 1024) {
-      setError('El archivo supera el tamaño máximo de 2MB')
-      return
-    }
-    if (!selectedFile.type.startsWith('image/')) {
-      setError('El archivo no es una imagen válida')
-      return
-    }
-
-    setError(null)
     setIsSuccess(false)
-    setFile(selectedFile)
-    
-    // Revocamos la anterior antes de crear la nueva
-    if (preview) URL.revokeObjectURL(preview)
-    setPreview(URL.createObjectURL(selectedFile))
+    onUpload('')
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }, [preview, onUpload])
+
+  // Gestión de memoria
+  useEffect(() => {
+    return () => {
+      if (preview) URL.revokeObjectURL(preview)
+    }
   }, [preview])
 
-  // Handlers de selección tradicional
+  // Lógica de validación y preview
+  const processFile = useCallback(
+    (selectedFile: File) => {
+      // 1. LIMPIEZA TOTAL antes de cualquier validación
+      clearStates()
+
+      // 2. VALIDACIONES con Toasts de Sileo
+      if (selectedFile.size > 2 * 1024 * 1024) {
+        sileo.error({
+          title: 'Archivo demasiado pesado',
+          description: 'La imagen excede el límite de 2MB. Reduce su tamaño.',
+        })
+        return
+      }
+
+      if (!selectedFile.type.startsWith('image/')) {
+        sileo.error({
+          title: 'Material no apto',
+          description: 'El archivo debe ser una imagen (JPG, PNG, WebP).',
+        })
+        return
+      }
+
+      setFile(selectedFile)
+      setPreview(URL.createObjectURL(selectedFile))
+    },
+    [clearStates]
+  )
+
+  // Handlers
   const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0]
     if (selectedFile) processFile(selectedFile)
   }
 
-  // OPTIMIZACIÓN 2: Soporte nativo de Drag & Drop
+  const handleClick = () => {
+    if (isUploading || isSuccess) return
+    clearStates()
+    fileInputRef.current?.click()
+  }
+
   const handleDrag = (e: DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    if (e.type === 'dragenter' || e.type === 'dragover') {
-      setIsDragging(true)
-    } else if (e.type === 'dragleave') {
-      setIsDragging(false)
-    }
+    if (e.type === 'dragenter' || e.type === 'dragover') setIsDragging(true)
+    else if (e.type === 'dragleave') setIsDragging(false)
   }
 
   const handleDrop = (e: DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
     setIsDragging(false)
-    
     const droppedFile = e.dataTransfer.files?.[0]
     if (droppedFile) processFile(droppedFile)
   }
 
-  // ACCESIBILIDAD 1: Soporte para teclado (Enter/Espacio)
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
-      fileInputRef.current?.click()
+      handleClick()
     }
   }
 
-  // Subida Real a Supabase (Usando el Servicio)
+  // Subida Real a Supabase
   const handleUpload = async () => {
     if (!file || !userId) return
 
     setIsUploading(true)
-    setError(null)
 
     try {
       const token = await getToken({ template: 'supabase' })
@@ -111,15 +130,22 @@ export default function ImageUploader({
         file,
         userId,
         category,
-        token
+        token,
       })
 
       onUpload(publicUrl)
       setIsSuccess(true)
+
+      sileo.success({
+        title: 'Imagen Sellada',
+        description: 'La ilustración ha sido guardada en los archivos de la campaña.',
+      })
     } catch (err: unknown) {
       console.error('Upload error:', err)
-      const errorMessage = err instanceof Error ? err.message : 'Error al subir la imagen'
-      setError(errorMessage)
+      sileo.error({
+        title: 'Fallo al Guardar',
+        description: err instanceof Error ? err.message : 'Error desconocido al subir la imagen.',
+      })
     } finally {
       setIsUploading(false)
     }
@@ -127,12 +153,7 @@ export default function ImageUploader({
 
   const reset = (e: React.MouseEvent) => {
     e.stopPropagation()
-    setFile(null)
-    setPreview(null)
-    setIsSuccess(false)
-    setError(null)
-    onUpload('')
-    if (fileInputRef.current) fileInputRef.current.value = ''
+    clearStates()
   }
 
   return (
@@ -144,26 +165,25 @@ export default function ImageUploader({
       )}
 
       <div className='relative group'>
-        {/* Contenedor de la Imagen / Dropzone */}
         <div
-          onClick={() => !isUploading && !isSuccess && fileInputRef.current?.click()}
+          onClick={handleClick}
           onDragEnter={handleDrag}
           onDragOver={handleDrag}
           onDragLeave={handleDrag}
           onDrop={handleDrop}
           onKeyDown={handleKeyDown}
-          role="button"
+          role='button'
           tabIndex={preview ? -1 : 0}
           aria-label={label || 'Subir imagen'}
           className={cn(
-            'relative flex flex-col items-center justify-center w-full aspect-video border-2 border-dashed rounded-md transition-all overflow-hidden focus:outline-none focus:ring-2 focus:ring-amber-900/40 focus:border-amber-900/60',
-            preview 
-              ? 'border-amber-900/30 bg-neutral-900/20' 
+            'relative flex flex-col items-center justify-center w-full aspect-video border-2 border-dashed rounded-md transition-all overflow-hidden focus:outline-none focus:ring-2 focus:ring-amber-900/40',
+            preview
+              ? 'border-amber-900/30 bg-neutral-900/10'
               : 'border-neutral-800 hover:border-amber-900/60 bg-neutral-950/50 cursor-pointer',
             isDragging && 'border-amber-500 bg-amber-950/20 scale-[0.99]',
-            isSuccess && 'border-emerald-900/50 bg-emerald-950/10',
-            isUploading && 'cursor-not-allowed opacity-80',
-            error && 'border-red-900/50'
+            isSuccess &&
+              'border-emerald-900/50 bg-emerald-950/10 shadow-[0_0_15px_rgba(16,185,129,0.1)]',
+            isUploading && 'cursor-not-allowed opacity-80'
           )}
         >
           {preview ? (
@@ -174,12 +194,10 @@ export default function ImageUploader({
                 fill
                 className={cn(
                   'object-cover transition-all duration-700',
-                  isUploading ? 'scale-110 blur-sm' : 'scale-100',
-                  isSuccess ? 'opacity-80' : 'opacity-100'
+                  isUploading ? 'scale-110 blur-sm' : 'scale-100'
                 )}
               />
-              
-              {/* Overlay de Carga */}
+
               {isUploading && (
                 <div className='absolute inset-0 bg-neutral-950/60 flex flex-col items-center justify-center space-y-3 backdrop-blur-sm'>
                   <Loader2 className='w-8 h-8 text-amber-500 animate-spin' />
@@ -188,24 +206,16 @@ export default function ImageUploader({
                   </p>
                 </div>
               )}
-
-              {/* Overlay de Éxito */}
-              {isSuccess && (
-                <div className='absolute inset-0 bg-emerald-950/40 flex flex-col items-center justify-center space-y-2 backdrop-blur-[2px]'>
-                  <div className='p-2 bg-emerald-500 rounded-full shadow-lg shadow-emerald-500/20'>
-                    <Check className='w-5 h-5 text-white' />
-                  </div>
-                  <p className='text-[10px] font-bold text-emerald-400 uppercase tracking-widest'>Subida Completada</p>
-                </div>
-              )}
             </>
           ) : (
             <div className='flex flex-col items-center justify-center p-6 space-y-3'>
               <div className='p-3 bg-neutral-900/80 rounded-full border border-neutral-800 group-hover:border-amber-900/50 transition-colors'>
-                <Upload className={cn(
-                  "w-5 h-5 transition-colors",
-                  isDragging ? "text-amber-500" : "text-neutral-600 group-hover:text-amber-600"
-                )} />
+                <Upload
+                  className={cn(
+                    'w-5 h-5 transition-colors',
+                    isDragging ? 'text-amber-500' : 'text-neutral-600 group-hover:text-amber-600'
+                  )}
+                />
               </div>
               <div className='text-center'>
                 <p className='text-xs font-bold text-neutral-500 group-hover:text-neutral-300 transition-colors uppercase tracking-widest'>
@@ -225,7 +235,7 @@ export default function ImageUploader({
             <button
               type='button'
               onClick={reset}
-              className='flex items-center gap-1.5 px-3 py-1.5 bg-neutral-900 border border-neutral-800 rounded text-[10px] font-bold text-neutral-400 hover:text-red-400 hover:border-red-900/30 transition-all uppercase tracking-wider'
+              className='flex items-center gap-1.5 px-3 py-1.5 bg-neutral-900/90 backdrop-blur-md border border-neutral-800 rounded text-[10px] font-bold text-neutral-400 hover:text-red-400 hover:border-red-900/30 transition-all uppercase tracking-wider'
             >
               <X className='w-3 h-3' /> Descartar
             </button>
@@ -251,10 +261,6 @@ export default function ImageUploader({
           </button>
         )}
       </div>
-
-      {error && (
-        <p className='text-[10px] text-red-600 font-bold uppercase tracking-wider'>{error}</p>
-      )}
 
       <input
         type='file'
