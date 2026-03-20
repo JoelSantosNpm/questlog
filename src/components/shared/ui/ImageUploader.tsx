@@ -9,11 +9,17 @@ import { ChangeEvent, useRef, useState } from 'react'
 
 interface ImageUploaderProps {
   onUpload: (url: string) => void
+  category?: 'campaigns' | 'monsters' | 'characters' | 'items' | 'assets'
   label?: string
   className?: string
 }
 
-export default function ImageUploader({ onUpload, label, className }: ImageUploaderProps) {
+export default function ImageUploader({
+  onUpload,
+  category = 'assets',
+  label,
+  className,
+}: ImageUploaderProps) {
   const { getToken, userId } = useAuth()
   const [isUploading, setIsUploading] = useState(false)
   const [preview, setPreview] = useState<string | null>(null)
@@ -45,7 +51,7 @@ export default function ImageUploader({ onUpload, label, className }: ImageUploa
     try {
       // 1. Obtener el token de Clerk para Supabase
       const supabaseToken = await getToken({ template: 'supabase' })
-      
+
       if (!supabaseToken) {
         throw new Error('No se pudo obtener el token de autenticación')
       }
@@ -53,10 +59,15 @@ export default function ImageUploader({ onUpload, label, className }: ImageUploa
       // 2. Obtener cliente autenticado mediante helper limpio
       const authenticatedSupabase = getSupabaseClient(supabaseToken)
 
-      // 3. Subir el archivo (organizado por userId)
+      // 3. Subir el archivo organizado por: userId / category / filename.ext
       const fileExt = file.name.split('.').pop()
-      const fileName = `${userId}/${Date.now()}.${fileExt}`
-      
+      // Saneamos el nombre original quitando espacios y caracteres raros
+      const cleanFileName = file.name
+        .split('.')[0]
+        .replace(/[^a-z0-9]/gi, '_')
+        .toLowerCase()
+      const fileName = `${userId}/${category}/${Date.now()}-${cleanFileName}.${fileExt}`
+
       const { error: uploadError } = await authenticatedSupabase.storage
         .from('questlog-assets')
         .upload(fileName, file, {
