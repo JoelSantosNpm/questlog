@@ -1,11 +1,11 @@
 'use client'
 
-import { getSupabaseClient } from '@/lib/supabase'
+import { StorageService } from '@/services/storage-service'
 import { cn } from '@/shared/utils/styles'
 import { useAuth } from '@clerk/nextjs'
-import { Loader2, Upload, X, Check, CloudUpload } from 'lucide-react'
+import { Check, CloudUpload, Loader2, Upload, X } from 'lucide-react'
 import Image from 'next/image'
-import { ChangeEvent, useRef, useState } from 'react'
+import { ChangeEvent, DragEvent, useCallback, useEffect, useRef, useState } from 'react'
 
 interface ImageUploaderProps {
   onUpload: (url: string) => void
@@ -28,52 +28,75 @@ export default function ImageUploader({
   const [isUploading, setIsUploading] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isDragging, setIsDragging] = useState(false)
   
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // 1. Selección y Previsualización Local
-  const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
-    // Limpiamos estados anteriores ante un nuevo intento
-    setFile(null)
-    setPreview(null)
-    setIsSuccess(false)
-    setError(null)
-    onUpload('')
+  // OPTIMIZACIÓN 1: Gestión de memoria (Revocar URLs de blobs)
+  useEffect(() => {
+    // Si la preview cambia o el componente se desmonta, liberamos la memoria
+    return () => {
+      if (preview) {
+        URL.revokeObjectURL(preview)
+      }
+    }
+  }, [preview])
 
-    const selectedFile = e.target.files?.[0]
-    if (!selectedFile) return
-
-    // Validaciones básicas
+  // Lógica común de validación y preview
+  const processFile = useCallback((selectedFile: File) => {
     if (selectedFile.size > 2 * 1024 * 1024) {
       setError('El archivo supera el tamaño máximo de 2MB')
-      // Resetear input para permitir re-selección
-      if (fileInputRef.current) fileInputRef.current.value = ''
       return
     }
     if (!selectedFile.type.startsWith('image/')) {
       setError('El archivo no es una imagen válida')
-      if (fileInputRef.current) fileInputRef.current.value = ''
       return
     }
 
+    setError(null)
+    setIsSuccess(false)
     setFile(selectedFile)
     
-    // Crear preview local instantáneo
-    const localPreview = URL.createObjectURL(selectedFile)
-    setPreview(localPreview)
+    // Revocamos la anterior antes de crear la nueva
+    if (preview) URL.revokeObjectURL(preview)
+    setPreview(URL.createObjectURL(selectedFile))
+  }, [preview])
+
+  // Handlers de selección tradicional
+  const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0]
+    if (selectedFile) processFile(selectedFile)
   }
 
-  const handleInputClick = () => {
-    if (isUploading || isSuccess) return
-    
-    // Resetear el valor del input nativo antes de abrir el diálogo
-    // Esto asegura que si el usuario selecciona el mismo archivo tras un error, el evento change se dispare
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ''
+  // OPTIMIZACIÓN 2: Soporte nativo de Drag & Drop
+  const handleDrag = (e: DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setIsDragging(true)
+    } else if (e.type === 'dragleave') {
+      setIsDragging(false)
     }
-    fileInputRef.current?.click()
   }
 
+  const handleDrop = (e: DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+    
+    const droppedFile = e.dataTransfer.files?.[0]
+    if (droppedFile) processFile(droppedFile)
+  }
+
+  // ACCESIBILIDAD 1: Soporte para teclado (Enter/Espacio)
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      fileInputRef.current?.click()
+    }
+  }
+
+  // Subida Real a Supabase (Usando el Servicio)
   const handleUpload = async () => {
     if (!file || !userId) return
 
@@ -81,27 +104,15 @@ export default function ImageUploader({
     setError(null)
 
     try {
-      const supabaseToken = await getToken({ template: 'supabase' })
-      if (!supabaseToken) throw new Error('No se pudo obtener el token de autenticación')
+      const token = await getToken({ template: 'supabase' })
+      if (!token) throw new Error('No se pudo obtener el token de autenticación')
 
-      const authenticatedSupabase = getSupabaseClient(supabaseToken)
-
-      const fileExt = file.name.split('.').pop()
-      const cleanFileName = file.name.split('.')[0].replace(/[^a-z0-9]/gi, '_').toLowerCase()
-      const fileName = `${userId}/${category}/${Date.now()}-${cleanFileName}.${fileExt}`
-      
-      const { error: uploadError } = await authenticatedSupabase.storage
-        .from('questlog-assets')
-        .upload(fileName, file, {
-          cacheControl: '3600',
-          upsert: false,
-        })
-
-      if (uploadError) throw uploadError
-
-      const { data: { publicUrl } } = authenticatedSupabase.storage
-        .from('questlog-assets')
-        .getPublicUrl(fileName)
+      const publicUrl = await StorageService.uploadFile({
+        file,
+        userId,
+        category,
+        token
+      })
 
       onUpload(publicUrl)
       setIsSuccess(true)
@@ -127,7 +138,7 @@ export default function ImageUploader({
   return (
     <div className={cn('space-y-3', className)}>
       {label && (
-        <label className='text-xs uppercase tracking-widest font-bold text-neutral-500'>
+        <label className='text-[10px] uppercase tracking-[0.2em] font-bold text-neutral-500'>
           {label}
         </label>
       )}
@@ -136,11 +147,20 @@ export default function ImageUploader({
         {/* Contenedor de la Imagen / Dropzone */}
         <div
           onClick={() => !isUploading && !isSuccess && fileInputRef.current?.click()}
+          onDragEnter={handleDrag}
+          onDragOver={handleDrag}
+          onDragLeave={handleDrag}
+          onDrop={handleDrop}
+          onKeyDown={handleKeyDown}
+          role="button"
+          tabIndex={preview ? -1 : 0}
+          aria-label={label || 'Subir imagen'}
           className={cn(
-            'relative flex flex-col items-center justify-center w-full aspect-video border-2 border-dashed rounded-md transition-all overflow-hidden',
+            'relative flex flex-col items-center justify-center w-full aspect-video border-2 border-dashed rounded-md transition-all overflow-hidden focus:outline-none focus:ring-2 focus:ring-amber-900/40 focus:border-amber-900/60',
             preview 
               ? 'border-amber-900/30 bg-neutral-900/20' 
               : 'border-neutral-800 hover:border-amber-900/60 bg-neutral-950/50 cursor-pointer',
+            isDragging && 'border-amber-500 bg-amber-950/20 scale-[0.99]',
             isSuccess && 'border-emerald-900/50 bg-emerald-950/10',
             isUploading && 'cursor-not-allowed opacity-80',
             error && 'border-red-900/50'
@@ -182,11 +202,14 @@ export default function ImageUploader({
           ) : (
             <div className='flex flex-col items-center justify-center p-6 space-y-3'>
               <div className='p-3 bg-neutral-900/80 rounded-full border border-neutral-800 group-hover:border-amber-900/50 transition-colors'>
-                <Upload className='w-5 h-5 text-neutral-600 group-hover:text-amber-600 transition-colors' />
+                <Upload className={cn(
+                  "w-5 h-5 transition-colors",
+                  isDragging ? "text-amber-500" : "text-neutral-600 group-hover:text-amber-600"
+                )} />
               </div>
               <div className='text-center'>
                 <p className='text-xs font-bold text-neutral-500 group-hover:text-neutral-300 transition-colors uppercase tracking-widest'>
-                  Seleccionar Imagen
+                  {isDragging ? 'Suelta para invocar' : 'Seleccionar Imagen'}
                 </p>
                 <p className='text-[10px] text-neutral-700 uppercase tracking-tighter'>
                   JPG, PNG, WebP (Máx 2MB)
@@ -196,7 +219,7 @@ export default function ImageUploader({
           )}
         </div>
 
-        {/* Botones de Acción (Solo si hay preview y no se ha subido aún) */}
+        {/* Botones de Acción */}
         {preview && !isUploading && !isSuccess && (
           <div className='absolute bottom-3 right-3 flex items-center gap-2 animate-in fade-in slide-in-from-bottom-2'>
             <button
