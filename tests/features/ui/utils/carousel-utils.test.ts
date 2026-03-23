@@ -1,4 +1,5 @@
-import { getCircularCarousel } from './carousel-utils'
+import { describe, it, expect } from 'vitest'
+import { getCircularCarousel } from '@/lib/carousel-utils'
 
 describe('carousel-utils', () => {
   type TestItem = { id: number; value: string }

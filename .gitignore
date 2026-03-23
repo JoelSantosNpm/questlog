@@ -30,8 +30,13 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# env files
+.env
+.env.local
+.env.test
+.env.production
+.env.development
+!.env.example
 
 # vercel
 .vercel
@@ -48,3 +53,8 @@ next-env.d.ts
 e2e/.auth/
 playwright-report/
 test-results/
+
+
+# tareas
+
+tareas.md

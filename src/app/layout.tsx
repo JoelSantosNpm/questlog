@@ -73,7 +73,7 @@ export default async function RootLayout({
               Forjando leyendas en la oscuridad.
             </p>
           </footer>
-          <Toaster theme='light' />
+          <Toaster theme='light' position='top-center' />
         </body>
       </html>
     </AuthProvider>
