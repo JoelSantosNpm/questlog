@@ -4,9 +4,9 @@ import { FormProvider, useForm } from 'react-hook-form'
 import type { Campaign } from '@prisma/client'
 import type React from 'react'
 
-import { CampaignCreationForm } from './CampaignCreationForm'
-import type { CampaignFormValues } from './types'
-import { useCampaignStore } from './store/campaignStore'
+import { CampaignCreationForm } from '@/components/campaigns/creation/CampaignCreationForm'
+import type { CampaignFormValues } from '@/components/campaigns/creation/types'
+import { useCampaignStore } from '@/components/campaigns/creation/store/campaignStore'
 import * as campaignActions from '@/actions/campaign-actions'
 
 // ─── Mocks ───────────────────────────────────────────────────────────────────
