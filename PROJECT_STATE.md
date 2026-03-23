@@ -1,4 +1,4 @@
-# Estado del Proyecto: Questlog
+﻿# Estado del Proyecto: Questlog
 
 **Última actualización:** 17 de Marzo de 2026
 **Rama actual:** m2-03-testing-la-creación-de-campañas
@@ -139,73 +139,89 @@ src/
 - [x] **M1-03: Lazy Sync (Clerk -> Prisma Upsert)**
   - _AC:_ ✅ Verificación de `userId` en Layout y creación automática en Supabase si no existe.
 - [x] **M1-04: Sincronización Automática (Clerk Webhooks)**
-  - _AC:_ ✅ Integración con svix, manejo de `user.deleted` (cascada) y `user.updated` (sync).
-  - _Pasos:_
-    1. Instalar `svix` (Hecho).
-    2. Configurar `CLERK_WEBHOOK_SECRET` en `.env`. (Hecho)
-    3. Crear Route Handler (`api/webhooks/clerk`) con validación de firma (Hecho).
-    4. Implementar lógica de Prisma para `user.created`, `user.updated`, `user.deleted` (Hecho).
-    5. Testear localmente con ngrok y Dashboard de Clerk. (Hecho)
+  - _Tareas:_
+    1. ✅ Instalar `svix`.
+    2. ✅ Configurar `CLERK_WEBHOOK_SECRET` en `.env`.
+    3. ✅ Crear Route Handler (`api/webhooks/clerk`) con validación de firma.
+    4. ✅ Implementar lógica de Prisma para `user.created`, `user.updated`, `user.deleted`.
+    5. ✅ Testear localmente con ngrok y Dashboard de Clerk.
+  - _AC:_ ✅ Los eventos de Clerk (`user.deleted` con cascada, `user.updated` con sync) son procesados correctamente vía svix con validación de firma.
 
 ### M2: El Salón de los Héroes (Gestión de Campañas) [COMPLETADO]
 
 - [x] **M2-01: Dashboard de Campañas (Vista Máster)**
-  - _AC:_ ✅ Fetch de Prisma + `PortalCarousel` conectado a datos reales. Estado de "Vacío" implementado.
+  - _Tarea:_ Conectar `PortalCarousel` a datos reales de Prisma e implementar estado de "Vacío".
+  - _AC:_ ✅ El DM ve sus campañas en el carrusel al entrar al dashboard; si no tiene ninguna, aparece el estado vacío.
 - [x] **M2-02: Formulario de Creación de Aventuras**
-  - _AC:_ ✅ Implementación de React Hook Form + Zustand + Framer Motion (LazyLoad) para la creación paso-a-paso de campañas vinculadas al usuario. Redirección automática y Toast temáticas con Sileo.
+  - _Tarea:_ Wizard multi-paso con React Hook Form + Zustand + Framer Motion (LazyLoad) para crear campañas vinculadas al usuario.
+  - _AC:_ ✅ El DM puede completar el wizard, y al finalizar la campaña se crea en DB, se redirige automáticamente y aparece una toast de confirmación.
 - [x] **M2-03: Testing de la Creación de Campañas**
-  - _AC 1.1:_ ✅ Proyecto libre de Jest (`jest`, `ts-jest`, `jest-environment-jsdom`, `@types/jest` desinstalados).
-  - _AC 1.2:_ ✅ Vitest 4.x configurado (`vitest.config.ts` + `vitest.setup.ts`) — 12/12 tests pasando.
-  - _AC 1.3:_ ✅ Playwright inicializado (`playwright.config.ts`) con proyecto `setup` de auth y proyecto `chromium`.
-  - _AC 2.1:_ ✅ Test de integración: `FormProvider` envuelve correctamente los inputs del formulario.
-  - _AC 2.2:_ ✅ Test de integración: error de validación visible + store no avanza si el nombre está vacío.
-  - _AC 2.3:_ ✅ Test de integración: `createCampaign` es llamada con los datos correctos al hacer submit en último paso.
-  - _AC 3.1:_ ✅ E2E: carga de la Home pública + renderizado del `region` del Portal de Piedra en `/campaigns`.
-  - _AC 3.2:_ ✅ E2E: navegación con botones Next/Prev y teclas ←→ del carrusel.
-  - _AC 3.3:_ ✅ E2E: flujo completo Dot → Portal “Nueva Aventura” → Wizard (nombre + location) → redirect a `/campaigns/{id}` → campaña visible en el carrusel.
-  - _AC 4.1:_ ✅ Scripts `npm run test`, `npm run test:run`, `npm run test:e2e`, `npm run test:e2e:ui` operativos.
-  - _AC 4.2:_ ✅ README (EN + ES) actualizado con la estrategia de testing y variables de entorno necesarias.
+  - _Tareas:_
+    1. ✅ Migrar de Jest a Vitest 4.x (`vitest.config.ts` + `vitest.setup.ts`).
+    2. ✅ Inicializar Playwright con proyecto `setup` de auth y proyecto `chromium`.
+    3. ✅ Actualizar README (EN + ES) con estrategia de testing y variables de entorno necesarias.
+  - _AC 1:_ ✅ El proyecto no tiene dependencias de Jest; Vitest está configurado y 12/12 tests pasan (`npm run test`, `npm run test:run` operativos).
+  - _AC 2:_ ✅ Playwright está inicializado; los scripts `npm run test:e2e` y `npm run test:e2e:ui` son operativos.
+  - _AC 3.1:_ ✅ Test de integración: `FormProvider` envuelve correctamente los inputs del formulario.
+  - _AC 3.2:_ ✅ Test de integración: el error de validación es visible y el store no avanza si el nombre está vacío.
+  - _AC 3.3:_ ✅ Test de integración: `createCampaign` es llamada con los datos correctos al hacer submit en el último paso.
+  - _AC 4.1:_ ✅ E2E: carga de la Home pública + renderizado del `region` del Portal de Piedra en `/campaigns`.
+  - _AC 4.2:_ ✅ E2E: navegación con botones Next/Prev y teclas ←→ del carrusel.
+  - _AC 4.3:_ ✅ E2E: flujo completo Dot → Portal "Nueva Aventura" → Wizard (nombre + location) → redirect a `/campaigns/{id}` → campaña visible en el carrusel.
   - _Nota:_ Los tests E2E requieren `E2E_CLERK_USER_EMAIL` en `.env` (usuario existente en Clerk + lazy sync hecho).
 
 ### M3: La Forja de la Enciclopedia (Datos, Imágenes y Estructuras) [EN PROGRESO]
 
 - [x] **M3-00: Infraestructura de Imágenes (Storage)**
-  - _AC 1:_ ✅ Bucket `questlog-assets` creado en Supabase (Público).
-  - _AC 2:_ ✅ Políticas RLS configuradas (SELECT: anon, INSERT/UPDATE/DELETE: owner).
-  - _AC 3:_ ✅ `next.config.ts` actualizado con `remotePatterns` para el hostname de Supabase.
-  - _AC 4:_ ✅ Componente `ImageUploader` atomizado y funcional (validación 2MB, preview, upload).
-  - _AC 5:_ ✅ Estética de "Lienzo de dibujo" implementada con esquinas decorativas dinámicas.
-  - _Testing:_ ✅ Cobertura completa: Esquema (unit), Servicio (integración), Hook (lógica de estado) y Componente (UI). Estructura organizada por features en `/tests`.
+  - _Tareas:_
+    1. ✅ Bucket `questlog-assets` creado en Supabase (Público).
+    2. ✅ Políticas RLS configuradas (SELECT: anon, INSERT/UPDATE/DELETE: owner).
+    3. ✅ `next.config.ts` actualizado con `remotePatterns` para el hostname de Supabase.
+    4. ✅ Componente `ImageUploader` atomizado y funcional (validación 2MB, preview, upload).
+    5. ✅ Estética de "Lienzo de dibujo" implementada con esquinas decorativas dinámicas.
+  - _Cobertura de Tests:_ ✅ Esquema (unit), Servicio (integración), Hook (lógica de estado) y Componente (UI). Estructura organizada por features en `/tests`.
+  - _AC 1:_ ✅ Puedo subir una imagen desde `ImageUploader` — selección, validación (2MB / tipo MIME) y envío vía `StorageService.uploadFile` funcionan correctamente.
+  - _AC 2:_ ✅ El componente devuelve una URL pública (`onUpload: (url: string) => void`) que puede guardarse en `Campaign.imageUrl`. `createCampaign` y `updateCampaign` aceptan `imageUrl` en su DTO.
 
 - [ ] **M3-01: Reestructuración de Datos (Atómicos vs JSON)** [SIGUIENTE]
   - _Objetivo:_ Eliminar campos `Json` de estadísticas para permitir filtrado y búsquedas eficientes en DB.
-  - _Cambios Prisma:_
-    - `MonsterTemplate`, `ActiveMonster`, `CharacterTemplate`, `Character`: Eliminar `stats` JSON -> Agregar columnas `strength`, `dexterity`, `constitution`, `intelligence`, `wisdom`, `charisma`, `ac`, `speed`, `initiativeBonus`, `perception`.
+  - _Tareas (Cambios Prisma):_
+    - Modelos `MonsterTemplate`, `ActiveMonster`, `CharacterTemplate`, `Character`: Eliminar `stats` JSON → Agregar columnas `strength`, `dexterity`, `constitution`, `intelligence`, `wisdom`, `charisma`, `ac`, `speed`, `initiativeBonus`, `perception`.
     - Estandarizar gestión de `maxHp` y `currentHp`.
     - Tabla `Item`: Añadir `templateId`, cambiar `rarity` a Enum.
     - Nuevas Tablas: `ItemTemplate`, `AccessGrant` (Permisos compartidos), Enums (`Rarity`, `AccessType`).
     - `Campaign`: Añadir `parentCampaignId` e `imageUrl`.
+  - _AC 1:_ No existen campos de tipo `Json` para estadísticas en el schema de Prisma.
+  - _AC 2:_ Es posible filtrar entidades por stats individuales (ej. `strength > 15`) directamente en una query de Prisma.
+  - _AC 3:_ La migración se aplica en el entorno de desarrollo sin pérdida de datos existentes.
 
 - [ ] **M3-02: Hub de la Enciclopedia y Navegación**
-  - _AC:_ Página `/encyclopedia` con pestañas (Bestiario, Museo, Registro) y filtros (Mis Creaciones | Públicos | Compartidos).
+  - _Tarea:_ Crear página `/encyclopedia` con pestañas (Bestiario, Museo, Registro) y filtros (Mis Creaciones | Públicos | Compartidos).
+  - _AC:_ El usuario puede navegar a `/encyclopedia`, cambiar entre las tres pestañas y filtrar resultados sin errores.
 
 - [ ] **M3-03: Bestiario y Fichas de Monstruos**
-  - _AC:_ Formulario unificado para `MonsterTemplate` (Librería) y `ActiveMonster` (Instancia de Campaña) con stats atómicos y upload de imagen.
+  - _Tarea:_ Formulario unificado para `MonsterTemplate` (Librería) y `ActiveMonster` (Instancia de Campaña) con stats atómicos y upload de imagen.
+  - _AC:_ El DM puede crear y editar una ficha de monstruo con stats atómicos y asociarla a una campaña; la imagen se sube y se muestra correctamente.
 
 - [ ] **M3-04: Módulo de Inventario y Museo**
-  - _AC:_ CRUD de objetos con visualización temática según rareza y gestión de posesión (Personaje vs Mundo).
+  - _Tarea:_ CRUD de objetos con visualización temática según rareza y gestión de posesión (Personaje vs Mundo).
+  - _AC:_ El DM puede crear, editar y eliminar objetos; la rareza se refleja visualmente y la posesión (Personaje o Mundo) es asignable.
 
 - [ ] **M3-05: Registro de Personajes (Template & Instance)**
-  - _AC:_ Gestión de NPCs y Héroes con stats completos, nivel y vinculación de inventario inicial.
+  - _Tarea:_ Gestión de NPCs y Héroes con stats completos, nivel y vinculación de inventario inicial.
+  - _AC:_ El DM puede crear personajes/NPCs con stats atómicos, vincularlos a una campaña y asignarles un inventario inicial.
 
 ### M4: Las Crónicas del Coliseo (Live Tools) [PENDIENTE]
 
 - [ ] **M4-01: Logbook de Sesión**
-  - _AC:_ Diario de campaña con persistencia y cronología.
+  - _Tarea:_ Diario de campaña con persistencia y cronología.
+  - _AC:_ El DM puede añadir entradas al diario de una campaña y verlas ordenadas cronológicamente en sesiones posteriores.
 - [ ] **M4-02: Gestor de Iniciativa (El Coliseo)**
-  - _AC:_ Herramienta de turnos para combate en vivo.
+  - _Tarea:_ Herramienta de turnos para combate en vivo.
+  - _AC:_ El DM puede añadir participantes, ordenarlos por iniciativa y avanzar turnos en tiempo real sin recargar la página.
 - [ ] **M4-03: Pulido y Despliegue**
-  - _AC:_ Optimización UI/UX y deploy en Vercel.
+  - _Tarea:_ Optimización UI/UX y deploy en Vercel.
+  - _AC:_ La aplicación pasa un audit de Lighthouse (Performance ≥ 90) y está desplegada y accesible en producción.
 
 ---
 
