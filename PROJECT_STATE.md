@@ -169,14 +169,15 @@ src/
 
 ### M3: La Forja de la Enciclopedia (Datos, Imágenes y Estructuras) [EN PROGRESO]
 
-- [ ] **M3-00: Infraestructura de Imágenes (Storage)**
+- [x] **M3-00: Infraestructura de Imágenes (Storage)**
   - _AC 1:_ ✅ Bucket `questlog-assets` creado en Supabase (Público).
   - _AC 2:_ ✅ Políticas RLS configuradas (SELECT: anon, INSERT/UPDATE/DELETE: owner).
   - _AC 3:_ ✅ `next.config.ts` actualizado con `remotePatterns` para el hostname de Supabase.
-  - _AC 4:_ Componente `ImageUploader` con validación (máx 2MB), previsualización y retorno de Public URL.
-  - _AC 5:_ Sistema de placeholder estilo "boceto a carboncillo" para `imageUrl: null`.
+  - _AC 4:_ ✅ Componente `ImageUploader` atomizado y funcional (validación 2MB, preview, upload).
+  - _AC 5:_ ✅ Estética de "Lienzo de dibujo" implementada con esquinas decorativas dinámicas.
+  - _Testing:_ ✅ Cobertura completa: Esquema (unit), Servicio (integración), Hook (lógica de estado) y Componente (UI). Estructura organizada por features en `/tests`.
 
-- [ ] **M3-01: Reestructuración de Datos (Atómicos vs JSON)**
+- [ ] **M3-01: Reestructuración de Datos (Atómicos vs JSON)** [SIGUIENTE]
   - _Objetivo:_ Eliminar campos `Json` de estadísticas para permitir filtrado y búsquedas eficientes en DB.
   - _Cambios Prisma:_
     - `MonsterTemplate`, `ActiveMonster`, `CharacterTemplate`, `Character`: Eliminar `stats` JSON -> Agregar columnas `strength`, `dexterity`, `constitution`, `intelligence`, `wisdom`, `charisma`, `ac`, `speed`, `initiativeBonus`, `perception`.
