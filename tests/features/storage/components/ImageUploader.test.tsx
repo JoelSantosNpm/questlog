@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
-import ImageUploader from '@/components/shared/ui/ImageUploader'
+import ImageUploader from '@/components/shared/ui/image-uploader/ImageUploader'
 import { StorageService } from '@/services/storage-service'
 import { useAuth } from '@clerk/nextjs'
 
