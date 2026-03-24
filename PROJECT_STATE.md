@@ -84,33 +84,29 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
 ## 📂 Estructura de Carpetas Clave
 
 ```
-src/
-├── app/
-│   ├── components/portal/       # Carrusel 3D (PortalCarousel, PortalCard, Portal)
+├── src/
+│   ├── app/
+│   │   ├── api/
+│   │   ├── campaigns/
+│   │   ├── colosseum/
+│   │   ├── dashboard/
+│   │   ├── sign-in/
+│   │   ├── sign-up/
+│   │   └── test/
+│   ├── components/
+│   │   ├── auth/
+│   │   ├── campaigns/
+│   │   ├── portal/              # Carrusel 3D (PortalCarousel, PortalCard, Portal)
+│   │   └── shared/
+│   ├── config/
+│   ├── data/
+│   ├── hooks/
+│   ├── lib/
 │   ├── providers/
-│   │   └── auth-provider.tsx    # ClerkProvider con tema Grimdark
-│   ├── sign-in/[[...sign-in]]/  # Página de login temática
-│   ├── sign-up/[[...sign-up]]/  # Página de registro temática
-│   ├── colosseum/               # Módulo El Coliseo (layout + page)
-│   ├── layout.tsx               # Root Layout (AuthSync incluido)
-│   └── globals.css              # Estilos globales
-├── components/
-│   └── auth/
-│       └── auth-sync.tsx        # Lazy Sync Clerk -> Prisma (Server Component)
-├── config/
-│   ├── clerk-theme.ts           # Tema dark personalizado para Clerk
-│   └── routes/auth.ts           # Constantes de rutas públicas/protegidas
-├── hooks/
-│   └── ui/                      # Hooks genéricos (useCarousel)
-├── lib/
-│   ├── prisma.ts                # Singleton PrismaClient + adaptador PrismaPg
-│   ├── carousel-utils.ts        # Lógica matemática del carrusel (+ tests)
-│   └── carousel-utils.test.ts
-├── shared/utils/
-│   └── styles.ts                # Utilidad cn()
-├── types/
-│   └── portal.ts                # Tipos: Campaign, CarouselItem
-└── proxy.ts                     # Middleware de protección de rutas (Clerk)
+│   ├── services/
+│   ├── shared/
+│   └── types/
+└── proxy.ts
 ```
 
 ---
@@ -147,7 +143,7 @@ src/
     5. ✅ Testear localmente con ngrok y Dashboard de Clerk.
   - _AC:_ ✅ Los eventos de Clerk (`user.deleted` con cascada, `user.updated` con sync) son procesados correctamente vía svix con validación de firma.
 
-### M2: El Salón de los Héroes (Gestión de Campañas) [COMPLETADO]
+### M2: El Salón de los Portales (Gestión de Campañas) [COMPLETADO]
 
 - [x] **M2-01: Dashboard de Campañas (Vista Máster)**
   - _Tarea:_ Conectar `PortalCarousel` a datos reales de Prisma e implementar estado de "Vacío".
