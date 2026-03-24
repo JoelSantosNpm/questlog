@@ -1,16 +1,217 @@
-
+// ---------------------------------------------------------
+// GENERATOR & DATASOURCE PARA SUPABASE
+// ---------------------------------------------------------
 generator client {
-  provider = "prisma-client"
-  output   = "../app/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider = "postgresql"
 }
 
-model Campaign {
-  id        Int      @id @default(autoincrement())
-  name      String
-  active    Boolean  @default(true)
+// ---------------------------------------------------------
+// 1. USUARIOS (Conectados con Clerk)
+// ---------------------------------------------------------
+model User {
+  id      String  @id @default(cuid())
+  clerkId String  @unique
+  email   String  @unique
+  name    String?
+  image   String?
+  plan    String  @default("FREE") // Para el futuro Market
+
+  campaigns        Campaign[] // Donde es DM
+  createdTemplates CharacterTemplate[] @relation("CreatedTemplates")
+  playerCharacters Character[]         @relation("PlayerCharacters")
+  createdMonsters  MonsterTemplate[]   @relation("CreatedMonsters")
+
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
+
+// ---------------------------------------------------------
+// 2. CAMPAÑA (La Mesa con el Portal de Piedra)
+// ---------------------------------------------------------
+model Campaign {
+  id            String  @id @default(cuid())
+  name          String
+  description   String?
+  imageUrl      String?
+  system        String  @default("D&D 5e")
+  location      String?
+  nextSession   DateTime?
+  isPrivate     Boolean @default(true)
+
+  gameMasterId String
+  gameMaster   User   @relation(fields: [gameMasterId], references: [id], onDelete: Cascade)
+
+  characters     Character[] // onDelete: SetNull (Persistencia del héroe)
+  notes          SessionNote[] // onDelete: Cascade
+  activeMonsters ActiveMonster[] // onDelete: Cascade
+  quests         Quest[] // onDelete: Cascade
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ---------------------------------------------------------
+// 3. PLANTILLA DE PERSONAJE (El "Molde" para el Market)
+// ---------------------------------------------------------
+model CharacterTemplate {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  imageUrl    String?
+
+  baseStats          Json // Fuerza, Dex, etc. iniciales
+  suggestedEquipment Json? // Equipamiento que se clonará al crear el Character
+
+  authorId String?
+  author   User?   @relation("CreatedTemplates", fields: [authorId], references: [id], onDelete: SetNull)
+
+  isPublished Boolean @default(false)
+  version     Int     @default(1)
+  price       Float   @default(0.0)
+
+  instances Character[] // Todos los personajes basados en esta plantilla
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ---------------------------------------------------------
+// 4. PERSONAJE (La Instancia Viva que juega)
+// ---------------------------------------------------------
+model Character {
+  id   String @id @default(cuid())
+  name String // Nombre elegido por el jugador
+
+  userId String?
+  user   User?   @relation("PlayerCharacters", fields: [userId], references: [id], onDelete: Cascade)
+
+  campaignId String?
+  campaign   Campaign? @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+
+  templateId String?
+  template   CharacterTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+
+  level     Int    @default(1)
+  currentHp Int
+  maxHp     Int
+  tempHp    Int    @default(0)
+  ac        Int    @default(10) // Clase de Armadura actual
+  stats     Json // Sus stats evolucionados
+  inventory Item[] // Su mochila personal
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ---------------------------------------------------------
+// 5. INVENTARIO 
+// ---------------------------------------------------------
+model Item {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+
+  // Stats
+  quantity Int     @default(1)
+  weight   Float? // in lbs
+  type     String? // Weapon, Potion, Gear
+  rarity   String? // Common, Rare, Legendary...
+  value    Float? // in Gold Pieces (gp)
+  image    String?
+
+  // State
+  equipped           Boolean @default(false)
+  isAttuned          Boolean @default(false)
+  requiresAttunement Boolean @default(false)
+  notes              String?
+
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+}
+
+// ---------------------------------------------------------
+// 6. NOTAS DE SESIÓN
+// ---------------------------------------------------------
+model SessionNote {
+  id         String   @id @default(cuid())
+  title      String?
+  content    String   @db.Text
+  campaignId String
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+// ---------------------------------------------------------
+// 7. PLANTILLA DE MONSTRUO (Bestiario)
+// ---------------------------------------------------------
+model MonsterTemplate {
+  id       String  @id @default(cuid())
+  name     String
+  type     String // Ej: "Humanoide", "Dragón"
+  imageUrl String?
+
+  challenge Float @default(1.0) // Nivel de desafío (CR)
+  maxHp     Int
+  ac        Int
+  stats     Json
+  abilities Json? // Acciones, legendarias, etc.
+
+  // Marketplace & Autoría
+  authorId String?
+  author   User?   @relation("CreatedMonsters", fields: [authorId], references: [id], onDelete: SetNull)
+
+  isPublished Boolean @default(false)
+  price       Float   @default(0.0)
+  version     Int     @default(1)
+
+  instances ActiveMonster[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ---------------------------------------------------------
+// 8. MONSTRUO ACTIVO (Instancia de Combate)
+// ---------------------------------------------------------
+model ActiveMonster {
+  id         String   @id @default(cuid())
+  name       String? // Por si el DM le pone mote (ej: "Trasgo Tuerto")
+  currentHp  Int
+  maxHp      Int // Para bosses personalizados
+  initiative Int?
+  status     String[] // Ej: ["Envenenado", "Ciego"]
+  stats      Json? // Override de stats opcional
+
+  templateId String?
+  template   MonsterTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+
+  campaignId String
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ---------------------------------------------------------
+// 9. MISIONES (Quests)
+// ---------------------------------------------------------
+model Quest {
+  id               String   @id @default(cuid())
+  title            String
+  description      String?  @db.Text
+  isCompleted      Boolean  @default(false)
+  visibleToPlayers Boolean  @default(false)
+  priority         String   @default("NORMAL")
+
+  campaignId       String
+  campaign         Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+

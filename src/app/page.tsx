@@ -1,71 +1,42 @@
-import prisma from "@/lib/prisma";
-import { createCampaign } from "@/actions/campaign-actions";
+import { SignedIn, SignedOut, SignInButton } from '@clerk/nextjs'
+import Link from 'next/link'
 
-export default async function Home() {
-  const campaigns = await prisma.campaign.findMany({
-    orderBy: { createdAt: "desc" },
-  });
-
+export default function LandingPage() {
   return (
-    <div className="flex min-h-screen flex-col items-center p-24 bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">
-      <h1 className="text-4xl font-bold mb-8">QuestLog Campaigns</h1>
+    <div className='flex min-h-[calc(100vh-8rem)] flex-col items-center justify-center space-y-8 p-6 text-center text-foreground'>
+      <div className='max-w-2xl space-y-6'>
+        <h1 className='font-medieval text-5xl font-bold tracking-wider text-amber-500 md:text-7xl'>
+          Questlog
+        </h1>
+        <p className='text-lg leading-relaxed text-neutral-400 md:text-2xl'>
+          La plataforma definitiva para que los Dungeon Masters gestionen sus campañas de D&D con el
+          poder de la piedra y el acero.
+        </p>
 
-      <div className="w-full max-w-md mb-12">
-        <h2 className="text-2xl font-semibold mb-4">Create New Campaign</h2>
-        <form action={createCampaign} className="flex gap-2">
-          <input
-            type="text"
-            name="name"
-            placeholder="Campaign Name"
-            required
-            className="flex-1 px-4 py-2 border rounded-lg bg-white dark:bg-zinc-800 border-zinc-300 dark:border-zinc-700"
-          />
-          <button
-            type="submit"
-            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
-            Create
-          </button>
-        </form>
+        <p className='mx-auto max-w-xl text-neutral-500'>
+          Crea tu mundo, maneja personajes, monstruos y objetos. Sumérgete en una experiencia oscura
+          medieval única para organizar tus aventuras.
+        </p>
       </div>
 
-      <div className="w-full max-w-2xl">
-        <h2 className="text-2xl font-semibold mb-4">Existing Campaigns</h2>
-        {campaigns.length === 0 ? (
-          <p className="text-zinc-500 dark:text-zinc-400">
-            No campaigns found.
-          </p>
-        ) : (
-          <ul className="space-y-4">
-            {campaigns.map(
-              (campaign: {
-                id: number;
-                name: string;
-                active: boolean;
-                createdAt: Date;
-              }) => (
-                <li
-                  key={campaign.id}
-                  className="p-4 border rounded-lg bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 shadow-sm flex justify-between items-center">
-                  <div>
-                    <h3 className="text-xl font-bold">{campaign.name}</h3>
-                    <p className="text-sm text-zinc-500">
-                      {new Date(campaign.createdAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      campaign.active
-                        ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100"
-                        : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
-                    }`}>
-                    {campaign.active ? "Active" : "Inactive"}
-                  </span>
-                </li>
-              ),
-            )}
-          </ul>
-        )}
+      <div className='flex flex-col gap-4 sm:flex-row mt-8'>
+        <SignedOut>
+          <SignInButton mode='modal'>
+            <button className='rounded-md bg-stone-800 border border-stone-600 px-8 py-3 text-lg font-bold text-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.2)] transition-all hover:bg-stone-700 hover:text-amber-400 hover:shadow-[0_0_25px_rgba(245,158,11,0.4)]'>
+              Comenzar la Aventura
+            </button>
+          </SignInButton>
+        </SignedOut>
+
+        <SignedIn>
+          <Link
+            href='/dashboard'
+            className='rounded-md bg-stone-800 border border-stone-600 px-8 py-3 text-lg font-bold text-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.2)] transition-all hover:bg-stone-700 hover:text-amber-400 hover:shadow-[0_0_25px_rgba(245,158,11,0.4)]'
+          >
+            Ir a mi Panel de Control
+          </Link>
+        </SignedIn>
       </div>
     </div>
-  );
+  )
 }
