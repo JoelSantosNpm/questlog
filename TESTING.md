@@ -13,17 +13,18 @@ Este documento describe las prácticas, herramientas y organización del sistema
 
 ## 📂 Organización de Archivos
 
-Adoptamos una estructura basada en **Features** para maximizar la escalabilidad. Los tests no se mezclan con el código fuente en `src/`, sino que residen en la carpeta raíz `tests/`.
+Adoptamos una estructura centralizada en la carpeta raíz `tests/` para maximizar la escalabilidad y mantener la raíz del proyecto limpia.
 
 ```text
 tests/
-└── features/
-    └── <feature-name>/
-        ├── components/  # Tests de UI y comportamiento de componentes
-        ├── hooks/       # Tests de lógica de estado aislada (useHook)
-        ├── services/    # Tests de integración con APIs (Supabase, Prisma)
-        ├── schemas/     # Tests unitarios de validación (Zod)
-        └── utils/       # Tests de funciones puras y cálculos
+├── features/    # Tests organizados por funcionalidad (Unit/Integration/UI)
+│   └── <feature-name>/
+│       ├── components/
+│       ├── hooks/
+│       ├── services/
+│       └── schemas/
+├── e2e/         # Tests de extremo a extremo (Playwright)
+└── artifacts/   # Resultados, capturas y trazas de ejecuciones (Git ignored)
 ```
 
 ---

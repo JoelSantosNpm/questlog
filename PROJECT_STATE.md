@@ -84,33 +84,22 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
 ## 📂 Estructura de Carpetas Clave
 
 ```
-src/
-├── app/
-│   ├── components/portal/       # Carrusel 3D (PortalCarousel, PortalCard, Portal)
+├── src/
+│   ├── app/
+│   ├── components/
+│   ├── config/
+│   ├── data/
+│   ├── hooks/
+│   ├── lib/
 │   ├── providers/
-│   │   └── auth-provider.tsx    # ClerkProvider con tema Grimdark
-│   ├── sign-in/[[...sign-in]]/  # Página de login temática
-│   ├── sign-up/[[...sign-up]]/  # Página de registro temática
-│   ├── colosseum/               # Módulo El Coliseo (layout + page)
-│   ├── layout.tsx               # Root Layout (AuthSync incluido)
-│   └── globals.css              # Estilos globales
-├── components/
-│   └── auth/
-│       └── auth-sync.tsx        # Lazy Sync Clerk -> Prisma (Server Component)
-├── config/
-│   ├── clerk-theme.ts           # Tema dark personalizado para Clerk
-│   └── routes/auth.ts           # Constantes de rutas públicas/protegidas
-├── hooks/
-│   └── ui/                      # Hooks genéricos (useCarousel)
-├── lib/
-│   ├── prisma.ts                # Singleton PrismaClient + adaptador PrismaPg
-│   ├── carousel-utils.ts        # Lógica matemática del carrusel (+ tests)
-│   └── carousel-utils.test.ts
-├── shared/utils/
-│   └── styles.ts                # Utilidad cn()
-├── types/
-│   └── portal.ts                # Tipos: Campaign, CarouselItem
-└── proxy.ts                     # Middleware de protección de rutas (Clerk)
+│   ├── services/
+│   ├── shared/
+│   └── types/
+├── tests/
+│   ├── artifacts/           # Resultados y trazas de Playwright
+│   ├── e2e/                 # Tests Playwright
+│   └── features/            # Tests Unitarios e Integración por funcionalidad
+└── proxy.ts
 ```
 
 ---
@@ -147,7 +136,7 @@ src/
     5. ✅ Testear localmente con ngrok y Dashboard de Clerk.
   - _AC:_ ✅ Los eventos de Clerk (`user.deleted` con cascada, `user.updated` con sync) son procesados correctamente vía svix con validación de firma.
 
-### M2: El Salón de los Héroes (Gestión de Campañas) [COMPLETADO]
+### M2: El Salón de los Portales (Gestión de Campañas) [COMPLETADO]
 
 - [x] **M2-01: Dashboard de Campañas (Vista Máster)**
   - _Tarea:_ Conectar `PortalCarousel` a datos reales de Prisma e implementar estado de "Vacío".
@@ -255,3 +244,5 @@ src/
 - **Optimización de Bundle:** Mover `motion` a `<LazyMotion features={domAnimation}>` y `m.div` en UI cargadas globalmente para ahorrar severos picos de ~30kb en renderizados iniciales.
 - **Accesibilidad:** No utilizar `autoFocus` nativo en componentes renderizados condicionalmente ya que rompe el flujo interpretativo de los screen-readers.
 - **Secuencialidad vs Paralelismo:** Promesas que no dependen una de otra como llamadas a `auth()` y extracción de `params` asincrónicos o DB, agruparlas de forma segura en un `Promise.all()`.
+- **Arquitectura de Animaciones (LazyMotion):** Se ha implementado `LazyMotion` global con el paquete `domAnimation`. Esto reduce el bundle en ~30kb al excluir funciones pesadas de Framer Motion (como `drag` físico o `layout animations`) que no son necesarias para la mayoría de la UI.
+- **Drag & Drop Híbrido:** La funcionalidad de arrastrar archivos en `ImageUploader` sigue operativa porque utiliza la **API nativa de HTML5** (`onDrop`, `onDragOver`), delegando en Framer Motion solo el "feedback visual" (escalado, opacidad). Esto combina la robustez del navegador con la fluidez de las animaciones optimizadas.

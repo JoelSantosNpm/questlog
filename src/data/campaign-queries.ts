@@ -1,5 +1,5 @@
 import prisma from '@/lib/prisma'
-import { Campaign as PortalCampaign } from '@/types/portal'
+import { Campaign as PortalCampaign } from '@/types/ui/portal'
 import { auth } from '@clerk/nextjs/server'
 
 export async function getUserCampaigns(): Promise<PortalCampaign[]> {
@@ -12,6 +12,9 @@ export async function getUserCampaigns(): Promise<PortalCampaign[]> {
       gameMaster: {
         clerkId: userId,
       },
+    },
+    orderBy: {
+      createdAt: 'desc',
     },
     select: {
       id: true,

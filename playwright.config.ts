@@ -1,7 +1,8 @@
 import { defineConfig, devices } from '@playwright/test'
 
 export default defineConfig({
-  testDir: './e2e',
+  testDir: './tests/e2e',
+  outputDir: './tests/artifacts',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
@@ -9,7 +10,7 @@ export default defineConfig({
   reporter: 'html',
 
   // Llama a clerkSetup() una vez antes de todo (obtiene CLERK_TESTING_TOKEN)
-  globalSetup: './e2e/global.setup.ts',
+  globalSetup: './tests/e2e/global.setup.ts',
 
   use: {
     baseURL: 'http://localhost:3000',
@@ -28,7 +29,7 @@ export default defineConfig({
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
-        storageState: 'e2e/.auth/user.json',
+        storageState: 'tests/e2e/.auth/user.json',
       },
       dependencies: ['setup'],
     },
