@@ -1,5 +1,6 @@
 import { AuthProvider } from '@/providers/auth-provider'
-import { AuthSync } from '@/components/auth/auth-sync'
+import { FramerMotionProvider } from '@/providers/framer-motion-provider'
+import { AuthSync } from '@/components/auth'
 import { cn } from '@/shared/utils/styles'
 import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
 import type { Metadata } from 'next'
@@ -64,7 +65,9 @@ export default async function RootLayout({
           </header>
 
           {/* Main Content */}
-          <main className='w-full flex-1'>{children}</main>
+          <main className='w-full flex-1'>
+            <FramerMotionProvider>{children}</FramerMotionProvider>
+          </main>
 
           {/* Footer */}
           <footer className='border-t border-neutral-800/30 bg-neutral-950/50 py-6 text-center text-xs text-neutral-500'>

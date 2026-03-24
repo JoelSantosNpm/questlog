@@ -1,5 +1,5 @@
 import CampaignCreationProvider from '@/components/campaigns/creation/CampaignCreationProvider'
-import { MysticBackground } from '@/components/shared/ui/MysticBackground'
+import { MysticBackground } from '@/components/shared/ui'
 
 export default function CreateCampaignPage() {
   return (

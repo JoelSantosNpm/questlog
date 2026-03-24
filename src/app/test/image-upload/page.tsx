@@ -1,8 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import ImageUploader from '@/components/shared/ui/image-uploader/ImageUploader'
-import { MysticBackground } from '@/components/shared/ui/MysticBackground'
+import { ImageUploader, MysticBackground } from '@/components/shared/ui'
 
 export default function ImageUploadTestPage() {
   const [uploadedUrl, setUploadedUrl] = useState<string | null>(null)
