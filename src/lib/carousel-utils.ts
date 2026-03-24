@@ -1,6 +1,6 @@
-import { PortalCarouselItem } from "@/types/portal";
+import { PortalCarouselItem } from '@/types/ui'
 
-export const MAX_INDEX = Number.MAX_SAFE_INTEGER - 100; // Margen de seguridad para evitar overflow
+export const MAX_INDEX = Number.MAX_SAFE_INTEGER - 100 // Margen de seguridad para evitar overflow
 
 /**
  * Genera un array circular de elementos para un carrusel infinito.
@@ -12,27 +12,27 @@ export const MAX_INDEX = Number.MAX_SAFE_INTEGER - 100; // Margen de seguridad p
 export const getCircularCarousel = <T>(
   allItems: T[],
   activeIndex: number,
-  visibleRange = 3,
+  visibleRange = 3
 ): PortalCarouselItem<T>[] => {
-  const total = allItems.length;
+  const total = allItems.length
 
-  if (total === 0) return [];
+  if (total === 0) return []
 
-  const visibleItems: PortalCarouselItem<T>[] = [];
+  const visibleItems: PortalCarouselItem<T>[] = []
 
   for (let i = -visibleRange; i <= visibleRange; i++) {
     // Usamos el índice "absoluto" infinito como key estable
-    const absoluteIndex = activeIndex + i;
+    const absoluteIndex = activeIndex + i
 
     // Aritmética modular para obtener el índice real del array de datos
-    const dataIndex = ((absoluteIndex % total) + total) % total;
+    const dataIndex = ((absoluteIndex % total) + total) % total
 
     visibleItems.push({
       key: `carousel-item-${absoluteIndex}`,
       item: allItems[dataIndex],
       position: i,
-    });
+    })
   }
 
-  return visibleItems;
-};
+  return visibleItems
+}
