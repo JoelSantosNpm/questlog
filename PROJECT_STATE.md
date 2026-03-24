@@ -86,18 +86,7 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
 ```
 ├── src/
 │   ├── app/
-│   │   ├── api/
-│   │   ├── campaigns/
-│   │   ├── colosseum/
-│   │   ├── dashboard/
-│   │   ├── sign-in/
-│   │   ├── sign-up/
-│   │   └── test/
 │   ├── components/
-│   │   ├── auth/
-│   │   ├── campaigns/
-│   │   ├── portal/              # Carrusel 3D (PortalCarousel, PortalCard, Portal)
-│   │   └── shared/
 │   ├── config/
 │   ├── data/
 │   ├── hooks/
@@ -106,6 +95,10 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
 │   ├── services/
 │   ├── shared/
 │   └── types/
+├── tests/
+│   ├── artifacts/           # Resultados y trazas de Playwright
+│   ├── e2e/                 # Tests Playwright
+│   └── features/            # Tests Unitarios e Integración por funcionalidad
 └── proxy.ts
 ```
 
