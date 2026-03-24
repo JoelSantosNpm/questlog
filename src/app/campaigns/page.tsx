@@ -1,8 +1,10 @@
-import { PortalCarousel } from '@/components/portal/portal-carousel'
+import { PortalCarousel } from '@/components/portal'
 import { getUserCampaigns } from '@/data/campaign-queries'
-import { Campaign as PortalCampaign } from '@/types/portal'
+import { Campaign as PortalCampaign } from '@/types/ui/portal'
 import { auth } from '@clerk/nextjs/server'
 import Link from 'next/link'
+
+export const revalidate = 0 // Forzar regeneración dinámica en cada request
 
 export default async function PortalsPage() {
   await auth.protect()
