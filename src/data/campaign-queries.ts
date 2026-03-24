@@ -13,6 +13,9 @@ export async function getUserCampaigns(): Promise<PortalCampaign[]> {
         clerkId: userId,
       },
     },
+    orderBy: {
+      createdAt: 'desc',
+    },
     select: {
       id: true,
       name: true,
