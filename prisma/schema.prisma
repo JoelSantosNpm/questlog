@@ -10,6 +10,31 @@ datasource db {
 }
 
 // ---------------------------------------------------------
+// ENUMS (Sistema de D&D y Permisos)
+// ---------------------------------------------------------
+enum Rarity {
+  JUNK
+  COMMON
+  UNCOMMON
+  RARE
+  EPIC
+  LEGENDARY
+  ARTIFACT
+}
+
+enum ResourceType {
+  MONSTER_TEMPLATE
+  ITEM_TEMPLATE
+  CHARACTER_TEMPLATE
+  CAMPAIGN
+}
+
+enum AccessType {
+  VIEW
+  EDIT
+}
+
+// ---------------------------------------------------------
 // 1. USUARIOS (Conectados con Clerk)
 // ---------------------------------------------------------
 model User {
@@ -18,12 +43,15 @@ model User {
   email   String  @unique
   name    String?
   image   String?
-  plan    String  @default("FREE") // Para el futuro Market
+  plan    String  @default("FREE")
 
-  campaigns        Campaign[] // Donde es DM
-  createdTemplates CharacterTemplate[] @relation("CreatedTemplates")
+  campaigns        Campaign[]
+  createdCharacterTemplates CharacterTemplate[] @relation("CreatedCharacterTemplates")
   playerCharacters Character[]         @relation("PlayerCharacters")
   createdMonsters  MonsterTemplate[]   @relation("CreatedMonsters")
+  createdItems     ItemTemplate[]      @relation("CreatedItems")
+  
+  accessGrants     AccessGrant[]       @relation("UserAccess")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -33,22 +61,24 @@ model User {
 // 2. CAMPAÑA (La Mesa con el Portal de Piedra)
 // ---------------------------------------------------------
 model Campaign {
-  id            String  @id @default(cuid())
-  name          String
-  description   String?
-  imageUrl      String?
-  system        String  @default("D&D 5e")
-  location      String?
-  nextSession   DateTime?
-  isPrivate     Boolean @default(true)
+  id               String  @id @default(cuid())
+  name             String
+  description      String?
+  imageUrl         String?
+  system           String  @default("D&D 5e")
+  location         String?
+  nextSession      DateTime?
+  isPrivate        Boolean @default(true)
+  parentCampaignId String?
 
   gameMasterId String
   gameMaster   User   @relation(fields: [gameMasterId], references: [id], onDelete: Cascade)
 
-  characters     Character[] // onDelete: SetNull (Persistencia del héroe)
-  notes          SessionNote[] // onDelete: Cascade
-  activeMonsters ActiveMonster[] // onDelete: Cascade
-  quests         Quest[] // onDelete: Cascade
+  characters     Character[]
+  notes          SessionNote[]
+  activeMonsters ActiveMonster[]
+  quests         Quest[]
+  items          Item[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -63,20 +93,33 @@ model CharacterTemplate {
   description String?
   imageUrl    String?
 
-  baseStats          Json // Fuerza, Dex, etc. iniciales
-  suggestedEquipment Json? // Equipamiento que se clonará al crear el Character
+  // Stats Atómicos
+  strength     Int @default(10)
+  dexterity    Int @default(10)
+  constitution Int @default(10)
+  intelligence Int @default(10)
+  wisdom       Int @default(10)
+  charisma     Int @default(10)
+  ac           Int @default(10)
+  speed        Int @default(30)
+  initiativeBonus Int @default(0)
+  perception   Int @default(10)
 
   authorId String?
-  author   User?   @relation("CreatedTemplates", fields: [authorId], references: [id], onDelete: SetNull)
+  author   User?   @relation("CreatedCharacterTemplates", fields: [authorId], references: [id], onDelete: SetNull)
 
   isPublished Boolean @default(false)
   version     Int     @default(1)
   price       Float   @default(0.0)
 
-  instances Character[] // Todos los personajes basados en esta plantilla
+  instances Character[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([strength])
+  @@index([dexterity])
+  @@index([ac])
 }
 
 // ---------------------------------------------------------
@@ -84,7 +127,7 @@ model CharacterTemplate {
 // ---------------------------------------------------------
 model Character {
   id   String @id @default(cuid())
-  name String // Nombre elegido por el jugador
+  name String
 
   userId String?
   user   User?   @relation("PlayerCharacters", fields: [userId], references: [id], onDelete: Cascade)
@@ -99,42 +142,112 @@ model Character {
   currentHp Int
   maxHp     Int
   tempHp    Int    @default(0)
-  ac        Int    @default(10) // Clase de Armadura actual
-  stats     Json // Sus stats evolucionados
-  inventory Item[] // Su mochila personal
+
+  // Stats Atómicos
+  strength     Int @default(10)
+  dexterity    Int @default(10)
+  constitution Int @default(10)
+  intelligence Int @default(10)
+  wisdom       Int @default(10)
+  charisma     Int @default(10)
+  ac           Int @default(10)
+  speed        Int @default(30)
+  initiativeBonus Int @default(0)
+  perception   Int @default(10)
+
+  inventory Item[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([campaignId])
 }
 
 // ---------------------------------------------------------
-// 5. INVENTARIO 
+// 5. PLANTILLA DE ÍTEM (El Molde)
+// ---------------------------------------------------------
+model ItemTemplate {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  imageUrl    String?
+  
+  category    String  @default("General")
+  weight      Float   @default(0.0)
+  value       Int     @default(0)
+  rarity      Rarity  @default(COMMON)
+  isPublic    Boolean @default(false)
+
+  // Modificadores Atómicos
+  strength     Int @default(0)
+  dexterity    Int @default(0)
+  constitution Int @default(0)
+  intelligence Int @default(0)
+  wisdom       Int @default(0)
+  charisma     Int @default(0)
+  ac           Int @default(0)
+  speed        Int @default(0)
+  initiativeBonus Int @default(0)
+  perception   Int @default(0)
+
+  creatorId String?
+  creator   User?   @relation("CreatedItems", fields: [creatorId], references: [id], onDelete: SetNull)
+
+  instances Item[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([rarity])
+  @@index([category])
+}
+
+// ---------------------------------------------------------
+// 6. ÍTEM (Instancia en el mundo o inventario)
 // ---------------------------------------------------------
 model Item {
   id          String  @id @default(cuid())
   name        String
   description String?
+  imageUrl    String?
 
-  // Stats
-  quantity Int     @default(1)
-  weight   Float? // in lbs
-  type     String? // Weapon, Potion, Gear
-  rarity   String? // Common, Rare, Legendary...
-  value    Float? // in Gold Pieces (gp)
-  image    String?
+  quantity    Int     @default(1)
+  rarity      Rarity  @default(COMMON)
+  isEquipped  Boolean @default(false)
+  isAttuned   Boolean @default(false)
+  notes       String?
 
-  // State
-  equipped           Boolean @default(false)
-  isAttuned          Boolean @default(false)
-  requiresAttunement Boolean @default(false)
-  notes              String?
+  // Modificadores Atómicos (pueden diferir de la plantilla)
+  strength     Int @default(0)
+  dexterity    Int @default(0)
+  constitution Int @default(0)
+  intelligence Int @default(0)
+  wisdom       Int @default(0)
+  charisma     Int @default(0)
+  ac           Int @default(0)
+  speed        Int @default(0)
+  initiativeBonus Int @default(0)
+  perception   Int @default(0)
 
-  characterId String
-  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  templateId String?
+  template   ItemTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+
+  campaignId String
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  characterId String?
+  character   Character? @relation(fields: [characterId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([campaignId])
+  @@index([characterId])
 }
 
 // ---------------------------------------------------------
-// 6. NOTAS DE SESIÓN
+// 7. NOTAS DE SESIÓN
 // ---------------------------------------------------------
 model SessionNote {
   id         String   @id @default(cuid())
@@ -147,21 +260,31 @@ model SessionNote {
 }
 
 // ---------------------------------------------------------
-// 7. PLANTILLA DE MONSTRUO (Bestiario)
+// 8. PLANTILLA DE MONSTRUO (Bestiario)
 // ---------------------------------------------------------
 model MonsterTemplate {
   id       String  @id @default(cuid())
   name     String
-  type     String // Ej: "Humanoide", "Dragón"
+  type     String 
   imageUrl String?
 
-  challenge Float @default(1.0) // Nivel de desafío (CR)
+  challenge Float @default(1.0)
   maxHp     Int
-  ac        Int
-  stats     Json
-  abilities Json? // Acciones, legendarias, etc.
+  
+  // Stats Atómicos
+  strength     Int @default(10)
+  dexterity    Int @default(10)
+  constitution Int @default(10)
+  intelligence Int @default(10)
+  wisdom       Int @default(10)
+  charisma     Int @default(10)
+  ac           Int @default(10)
+  speed        Int @default(30)
+  initiativeBonus Int @default(0)
+  perception   Int @default(10)
 
-  // Marketplace & Autoría
+  abilities Json? 
+
   authorId String?
   author   User?   @relation("CreatedMonsters", fields: [authorId], references: [id], onDelete: SetNull)
 
@@ -173,19 +296,33 @@ model MonsterTemplate {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([challenge])
+  @@index([type])
 }
 
 // ---------------------------------------------------------
-// 8. MONSTRUO ACTIVO (Instancia de Combate)
+// 9. MONSTRUO ACTIVO (Instancia de Combate)
 // ---------------------------------------------------------
 model ActiveMonster {
   id         String   @id @default(cuid())
-  name       String? // Por si el DM le pone mote (ej: "Trasgo Tuerto")
+  name       String? 
   currentHp  Int
-  maxHp      Int // Para bosses personalizados
+  maxHp      Int 
   initiative Int?
-  status     String[] // Ej: ["Envenenado", "Ciego"]
-  stats      Json? // Override de stats opcional
+  status     String[] 
+
+  // Stats Atómicos (Override opcional)
+  strength     Int @default(10)
+  dexterity    Int @default(10)
+  constitution Int @default(10)
+  intelligence Int @default(10)
+  wisdom       Int @default(10)
+  charisma     Int @default(10)
+  ac           Int @default(10)
+  speed        Int @default(30)
+  initiativeBonus Int @default(0)
+  perception   Int @default(10)
 
   templateId String?
   template   MonsterTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
@@ -195,10 +332,12 @@ model ActiveMonster {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([campaignId])
 }
 
 // ---------------------------------------------------------
-// 9. MISIONES (Quests)
+// 10. MISIONES (Quests)
 // ---------------------------------------------------------
 model Quest {
   id               String   @id @default(cuid())
@@ -215,3 +354,21 @@ model Quest {
   updatedAt        DateTime @updatedAt
 }
 
+// ---------------------------------------------------------
+// 11. PERMISOS (Access Control)
+// ---------------------------------------------------------
+model AccessGrant {
+  id           String       @id @default(cuid())
+  granteeId    String
+  grantee      User         @relation("UserAccess", fields: [granteeId], references: [id], onDelete: Cascade)
+  
+  resourceType ResourceType
+  resourceId   String
+  access       AccessType   @default(VIEW)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([granteeId])
+  @@index([resourceId])
+}
