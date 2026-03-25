@@ -1,127 +1,133 @@
-# ⚔️ QuestLog - RPG Campaign Manager
+# QuestLog - RPG Campaign Manager
 
 **🇺🇸 English** | [🇪🇸 Español](README.es.md)
 
 > **Status:** Active development. See [PROJECT_STATE.md](PROJECT_STATE.md) for the current milestone progress.
 
-**QuestLog** is a Grimdark-themed platform for Dungeon Masters seeking immersive and efficient D&D 5e campaign management. It provides tools for tracking narrative progression, inventory, bestiary, and live combat encounters.
+**QuestLog** is a Grimdark-themed web application for Dungeon Masters to manage their D&D 5e campaigns. It provides tools for tracking narrative progression, inventory, bestiary, and combat encounters.
 
----
+## 🚀 Features
 
-## ⚔️ Open Zones
+- **The Portal**: 3D circular carousel for campaign navigation.
+- **Authentication (Clerk)**: Secure sign-in/sign-up with automatic user sync to the database.
+- **Session Notes (El Cronicón)**: Chronological session diary.
+- **Inventory System (El Almacén)**: Loot, items, rarities, and quantities.
+- **Bestiary & Combat Tracker (El Coliseo)**: Monster library + live initiative tracker.
 
-- **The Stone Portal:** 3D perspective circular carousel to navigate between campaigns, with keyboard support and immersive animations.
-- **Authentication (Clerk):** Secure sign-in/sign-up with automatic profile sync to the database (_Lazy Sync_).
-- **Adventure Creation:** An animated multi-step _wizard_ that weaves your inputs into campaign lore, powered by Zustand + React Hook Form + Framer Motion.
+## 📸 Screenshots
 
----
+### The Portal — Campaign Selection
 
-## 🔮 The Illustrated Tome
-
-### The Stone Portal — Campaign Selection
-
-![The Stone Portal — Campaign Selection](public/screenshots/campaign-portals.png)
+![The Portal — Campaign Selection](public/screenshots/campaign-portals.png)
 
 > Navigate your campaigns through a 3D stone portal carousel
 
-### Adventure Creation Form
+### Campaign Creation Form
 
-![Adventure Creation Form](public/screenshots/campaign-creation.png)
+![Campaign Creation Form](public/screenshots/campaign-creation.png)
 
-> A narrative-driven multi-step wizard that turns your inputs into campaign lore
+> A narrative-driven multi-step form that weaves your input into lore
 
----
+## 🛠 Tech Stack
 
-## 🏗️ Data Architecture: The Heart of the System
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router, Server Components)
+- **Language**: [TypeScript](https://www.typescriptlang.org/) (Strict Mode)
+- **Auth**: [Clerk](https://clerk.com/) + [`@clerk/nextjs`](https://www.npmjs.com/package/@clerk/nextjs)
+- **Database**: [PostgreSQL](https://www.postgresql.org/) via [Supabase](https://supabase.com/)
+- **ORM**: [Prisma](https://www.prisma.io/) with `@prisma/adapter-pg`
+- **State Management**:
+  - [Zustand](https://zustand-demo.pmnd.rs/) — client-side state for multi-step flows (e.g. campaign creation: step index, transitions)
+  - [React Hook Form](https://react-hook-form.com/) — form validation and field management, integrated with Zustand via a Context provider
+- **Compiler**: [React Compiler](https://react.dev/learn/react-compiler) (`babel-plugin-react-compiler`) — automatic memoization of components and values; no manual `useMemo`/`useCallback` needed. Run `npx -y react-doctor@latest .` to audit project health.
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
+- **Animations**: [Framer Motion](https://www.framer.com/motion/)
+- **Testing**: [Vitest](https://vitest.dev/) + [Testing Library](https://testing-library.com/) (unit & integration) · [Playwright](https://playwright.dev/) (E2E)
 
-QuestLog's data system has evolved to prioritize performance on complex queries and DM flexibility.
+## 📦 Prerequisites
 
-### 🛡️ Atomic Stats & Consistency
+- [Node.js](https://nodejs.org/) v18 or higher
+- A [Supabase](https://supabase.com/) project (PostgreSQL)
+- A [Clerk](https://clerk.com/) application
 
-Stats have been migrated from JSON objects to **atomic columns** in the database. This isn't just a technical change — it's what makes the "Encyclopedia" search instant and combat calculations (AC, Modifiers) precise and reactive.
+## 🏁 Getting Started
 
-### 🧬 Templates vs Instances (The "Mold" and the "Figure")
-
-To maximize reusability, QuestLog separates the definition of an entity from its presence at the table:
-
-- **Templates (`MonsterTemplate`, `ItemTemplate`):** The base rules defined in the manuals.
-- **Instances (`ActiveMonster`, `Item`):** The living elements that take damage, get equipped, or are consumed in a specific session.
-
-> 📖 **For a deep technical explanation on relations and cascade deletion, see the [Data Schema Guide](docs/DATABASE_SCHEMA.md).**
-
----
-
-## 🛠️ Tech Stack: Why these tools?
-
-Every piece of the stack was chosen to serve a specific purpose in the user experience:
-
-### Frontend (Immersion & Reactivity)
-
-- **[Next.js 16](https://nextjs.org/) (App Router):** The foundation for fast navigation and SEO/Performance optimization via Server Components.
-- **[React Compiler](https://react.dev/learn/react-compiler):** Automatic memoization keeps the UI fluid without the mental overhead of `useMemo` or `useCallback`.
-- **[Zustand](https://docs.pmnd.rs/zustand/):** Manages the state of complex flows, like the multi-step campaign creation _wizard_, keeping logic out of components.
-- **[Framer Motion](https://www.framer.com/motion/):** Delivers the "magical" interactivity and animations (like the 3D portal carousel) that define the app's aesthetic.
-- **[Tailwind CSS v4](https://tailwindcss.com/):** Ultra-fast styling with native CSS variables.
-
-### Backend & Infrastructure (Robustness)
-
-- **[Supabase (PostgreSQL)](https://supabase.com/):** Powerful relational database for managing complex quest, character, and item networks.
-- **[Prisma ORM](https://www.prisma.io/):** Provides Type Safety across the entire data layer.
-- **[Clerk](https://clerk.com/):** Professional-grade authentication with automatic profile synchronization.
-
----
-
-## 🏁 Installation & Development
-
-1. **Clone & Install:**
+1. **Clone the repository:**
 
    ```bash
    git clone https://github.com/JoelSantosNpm/questlog.git
+   cd questlog
+   ```
+
+2. **Install dependencies:**
+
+   ```bash
    npm install
    ```
 
-2. **Env Variables:** Create a `.env` file based on `.env.example`.
-3. **Database:**
+3. **Environment Setup:**
+
+   Create a `.env` file in the root directory with the following variables:
+
+   ```env
+   # Supabase / Prisma
+   DATABASE_URL_REMOTE="postgresql://user:password@host:port/database"
+
+   # Clerk Authentication
+   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_..."
+   CLERK_SECRET_KEY="sk_..."
+   NEXT_PUBLIC_CLERK_SIGN_IN_URL="/sign-in"
+   NEXT_PUBLIC_CLERK_SIGN_UP_URL="/sign-up"
+
+   # Database Seeding (Optional)
+   SEED_GM_EMAIL="your-gm-email@example.com"
+   SEED_PLAYER_EMAIL="your-player-email@example.com"
+   ```
+
+4. **Database Setup:**
+
    ```bash
    npx prisma generate
-   npx prisma migrate dev
+   npx prisma db push
    ```
-4. **Run Server:**
+
+5. **Run the development server:**
+
    ```bash
    npm run dev
    ```
-   Open [http://localhost:3000](http://localhost:3000) in your browser.
 
----
+   Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## 🧪 Development & Seeding
 
-Since this project uses Clerk for authentication, seeding the database requires linking test data to real Clerk users.
+Since this project uses Clerk for authentication, seeding the database requires linking mock data to real Clerk users.
 
-1.  **Configure your emails:** Add your development user emails (GM and Player) to `.env`:
+1.  Add your development user emails (GM and Player) to `.env`:
+
     ```env
     SEED_GM_EMAIL=your-gm-email@example.com
     SEED_PLAYER_EMAIL=your-player-email@example.com
     ```
-2.  **Sync:** Run the app (`npm run dev`) and sign in with those emails to ensure the user records exist in the database (auto-created on login via _Lazy Sync_).
-3.  **Run:** Launch the seed script:
+
+    _Note: These can be the same email if you want to test both roles with one account._
+
+2.  Run the application (`npm run dev`) and sign in with those emails to ensure the user records exist in the database (synced on login).
+3.  Run the seed script:
     ```bash
     npm run db:seed
     ```
-    This will populate the database with a test campaign (_Curse of Strahd_) where the GM user is the Master and the Player will have a character assigned.
+    This will create a test campaign where `SEED_GM_EMAIL` is the Game Master, and assign a character to `SEED_PLAYER_EMAIL`.
 
----
+## 🧪 Testing
 
-## 🧪 Testing Strategy
+The project uses a two-layer testing strategy:
 
-We maintain a two-layer test suite to ensure the "game table" never breaks:
+| Layer              | Tool                       | Scope                                                                     | Command            |
+| ------------------ | -------------------------- | ------------------------------------------------------------------------- | ------------------ |
+| Unit & Integration | Vitest 4 + Testing Library | Pure utils, Zustand store, React components with mocked server actions    | `npm run test:run` |
+| End-to-End         | Playwright (Chromium)      | Full browser flows: Portal carousel navigation + campaign creation wizard | `npm run test:e2e` |
 
-| Layer                  | Tool                       | Scope                                                                  | Command            |
-| :--------------------- | :------------------------- | :--------------------------------------------------------------------- | :----------------- |
-| **Unit & Integration** | Vitest 4 + Testing Library | Pure utils, Zustand store, React components with mocked server actions | `npm run test:run` |
-| **End-to-End**         | Playwright (Chromium)      | Full browser flows: Portal carousel + campaign creation wizard         | `npm run test:e2e` |
-
-### Test Commands
+### Commands
 
 ```bash
 npm run test          # Vitest in watch mode (development)
@@ -131,30 +137,118 @@ npm run test:e2e      # Playwright E2E (headless)
 npm run test:e2e:ui   # Playwright E2E with interactive UI
 ```
 
-### Running E2E Tests
+### Running E2E tests
 
-E2E tests require one extra environment variable:
+E2E tests require the app to be running (the `webServer` config in `playwright.config.ts` starts it automatically) and one extra environment variable:
 
 ```env
 # .env — required for Playwright auth via @clerk/testing
 E2E_CLERK_USER_EMAIL=your-test-user@example.com
 ```
 
-The user must already exist in Clerk and have logged in at least once to sync their record.
+The user must already exist in Clerk and have logged in to the app at least once (to trigger the lazy sync to the database). The `CLERK_SECRET_KEY` already in your `.env` is reused — no extra keys needed.
 
 ### Cascade Deletion Tests (Data Integrity)
 
-To verify that deletion rules (_Cascade vs SetNull_) protect player data, run:
+To verify that deletion rules (Cascade vs SetNull) are working correctly and data integrity is preserved (e.g., players keep their characters even if a campaign is deleted), you can run the test script:
 
 ```bash
 npx tsx --env-file=.env prisma/test-cascade.ts
 ```
 
-This script simulates critical scenarios (delete GM, delete Campaign, delete Player) and validates that, for example, characters survive even if their campaign is deleted.
+This script simulates multiple critical scenarios with detailed logging:
 
----
+1.  **Delete Campaign**: Verifies that linked characters **survive** (SetNull), even if notes and monsters are removed.
+2.  **Delete Player**: Verifies that if a user deletes their account, their character and inventory are **removed** (Cascade).
+3.  **Delete GM**: Verifies that if a GM deletes their account, their campaigns are removed, but characters from _other players_ in those tables **survive**.
 
-## 📂 Project Structure
+## � Data Model
+
+Central campaign schema and its relationships with characters, monsters, items, and quests.
+
+```prisma
+model Campaign {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  imageUrl    String?
+  system      String  @default("D&D 5e")
+  location    String?
+  isPrivate   Boolean @default(true)
+
+  gameMasterId String
+  gameMaster   User   @relation(fields: [gameMasterId], references: [id], onDelete: Cascade)
+
+  characters     Character[]    // onDelete: SetNull  — heroes survive campaign deletion
+  notes          SessionNote[]  // onDelete: Cascade
+  activeMonsters ActiveMonster[] // onDelete: Cascade
+  quests         Quest[]         // onDelete: Cascade
+}
+
+model ActiveMonster {
+  id        String  @id @default(cuid())
+  name      String? // Optional alias (e.g. "One-Eyed Goblin")
+  currentHp Int
+  initiative Int?
+  status    String[] // e.g. ["Poisoned", "Blinded"]
+
+  templateId String?
+  template   MonsterTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+
+  campaignId String
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+}
+
+model MonsterTemplate {
+  id        String  @id @default(cuid())
+  name      String
+  type      String  // e.g. "Humanoid", "Dragon"
+  challenge Float   @default(1.0)
+  maxHp     Int
+  ac        Int
+  stats     Json
+  abilities Json?
+
+  isPublished Boolean @default(false)
+  price       Float   @default(0.0) // Future marketplace
+
+  instances ActiveMonster[]
+}
+
+model Character {
+  id         String   @id @default(cuid())
+  name       String
+  level      Int      @default(1)
+  currentHp  Int
+  maxHp      Int
+  stats      Json
+
+  userId     String?
+  user       User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  campaignId String?
+  campaign   Campaign? @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+
+  inventory  Item[]   // onDelete: Cascade
+}
+
+model Item {
+  id       String  @id @default(cuid())
+  name     String
+  quantity Int     @default(1)
+  rarity   String? // Common, Rare, Legendary...
+  type     String? // Weapon, Potion, Gear
+  value    Float?  // in Gold Pieces (gp)
+  equipped Boolean @default(false)
+
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+}
+```
+
+> **Key rule:** Deleting a `Campaign` removes notes, active monsters, and quests (Cascade), but characters are only **unlinked** (SetNull) — players never lose their heroes.
+
+## �📂 Project Structure
 
 ```
 src/
@@ -165,24 +259,24 @@ src/
 │   │   └── [id]/               # Campaign detail
 │   ├── colosseum/              # Combat tracker (El Coliseo)
 │   ├── dashboard/              # Main dashboard
-│   ├── sign-in/ & sign-up/     # Authentication pages
+│   ├── sign-in/ & sign-up/     # Auth pages
 │   └── layout.tsx              # Root layout (includes AuthSync)
 ├── actions/
 │   └── campaign-actions.ts     # Server Actions (create campaign, etc.)
 ├── components/
 │   ├── auth/
-│   │   └── auth-sync.tsx       # Lazy sync: Clerk → Prisma
+│   │   └── auth-sync.tsx       # Lazy Sync: Clerk → Prisma
 │   ├── campaigns/creation/     # Multi-step campaign creation form
 │   │   ├── CampaignCreationProvider.tsx  # RHF + Zustand context root
 │   │   ├── CampaignCreationForm.tsx      # Animated narrative form
 │   │   ├── StepControls.tsx             # Next/Skip/Submit step buttons
-│   │   ├── hooks/useCampaignForm.ts      # Form and step logic
-│   │   └── store/campaignStore.ts        # Step state in Zustand
+│   │   ├── hooks/useCampaignForm.ts      # Form & step logic
+│   │   └── store/campaignStore.ts        # Zustand step state
 │   ├── portal/                 # 3D carousel components
 │   └── shared/ui/              # Reusable UI components
 ├── config/
 │   ├── campaign-steps.ts       # Step definitions for campaign creation
-│   ├── clerk-theme.ts          # Grimdark custom theme for Clerk
+│   ├── clerk-theme.ts          # Custom Grimdark Clerk theme
 │   └── routes/auth.ts          # Public/protected route constants
 ├── data/
 │   └── campaign-queries.ts     # Prisma read queries
@@ -193,8 +287,8 @@ src/
 ├── providers/                  # App-level providers (AuthProvider)
 └── types/                      # Shared TypeScript types
 prisma/
-├── schema.prisma               # Database schema
-├── seed.ts                     # Database seeding script
+├── schema.prisma               # DB schema
+├── seed.ts                     # DB seeding script
 └── test-cascade.ts             # Cascade deletion integrity tests
 src/proxy.ts                    # Route protection middleware
 ```
@@ -213,5 +307,4 @@ src/proxy.ts                    # Route protection middleware
 
 ## 🔒 Private Project
 
-This is a private project. It is not open to contributions at this time.
-All rights reserved.
+This is a private project. Not open for contributions at this time.

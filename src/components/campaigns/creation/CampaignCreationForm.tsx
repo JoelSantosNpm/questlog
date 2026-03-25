@@ -66,7 +66,7 @@ export function CampaignCreationForm() {
                 className='block text-xl md:text-2xl text-zinc-100 relative mt-4'
               >
                 <span>{activeStep.narrativeBefore}</span>
-                <span className='relative inline-block border-b-2 border-amber-500/30 focus-within:border-amber-500 transition-colors px-1 mx-1 min-w-50'>
+                <span className='relative inline-block border-b-2 border-amber-500/30 focus-within:border-amber-500 transition-colors px-1 mx-1 min-w-[200px]'>
                   <input
                     id={activeStep.field}
                     {...register(activeStep.field as keyof CampaignFormValues, {
