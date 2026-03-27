@@ -15,6 +15,9 @@ const medieval = MedievalSharp({
   variable: '--font-medieval',
 })
 
+import { BookOpen } from 'lucide-react'
+import Link from 'next/link'
+
 export const metadata: Metadata = {
   title: 'Questlog | Dungeon Master Toolkit',
   description: 'Gestiona tus campañas de D&D con el poder de la piedra y el acero.',
@@ -45,14 +48,26 @@ export default async function RootLayout({
           <header className='sticky top-0 z-50 w-full border-b border-neutral-800/50 bg-neutral-950/80 backdrop-blur-md'>
             <div className='flex h-16 w-full items-center justify-between px-4 sm:px-6 lg:px-8'>
               <div className='flex items-center gap-2'>
-                <h1 className='font-medieval text-2xl tracking-wide text-amber-500/90 drop-shadow-sm transition-colors hover:text-amber-400'>
-                  Questlog
-                </h1>
+                <Link href='/'>
+                  <h1 className='font-medieval text-2xl tracking-wide text-amber-500/90 drop-shadow-sm transition-colors hover:text-amber-400'>
+                    Questlog
+                  </h1>
+                </Link>
               </div>
-              <div className='flex items-center gap-4'>
+              <div className='flex items-center gap-6'>
+                <SignedIn>
+                  <Link
+                    href='/encyclopedia'
+                    className='group flex items-center gap-2 text-neutral-400 transition-colors hover:text-amber-500'
+                    title='Encyclopedia'
+                  >
+                    <BookOpen className='h-5 w-5 transition-transform group-hover:scale-110' />
+                    <span className='hidden text-sm font-medium sm:block'>Enciclopedia</span>
+                  </Link>
+                </SignedIn>
                 <SignedOut>
                   <SignInButton mode='modal'>
-                    <button className='rounded px-4 py-2 font-bold text-amber-500 hover:bg-neutral-800 transition-colors'>
+                    <button className='rounded px-4 py-2 font-bold text-amber-500 hover:bg-neutral-800 transition-colors cursor-pointer'>
                       Entrar
                     </button>
                   </SignInButton>
