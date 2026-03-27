@@ -47,7 +47,7 @@ To maximize reusability, QuestLog separates the definition of an entity from its
 - **Templates (`MonsterTemplate`, `ItemTemplate`):** The base rules defined in the manuals.
 - **Instances (`ActiveMonster`, `Item`):** The living elements that take damage, get equipped, or are consumed in a specific session.
 
-> 📖 **For a deep technical explanation on relations and cascade deletion, see the [Data Schema Guide](docs/DATABASE_SCHEMA.md).**
+> 📖 **For a deep technical explanation on relations and cascade deletion, see the [Data Schema Guide](docs/DATABASE_SCHEMA.en.md).**
 
 ---
 
