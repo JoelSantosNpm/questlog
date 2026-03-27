@@ -1,7 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import 'dotenv/config'
 import { PrismaClient, Rarity, ResourceType, AccessType } from '@prisma/client'
+import { PrismaPg } from '@prisma/adapter-pg'
 
-const prisma = new PrismaClient()
+const connectionString = process.env.DIRECT_URL!
+const adapter = new PrismaPg({ connectionString })
+const prisma = new PrismaClient({ adapter })
 
 async function main() {
   const gmEmail = process.env.SEED_GM_EMAIL
@@ -89,12 +93,33 @@ async function main() {
     },
   })
 
+  console.log('--- Creando Plantilla de Personaje ---')
+  const paladinTemplate = await prisma.characterTemplate.create({
+    data: {
+      name: 'Paladín de la Orden del Crepúsculo',
+      description: 'Guerrero sagrado especializado en combate contra no-muertos.',
+      authorId: gm.id,
+      isPublished: true,
+      strength: 18,
+      dexterity: 10,
+      constitution: 16,
+      intelligence: 10,
+      wisdom: 14,
+      charisma: 16,
+      ac: 18,
+      speed: 30,
+      initiativeBonus: 0,
+      perception: 12,
+    },
+  })
+
   console.log('--- Creando Personaje ---')
   const character = await prisma.character.create({
     data: {
       name: 'Valerius el Valiente',
       userId: player.id,
       campaignId: campaign.id,
+      templateId: paladinTemplate.id,
       level: 5,
       maxHp: 45,
       currentHp: 42,
