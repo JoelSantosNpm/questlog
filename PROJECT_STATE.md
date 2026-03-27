@@ -1,12 +1,12 @@
 ﻿# Estado del Proyecto: Questlog
 
-**Última actualización:** 17 de Marzo de 2026
-**Rama actual:** m2-03-testing-la-creación-de-campañas
+**Última actualización:** 27 de Marzo de 2026
+**Rama actual:** m3-02page-enciclopedia
 
 ## 📌 Resumen de Progreso
 
-Arquitectura base y **Milestone M1 (Auth & Infra)** completados.
-Hemos completado **M2-01 (Dashboard)** y **M2-02 (Formulario de Creación de Aventuras)**. Se diseñó una Landing page, una interfaz de atrezzo para las campañas, y un sofisticado _wizard_ animado usando framer-motion, zustand, react-hook-form y sileo para la creación de la narrativa.
+Arquitectura base y **Milestone M1 (Auth & Infra)** completados. **M2 (Gestión de Campañas)** completado al 100%.
+Hemos completado **M3-01 (Reestructuración de Datos)**: migración a columnas atómicas de stats, nuevas tablas `ItemTemplate` y `AccessGrant`, enum `Rarity`, y documentación del schema bilingüe. Iniciamos **M3-02: Hub de la Enciclopedia y Navegación**.
 
 ---
 
@@ -110,9 +110,9 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
 
 ## 📍 Estado Actual
 
-**Milestone:** M2: El Salón de los Héroes (Gestión de Campañas)
-**Tarea completada:** M2-03: Testing de la Creación de Campañas
-**Siguiente:** M3-01: Módulo de Inventario y Tesoros
+**Milestone:** M3: La Forja de la Enciclopedia (Datos, Imágenes y Estructuras)
+**Tarea completada:** M3-01: Reestructuración de Datos (Atómicos vs JSON)
+**En curso:** M3-02: Hub de la Enciclopedia y Navegación
 
 ---
 
@@ -172,19 +172,20 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
   - _AC 1:_ ✅ Puedo subir una imagen desde `ImageUploader` — selección, validación (2MB / tipo MIME) y envío vía `StorageService.uploadFile` funcionan correctamente.
   - _AC 2:_ ✅ El componente devuelve una URL pública (`onUpload: (url: string) => void`) que puede guardarse en `Campaign.imageUrl`. `createCampaign` y `updateCampaign` aceptan `imageUrl` en su DTO.
 
-- [ ] **M3-01: Reestructuración de Datos (Atómicos vs JSON)** [SIGUIENTE]
+- [x] **M3-01: Reestructuración de Datos (Atómicos vs JSON)** [COMPLETADO]
   - _Objetivo:_ Eliminar campos `Json` de estadísticas para permitir filtrado y búsquedas eficientes en DB.
   - _Tareas (Cambios Prisma):_
-    - Modelos `MonsterTemplate`, `ActiveMonster`, `CharacterTemplate`, `Character`: Eliminar `stats` JSON → Agregar columnas `strength`, `dexterity`, `constitution`, `intelligence`, `wisdom`, `charisma`, `ac`, `speed`, `initiativeBonus`, `perception`.
-    - Estandarizar gestión de `maxHp` y `currentHp`.
-    - Tabla `Item`: Añadir `templateId`, cambiar `rarity` a Enum.
-    - Nuevas Tablas: `ItemTemplate`, `AccessGrant` (Permisos compartidos), Enums (`Rarity`, `AccessType`).
-    - `Campaign`: Añadir `parentCampaignId` e `imageUrl`.
-  - _AC 1:_ No existen campos de tipo `Json` para estadísticas en el schema de Prisma.
-  - _AC 2:_ Es posible filtrar entidades por stats individuales (ej. `strength > 15`) directamente en una query de Prisma.
-  - _AC 3:_ La migración se aplica en el entorno de desarrollo sin pérdida de datos existentes.
+    - ✅ Modelos `MonsterTemplate`, `ActiveMonster`, `CharacterTemplate`, `Character`: Eliminado `stats` JSON → Agregadas columnas `strength`, `dexterity`, `constitution`, `intelligence`, `wisdom`, `charisma`, `ac`, `speed`, `initiativeBonus`, `perception`.
+    - ✅ Estandarización de `maxHp` y `currentHp`.
+    - ✅ Tabla `Item`: Añadido `templateId`, `rarity` migrado a Enum.
+    - ✅ Nuevas Tablas: `ItemTemplate`, `AccessGrant` (Permisos compartidos), Enums (`Rarity`, `AccessType`).
+    - ✅ `Campaign`: Añadido `parentCampaignId` e `imageUrl`.
+    - ✅ Documentación del schema (`docs/DATABASE_SCHEMA.md` ES + `docs/DATABASE_SCHEMA.en.md` EN).
+  - _AC 1:_ ✅ No existen campos de tipo `Json` para estadísticas en el schema de Prisma.
+  - _AC 2:_ ✅ Es posible filtrar entidades por stats individuales (ej. `strength > 15`) directamente en una query de Prisma.
+  - _AC 3:_ ✅ La migración se aplica en el entorno de desarrollo sin pérdida de datos existentes.
 
-- [ ] **M3-02: Hub de la Enciclopedia y Navegación**
+- [ ] **M3-02: Hub de la Enciclopedia y Navegación** [EN PROGRESO]
   - _Tarea:_ Crear página `/encyclopedia` con pestañas (Bestiario, Museo, Registro) y filtros (Mis Creaciones | Públicos | Compartidos).
   - _AC:_ El usuario puede navegar a `/encyclopedia`, cambiar entre las tres pestañas y filtrar resultados sin errores.
 
