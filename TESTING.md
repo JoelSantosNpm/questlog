@@ -6,8 +6,10 @@ Este documento describe las prácticas, herramientas y organización del sistema
 
 - **Unit/Integration:** [Vitest](https://vitest.dev/) + [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/).
 - **E2E:** [Playwright](https://playwright.dev/).
-- **Mocks:** Vitest `vi` para servicios y `msw` (opcional) para red.
+- **Mocks:** Vitest `vi` para servicios y módulos externos.
 - **Coverage:** `@vitest/coverage-v8`.
+
+> **Tests actuales:** 29 tests pasando (6 carousel utils, 3 storage service, 4 storage schema, 6 useImageUploader, 4 ImageUploader UI, 6 CampaignCreationForm).
 
 ---
 
@@ -32,21 +34,29 @@ tests/
 ## 🧪 Tipos de Pruebas
 
 ### 1. Tests Unitarios (Schemas & Utils)
+
 Se centran en funciones puras sin efectos secundarios.
+
 - **Ejemplo:** Validar que `FileValidationSchema` rechace archivos de 3MB.
 
 ### 2. Hook Testing
+
 Probamos la **máquina de estados** de nuestros hooks personalizados sin necesidad de renderizar toda la UI.
+
 - **Herramienta:** `renderHook` de Testing Library.
 - **Enfoque:** Verificar transiciones de estado (ej: `idle` -> `uploading` -> `success`).
 
 ### 3. Tests de Componentes (UI)
+
 Verificamos que el componente renderice correctamente y reaccione a eventos de usuario.
+
 - **Regla de Oro:** Probar comportamiento, no implementación.
 - **Mocking:** Se deben mockear los hooks y servicios externos para aislar el componente.
 
 ### 4. Tests de Integración (Services)
+
 Verificamos la comunicación entre nuestra lógica y servicios externos.
+
 - **Enfoque:** Mockear el cliente (ej: Supabase) y asegurar que las llamadas se realizan con los parámetros y formatos correctos.
 
 ---
@@ -63,30 +73,48 @@ Verificamos la comunicación entre nuestra lógica y servicios externos.
 
 ## 🚀 Ejecución de Tests
 
-| Comando | Descripción |
-| :--- | :--- |
-| `npm run test` | Inicia Vitest en modo watch (desarrollo). |
-| `npm run test:run` | Ejecuta todos los tests una sola vez (CI). |
+| Comando                 | Descripción                                 |
+| :---------------------- | :------------------------------------------ |
+| `npm run test`          | Inicia Vitest en modo watch (desarrollo).   |
+| `npm run test:run`      | Ejecuta todos los tests una sola vez (CI).  |
 | `npm run test:coverage` | Genera reporte de cobertura en `/coverage`. |
-| `npm run test:e2e` | Ejecuta los tests de Playwright. |
+| `npm run test:e2e`      | Ejecuta los tests de Playwright.            |
 
 ---
 
 ## 🛡️ Infraestructura de Mocks Comunes
 
 ### Clerk (Autenticación)
+
 ```typescript
 vi.mock('@clerk/nextjs', () => ({
   useAuth: vi.fn(() => ({
     userId: 'mock-user',
-    getToken: vi.fn().mockResolvedValue('token')
-  }))
+    getToken: vi.fn().mockResolvedValue('token'),
+  })),
+}))
+```
+
+### Supabase (Base de datos)
+
+```typescript
+vi.mock('@/lib/supabase/server', () => ({
+  createClient: vi.fn(() => ({
+    from: vi.fn().mockReturnThis(),
+    select: vi.fn().mockReturnThis(),
+    insert: vi.fn().mockReturnThis(),
+    update: vi.fn().mockReturnThis(),
+    delete: vi.fn().mockReturnThis(),
+    eq: vi.fn().mockReturnThis(),
+    single: vi.fn().mockResolvedValue({ data: mockData, error: null }),
+  })),
 }))
 ```
 
 ### Sileo (Notificaciones)
+
 ```typescript
 vi.mock('sileo', () => ({
-  sileo: { success: vi.fn(), error: vi.fn() }
+  sileo: { success: vi.fn(), error: vi.fn() },
 }))
 ```
