@@ -2,9 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
-import { Database } from '@/types/database.types'
-
-type Campaign = Database['public']['Tables']['campaigns']['Row']
+import { auth } from '@clerk/nextjs/server'
 
 export type ActionResponse<T = void> = {
   success: boolean
@@ -26,26 +24,39 @@ export interface UpdateCampaignDTO extends Partial<CreateCampaignDTO> {
   id: string
 }
 
-export async function createCampaign(data: CreateCampaignDTO): Promise<ActionResponse<Campaign>> {
+export async function createCampaign(data: CreateCampaignDTO): Promise<ActionResponse> {
   try {
     if (!data.name?.trim()) {
       return { success: false, message: 'El nombre de la campaña es obligatorio' }
     }
 
-    const supabase = await createClient()
+    const supabase = createClient()
+    const { userId: clerkId } = await auth()
 
+    if (!clerkId) {
+      return { success: false, message: 'No se pudo identificar la sesión de Clerk' }
+    }
+
+    // Obtenemos el ID interno del usuario en la tabla 'users' de Supabase
     const { data: userData, error: userError } = await supabase
-      .from('users')
+      .from('User')
       .select('id')
+      .eq('clerkId', clerkId)
       .single()
 
     if (userError || !userData) {
-      return { success: false, message: 'No se pudo identificar al usuario' }
+      console.error('❌ Error al encontrar usuario en Supabase:', userError)
+      return {
+        success: false,
+        message:
+          'Tu usuario aún no está sincronizado en la base de datos. Por favor, refresca la página.',
+      }
     }
 
     const { data: campaign, error } = await supabase
-      .from('campaigns')
+      .from('Campaign')
       .insert({
+        id: crypto.randomUUID(),
         name: data.name,
         description: data.description,
         imageUrl: data.imageUrl,
@@ -71,19 +82,20 @@ export async function createCampaign(data: CreateCampaignDTO): Promise<ActionRes
       data: campaign,
     }
   } catch (error) {
-    console.error('Error al crear campaña:', error)
-    return { success: false, message: 'Ocurrió un error al crear la campaña' }
+    const msg = error instanceof Error ? error.message : JSON.stringify(error)
+    console.error('❌ Error al crear campaña:', msg)
+    return { success: false, message: `Error: ${msg}` }
   }
 }
 
-export async function updateCampaign(data: UpdateCampaignDTO): Promise<ActionResponse<Campaign>> {
+export async function updateCampaign(data: UpdateCampaignDTO): Promise<ActionResponse> {
   try {
     if (!data.id) return { success: false, message: 'El ID es requerido' }
 
-    const supabase = await createClient()
+    const supabase = createClient()
 
     const { data: updated, error } = await supabase
-      .from('campaigns')
+      .from('Campaign')
       .update({
         name: data.name,
         description: data.description,
@@ -116,8 +128,8 @@ export async function updateCampaign(data: UpdateCampaignDTO): Promise<ActionRes
 
 export async function deleteCampaign(campaignId: string): Promise<ActionResponse<void>> {
   try {
-    const supabase = await createClient()
-    const { error } = await supabase.from('campaigns').delete().eq('id', campaignId)
+    const supabase = createClient()
+    const { error } = await supabase.from('Campaign').delete().eq('id', campaignId)
 
     if (error) throw error
 

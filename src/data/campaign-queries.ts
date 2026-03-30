@@ -6,15 +6,21 @@ import { Campaign as PortalCampaign } from '@/types/ui/portal'
  * La seguridad se delega al RLS de Supabase.
  */
 export async function getUserCampaigns(): Promise<PortalCampaign[]> {
-  const supabase = await createClient()
+  const supabase = createClient()
 
   const { data: campaigns, error } = await supabase
-    .from('campaigns')
+    .from('Campaign')
     .select('id, name')
-    .order('created_at', { ascending: false })
+    .order('createdAt', { ascending: false })
 
   if (error) {
-    console.error('❌ Error fetching campaigns from Supabase:', error)
+    console.error(
+      '❌ Error fetching campaigns from Supabase:',
+      error.message,
+      error.details,
+      error.hint,
+      error.code
+    )
     return []
   }
 
@@ -26,14 +32,14 @@ export async function getUserCampaigns(): Promise<PortalCampaign[]> {
 }
 
 /**
- * Obtiene una campaña por ID. 
+ * Obtiene una campaña por ID.
  * El RLS de Supabase garantiza que el usuario tenga acceso.
  */
 export async function getCampaignById(id: string) {
-  const supabase = await createClient()
+  const supabase = createClient()
 
   const { data: campaign, error } = await supabase
-    .from('campaigns')
+    .from('Campaign')
     .select('*')
     .eq('id', id)
     .single()
