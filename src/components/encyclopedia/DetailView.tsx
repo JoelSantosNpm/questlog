@@ -2,22 +2,20 @@
 
 import React, { useState } from 'react'
 import { m, AnimatePresence } from 'framer-motion'
-import { Info } from 'lucide-react'
-import { useEncyclopediaStore, type EncyclopediaSection } from './encyclopediaStore'
+import { Info, Shield, Heart, Activity } from 'lucide-react'
+import { type EncyclopediaSection } from './encyclopediaStore'
 import { EncyclopediaItem } from './types'
-
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-const DEFAULTS_BUCKET_URL = `${SUPABASE_URL}/storage/v1/object/public/defaults`
-
-const PLACEHOLDERS: Record<EncyclopediaSection, string> = {
-  bestiary: `${DEFAULTS_BUCKET_URL}/monster-placeholder.png`,
-  'dramatis-personae': `${DEFAULTS_BUCKET_URL}/npc-placeholder.png`,
-  museum: `${DEFAULTS_BUCKET_URL}/item-placeholder.png`,
-}
+import { getEntityImage } from '@/lib/storage'
 
 interface DetailViewProps {
   item?: EncyclopediaItem
   activeSection: EncyclopediaSection
+}
+
+const SECTION_MAP: Record<EncyclopediaSection, 'BESTIARY' | 'DRAMATIS_PERSONAE' | 'MUSEUM'> = {
+  bestiary: 'BESTIARY',
+  'dramatis-personae': 'DRAMATIS_PERSONAE',
+  museum: 'MUSEUM',
 }
 
 const EncyclopediaImage: React.FC<{ item: EncyclopediaItem; section: EncyclopediaSection }> = ({
@@ -25,8 +23,7 @@ const EncyclopediaImage: React.FC<{ item: EncyclopediaItem; section: Encyclopedi
   section,
 }) => {
   const [hasError, setHasError] = useState(false)
-  const isUrlEmpty = !item.image || item.image.trim() === ''
-  const finalSrc = isUrlEmpty || hasError ? PLACEHOLDERS[section] : item.image!
+  const finalSrc = getEntityImage(hasError ? null : item.imageUrl, SECTION_MAP[section])
 
   return (
     <div className='relative group'>
@@ -41,6 +38,22 @@ const EncyclopediaImage: React.FC<{ item: EncyclopediaItem; section: Encyclopedi
   )
 }
 
+const StatBox: React.FC<{ label: string; value: number | string; icon?: React.ReactNode }> = ({
+  label,
+  value,
+  icon,
+}) => (
+  <div className='flex flex-col items-center justify-center rounded-lg border border-neutral-800 bg-neutral-900/50 p-3'>
+    <span className='text-[10px] font-bold uppercase tracking-widest text-neutral-500'>
+      {label}
+    </span>
+    <div className='mt-1 flex items-center gap-1'>
+      {icon && <span className='text-amber-500/60'>{icon}</span>}
+      <span className='font-mono text-lg font-bold text-amber-500'>{value}</span>
+    </div>
+  </div>
+)
+
 export const DetailView: React.FC<DetailViewProps> = ({ item, activeSection }) => {
   return (
     <main className='relative flex-1 overflow-y-auto bg-[radial-gradient(circle_at_top_right,var(--tw-gradient-stops))] from-neutral-900/20 via-transparent to-transparent'>
@@ -54,51 +67,80 @@ export const DetailView: React.FC<DetailViewProps> = ({ item, activeSection }) =
             transition={{ duration: 0.3 }}
             className='flex h-full flex-col lg:flex-row'
           >
+            {/* Image Column */}
             <div className='flex flex-1 items-center justify-center p-8 lg:p-12'>
               <EncyclopediaImage key={item.id} item={item} section={activeSection} />
             </div>
 
-            <div className='w-full max-w-md border-l border-neutral-800/50 bg-neutral-900/30 p-8 backdrop-blur-md lg:p-12'>
+            {/* Info Column */}
+            <div className='w-full max-w-lg border-l border-neutral-800/50 bg-neutral-900/30 p-8 backdrop-blur-md lg:p-12'>
               <header className='mb-8'>
                 <div className='flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-500/60'>
                   <Info className='h-3 w-3' />
                   {activeSection.replace('-', ' ')}
+                  {'rarity' in item && <span>• {item.rarity}</span>}
                 </div>
                 <h2 className='font-medieval mt-2 text-4xl text-neutral-100'>{item.name}</h2>
               </header>
 
-              <div className='space-y-6'>
+              <div className='space-y-8'>
                 <div>
                   <h3 className='text-xs font-bold uppercase tracking-widest text-neutral-500'>
                     Descripción
                   </h3>
-                  <p className='mt-2 leading-relaxed text-neutral-300'>{item.description}</p>
+                  <p className='mt-3 leading-relaxed text-neutral-300'>{'Sin descripción.'}</p>
                 </div>
 
-                {item.type === 'bestiary' && (
-                  <div>
+                {/* Stats for Monsters & Characters (checked by common properties in Prisma models) */}
+                {'strength' in item && !('rarity' in item) && (
+                  <div className='space-y-4'>
                     <h3 className='text-xs font-bold uppercase tracking-widest text-neutral-500'>
-                      Estadísticas
+                      Atributos
                     </h3>
-                    <p className='mt-2 font-mono text-sm text-amber-200/80'>{item.stats}</p>
+                    <div className='grid grid-cols-3 gap-3'>
+                      <StatBox label='AC' value={item.ac} icon={<Shield className='h-3 w-3' />} />
+                      <StatBox
+                        label='HP'
+                        value={'maxHp' in item ? item.maxHp : 'Instancia'}
+                        icon={<Heart className='h-3 w-3' />}
+                      />
+                      <StatBox
+                        label='Speed'
+                        value={`${item.speed}ft`}
+                        icon={<Activity className='h-3 w-3' />}
+                      />
+                    </div>
+                    <div className='grid grid-cols-6 gap-2'>
+                      <StatBox label='STR' value={item.strength} />
+                      <StatBox label='DEX' value={item.dexterity} />
+                      <StatBox label='CON' value={item.constitution} />
+                      <StatBox label='INT' value={item.intelligence} />
+                      <StatBox label='WIS' value={item.wisdom} />
+                      <StatBox label='CHA' value={item.charisma} />
+                    </div>
                   </div>
                 )}
 
-                {item.type === 'dramatis-personae' && (
-                  <div>
+                {/* Specifics for Items */}
+                {'rarity' in item && (
+                  <div className='space-y-4'>
                     <h3 className='text-xs font-bold uppercase tracking-widest text-neutral-500'>
-                      Rol
+                      Propiedades
                     </h3>
-                    <p className='mt-2 text-neutral-300'>{item.role}</p>
-                  </div>
-                )}
-
-                {item.type === 'museum' && (
-                  <div>
-                    <h3 className='text-xs font-bold uppercase tracking-widest text-neutral-500'>
-                      Origen
-                    </h3>
-                    <p className='mt-2 text-neutral-300'>{item.origin}</p>
+                    <div className='grid grid-cols-2 gap-4'>
+                      <div className='rounded-lg border border-neutral-800 bg-neutral-900/50 p-4'>
+                        <span className='text-[10px] font-bold uppercase text-neutral-500'>
+                          Categoría
+                        </span>
+                        <p className='mt-1 font-medium text-neutral-200'>{item.category}</p>
+                      </div>
+                      <div className='rounded-lg border border-neutral-800 bg-neutral-900/50 p-4'>
+                        <span className='text-[10px] font-bold uppercase text-neutral-500'>
+                          Valor
+                        </span>
+                        <p className='mt-1 font-mono text-amber-500'>{item.value} po</p>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
