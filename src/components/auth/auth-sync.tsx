@@ -16,37 +16,38 @@ export async function AuthSync() {
     }
 
     const fullName = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim()
-    const supabase = await createClient()
+    const supabase = createClient()
 
     // Buscamos si el usuario ya existe por email
     const { data: existingUser } = await supabase
-      .from('users')
-      .select('id, clerk_id')
+      .from('User')
+      .select('id, clerkId')
       .eq('email', email)
       .single()
 
-    if (existingUser && existingUser.clerk_id !== userId) {
-      // Actualizamos el clerk_id si es diferente
+    if (existingUser && existingUser.clerkId !== userId) {
+      // Actualizamos el clerkId si es diferente
       await supabase
-        .from('users')
+        .from('User')
         .update({
-          clerk_id: userId,
+          clerkId: userId,
           name: fullName,
           image: user.imageUrl,
-          updated_at: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
         })
         .eq('email', email)
     } else {
-      // Upsert basado en clerk_id
+      // Upsert basado en clerkId
       await supabase
-        .from('users')
+        .from('User')
         .upsert({
-          clerk_id: userId,
+          id: crypto.randomUUID(),
+          clerkId: userId,
           email,
           name: fullName,
           image: user.imageUrl,
-          updated_at: new Date().toISOString(),
-        }, { onConflict: 'clerk_id' })
+          updatedAt: new Date().toISOString(),
+        }, { onConflict: 'clerkId' })
     }
   } catch (error) {
     console.error('❌ Error syncing user to Supabase:', error)

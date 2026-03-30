@@ -42,7 +42,7 @@ export async function POST(req: Request) {
 
   const { id } = evt.data
   const eventType = evt.type
-  const supabase = await createClient()
+  const supabase = createClient()
 
   if (eventType === 'user.created' || eventType === 'user.updated') {
     const { email_addresses, first_name, last_name, image_url } = evt.data
@@ -50,8 +50,9 @@ export async function POST(req: Request) {
     const name = `${first_name || ''} ${last_name || ''}`.trim()
 
     const { error } = await supabase
-      .from('users')
+      .from('User')
       .upsert({
+        id: crypto.randomUUID(),
         clerkId: id,
         email: email,
         name: name,
@@ -67,7 +68,7 @@ export async function POST(req: Request) {
 
   if (eventType === 'user.deleted') {
     const { error } = await supabase
-      .from('users')
+      .from('User')
       .delete()
       .eq('clerkId', id)
 

@@ -5,9 +5,9 @@ import { EncyclopediaItem } from '@/components/encyclopedia/types'
  * Obtiene los monstruos disponibles para el usuario.
  */
 export async function getBestiaryItems(): Promise<EncyclopediaItem[]> {
-  const supabase = await createClient()
+  const supabase = createClient()
   const { data, error } = await supabase
-    .from('monster_templates')
+    .from('MonsterTemplate')
     .select('*')
     .order('name', { ascending: true })
 
@@ -16,16 +16,16 @@ export async function getBestiaryItems(): Promise<EncyclopediaItem[]> {
     return []
   }
 
-  return data.map(item => ({ ...item, type: 'bestiary' } as EncyclopediaItem))
+  return data.map(item => ({ ...item, monsterType: item.type, type: 'bestiary' } as EncyclopediaItem))
 }
 
 /**
  * Obtiene las plantillas de personajes.
  */
 export async function getCharacterTemplates(): Promise<EncyclopediaItem[]> {
-  const supabase = await createClient()
+  const supabase = createClient()
   const { data, error } = await supabase
-    .from('character_templates')
+    .from('CharacterTemplate')
     .select('*')
     .order('name', { ascending: true })
 
@@ -41,9 +41,9 @@ export async function getCharacterTemplates(): Promise<EncyclopediaItem[]> {
  * Obtiene los ítems del museo.
  */
 export async function getMuseumItems(): Promise<EncyclopediaItem[]> {
-  const supabase = await createClient()
+  const supabase = createClient()
   const { data, error } = await supabase
-    .from('item_templates')
+    .from('ItemTemplate')
     .select('*')
     .order('name', { ascending: true })
 
