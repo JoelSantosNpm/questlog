@@ -22,7 +22,7 @@ Hemos completado **M3-01 (Reestructuración de Datos)**: migración a columnas a
 - **Testing (Unit/Integration):** Vitest 4.x + Testing Library. Config: `vitest.config.ts`. Setup: `vitest.setup.ts`.
   - Tests existentes: `src/lib/carousel-utils.test.ts` (6), `src/components/campaigns/creation/CampaignCreationForm.test.tsx` (6). Total: 12 tests.
 - **Testing (E2E):** Playwright con auth via `@clerk/testing`. Config: `playwright.config.ts`. Tests: `e2e/portal-de-piedra.spec.ts` (3 tests: AC 3.1, 3.2, 3.3). Requiere `E2E_CLERK_USER_EMAIL` en `.env`.
-- **Auth & DB:** Clerk (Auth), Supabase (PostgreSQL). El cliente `@supabase/supabase-js` con `service_role` key se usa directamente desde el servidor para todas las operaciones de base de datos. Prisma se mantiene solo como herramienta de migraciones (schema + SQL histórico).
+- **Auth & DB:** Clerk (Auth), Supabase (PostgreSQL). El cliente `@supabase/supabase-js` con `service_role` key se usa directamente desde el servidor para todas las operaciones de base de datos. Prisma se mantiene en `devDependencies` como única fuente de verdad del schema: genera tipos TypeScript via `prisma generate` (usados como `import type`, cero impacto en bundle) y gestiona migraciones SQL via CLI.
 
 ### Layout Global (`src/app/layout.tsx`)
 
@@ -169,9 +169,10 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
     - ✅ `prisma.config.ts` eliminado.
     - ✅ `src/lib/supabase/server.ts` reescrito con `service_role` key (sin RLS, equiv. Prisma).
     - ✅ `campaign-actions.ts`, `campaign-queries.ts`, `encyclopedia-queries.ts`, `auth-sync.tsx`, `webhooks/clerk/route.ts`: todos migrados a cliente Supabase nativo con nombres de tabla PascalCase.
-    - ✅ `encyclopedia/types.ts` recreado con tipos manuales (sin `@prisma/client`).
-    - ✅ Dependencias `@prisma/client`, `@prisma/adapter-pg`, `prisma`, `pg` eliminadas de `package.json`.
-  - _AC:_ ✅ La app funciona sin Prisma en runtime. Prisma solo permanece en `prisma/schema.prisma` como documentación estructural y fuente de migraciones SQL históricas.
+    - ✅ `encyclopedia/types.ts` migrado a `import type` desde `@prisma/client` (generado, sin runtime).
+    - ✅ `@prisma/adapter-pg` y `pg` eliminados. `@prisma/client` y `prisma` movidos a `devDependencies`.
+    - ✅ `build` script actualizado: `prisma generate && next build` para que Vercel genere los tipos.
+  - _AC:_ ✅ La app funciona sin Prisma en runtime. `schema.prisma` es la única fuente de verdad: tipos TypeScript (via `prisma generate`) + migraciones SQL (via CLI).
 
 - [x] **M3-00: Infraestructura de Imágenes (Storage)**
   - _Tareas:_

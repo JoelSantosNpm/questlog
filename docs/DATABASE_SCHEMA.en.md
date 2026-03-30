@@ -73,7 +73,11 @@ Questlog does not only check who the owner is. The `AccessGrant` table allows:
 
 ## ⚙️ Schema Management & Migrations
 
-The schema is defined in `prisma/schema.prisma` as the **structural source of truth**, but Prisma is **not used at runtime**. All database access is handled directly by the `@supabase/supabase-js` client using the `service_role` key on the server.
+The schema is defined in `prisma/schema.prisma` as the **single source of truth**. Prisma is **not used at runtime** — its role in this project is:
+
+- **TypeScript types:** `prisma generate` generates types from the schema. Imported with `import type` (zero production bundle impact).
+- **SQL migrations:** the CLI generates and tracks the migration history.
+- **Runtime queries:** `@supabase/supabase-js` with the `service_role` key (no ORM).
 
 ### Applying migrations
 
@@ -90,8 +94,9 @@ supabase db push
 ### Creating a new schema change
 
 1. Modify `prisma/schema.prisma`.
-2. Generate the migration SQL: `npx prisma migrate diff --from-schema-datasource prisma/schema.prisma --to-schema-datamodel prisma/schema.prisma --script`
-3. Apply the resulting SQL in Supabase.
+2. Regenerate TypeScript types: `npx prisma generate`
+3. Generate the migration SQL: `npx prisma migrate diff --from-schema-datasource prisma/schema.prisma --to-schema-datamodel prisma/schema.prisma --script`
+4. Apply the resulting SQL in Supabase.
 
 ### Required environment variables
 
