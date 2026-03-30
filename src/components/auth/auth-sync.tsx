@@ -1,5 +1,5 @@
 import { auth, currentUser } from '@clerk/nextjs/server'
-import prisma from '@/lib/prisma'
+import { createClient } from '@/lib/supabase/server'
 
 export async function AuthSync() {
   const { userId } = await auth()
@@ -15,22 +15,41 @@ export async function AuthSync() {
       return null
     }
 
-    await prisma.user.upsert({
-      where: { clerkId: userId },
-      update: {
-        email,
-        name: `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim(),
-        image: user.imageUrl,
-      },
-      create: {
-        clerkId: userId,
-        email,
-        name: `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim(),
-        image: user.imageUrl,
-      },
-    })
+    const fullName = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim()
+    const supabase = await createClient()
+
+    // Buscamos si el usuario ya existe por email
+    const { data: existingUser } = await supabase
+      .from('users')
+      .select('id, clerk_id')
+      .eq('email', email)
+      .single()
+
+    if (existingUser && existingUser.clerk_id !== userId) {
+      // Actualizamos el clerk_id si es diferente
+      await supabase
+        .from('users')
+        .update({
+          clerk_id: userId,
+          name: fullName,
+          image: user.imageUrl,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('email', email)
+    } else {
+      // Upsert basado en clerk_id
+      await supabase
+        .from('users')
+        .upsert({
+          clerk_id: userId,
+          email,
+          name: fullName,
+          image: user.imageUrl,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'clerk_id' })
+    }
   } catch (error) {
-    console.error('❌ Error syncing user to Database:', error)
+    console.error('❌ Error syncing user to Supabase:', error)
   }
 
   return null
