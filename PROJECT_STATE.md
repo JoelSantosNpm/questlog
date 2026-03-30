@@ -1,12 +1,12 @@
 ﻿# Estado del Proyecto: Questlog
 
-**Última actualización:** 17 de Marzo de 2026
-**Rama actual:** m2-03-testing-la-creación-de-campañas
+**Última actualización:** 30 de Marzo de 2026
+**Rama actual:** m3-02page-enciclopedia
 
 ## 📌 Resumen de Progreso
 
-Arquitectura base y **Milestone M1 (Auth & Infra)** completados.
-Hemos completado **M2-01 (Dashboard)** y **M2-02 (Formulario de Creación de Aventuras)**. Se diseñó una Landing page, una interfaz de atrezzo para las campañas, y un sofisticado _wizard_ animado usando framer-motion, zustand, react-hook-form y sileo para la creación de la narrativa.
+Arquitectura base y **Milestone M1 (Auth & Infra)** completados. **M2 (Gestión de Campañas)** completado al 100%.
+Hemos completado **M3-01 (Reestructuración de Datos)**: migración a columnas atómicas de stats, nuevas tablas `ItemTemplate` y `AccessGrant`, enum `Rarity`, y documentación del schema bilingüe. Hemos completado también **A02 (Eliminar Prisma)**: la app usa ahora el cliente Supabase JS directamente, sin ORM. Iniciamos **M3-02: Hub de la Enciclopedia y Navegación**.
 
 ---
 
@@ -22,7 +22,7 @@ Hemos completado **M2-01 (Dashboard)** y **M2-02 (Formulario de Creación de Ave
 - **Testing (Unit/Integration):** Vitest 4.x + Testing Library. Config: `vitest.config.ts`. Setup: `vitest.setup.ts`.
   - Tests existentes: `src/lib/carousel-utils.test.ts` (6), `src/components/campaigns/creation/CampaignCreationForm.test.tsx` (6). Total: 12 tests.
 - **Testing (E2E):** Playwright con auth via `@clerk/testing`. Config: `playwright.config.ts`. Tests: `e2e/portal-de-piedra.spec.ts` (3 tests: AC 3.1, 3.2, 3.3). Requiere `E2E_CLERK_USER_EMAIL` en `.env`.
-- **Auth & DB:** Clerk (Auth), Supabase (PostgreSQL), Prisma ORM.
+- **Auth & DB:** Clerk (Auth), Supabase (PostgreSQL). El cliente `@supabase/supabase-js` con `service_role` key se usa directamente desde el servidor para todas las operaciones de base de datos. Prisma se mantiene solo como herramienta de migraciones (schema + SQL histórico).
 
 ### Layout Global (`src/app/layout.tsx`)
 
@@ -161,6 +161,18 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
 
 ### M3: La Forja de la Enciclopedia (Datos, Imágenes y Estructuras) [EN PROGRESO]
 
+- [x] **A02: Eliminación de Prisma como ORM de runtime** [COMPLETADO]
+  - _Objetivo:_ Simplificar el stack eliminando la dependencia de Prisma en runtime, usando el cliente Supabase JS directamente.
+  - _Cambios realizados:_
+    - ✅ `src/lib/prisma.ts` eliminado.
+    - ✅ `src/services/campaign-service.ts` eliminado (sin uso).
+    - ✅ `prisma.config.ts` eliminado.
+    - ✅ `src/lib/supabase/server.ts` reescrito con `service_role` key (sin RLS, equiv. Prisma).
+    - ✅ `campaign-actions.ts`, `campaign-queries.ts`, `encyclopedia-queries.ts`, `auth-sync.tsx`, `webhooks/clerk/route.ts`: todos migrados a cliente Supabase nativo con nombres de tabla PascalCase.
+    - ✅ `encyclopedia/types.ts` recreado con tipos manuales (sin `@prisma/client`).
+    - ✅ Dependencias `@prisma/client`, `@prisma/adapter-pg`, `prisma`, `pg` eliminadas de `package.json`.
+  - _AC:_ ✅ La app funciona sin Prisma en runtime. Prisma solo permanece en `prisma/schema.prisma` como documentación estructural y fuente de migraciones SQL históricas.
+
 - [x] **M3-00: Infraestructura de Imágenes (Storage)**
   - _Tareas:_
     1. ✅ Bucket `questlog-assets` creado en Supabase (Público).
@@ -228,12 +240,12 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
 
 ## 📝 Siguientes Pasos Inmediatos
 
-1. **M3-01: Módulo de Inventario y Tesoros** ← SIGUIENTE
-   - Empezar modelo de inventario en Prisma.
-   - Reflejar objetos en el dashboard individual `[id]` de cada aventura.
+1. **M3-02: Hub de la Enciclopedia** ← EN PROGRESO
+   - Completar navegación entre secciones y filtros.
+   - Conectar datos reales de `MonsterTemplate`, `CharacterTemplate`, `ItemTemplate` desde Supabase.
 
-2. **M3-02: Bestiario y Fichas de Monstruos**
-   - Buscador de monstruos + Ficha técnica (HP, AC, Stats).
+2. **M3-03: Bestiario y Fichas de Monstruos**
+   - Ver nota de deuda de schema en esa tarea.
 
 ---
 

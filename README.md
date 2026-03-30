@@ -13,6 +13,7 @@
 - **The Stone Portal:** 3D perspective circular carousel to navigate between campaigns, with keyboard support and immersive animations.
 - **Authentication (Clerk):** Secure sign-in/sign-up with automatic profile sync to the database (_Lazy Sync_).
 - **Adventure Creation:** An animated multi-step _wizard_ that weaves your inputs into campaign lore, powered by Zustand + React Hook Form + Framer Motion.
+- **Encyclopedia Hub:** Three-tab knowledge base (Bestiary, Dramatis Personae, Museum) with animated detail view and section-based navigation.
 
 ---
 
@@ -65,8 +66,7 @@ Every piece of the stack was chosen to serve a specific purpose in the user expe
 
 ### Backend & Infrastructure (Robustness)
 
-- **[Supabase (PostgreSQL)](https://supabase.com/):** Powerful relational database for managing complex quest, character, and item networks.
-- **[Prisma ORM](https://www.prisma.io/):** Provides Type Safety across the entire data layer.
+- **[Supabase (PostgreSQL)](https://supabase.com/):** Powerful relational database. The `@supabase/supabase-js` client is used directly for all server-side queries, bypassing the need for a separate ORM layer.
 - **[Clerk](https://clerk.com/):** Professional-grade authentication with automatic profile synchronization.
 
 ---
@@ -80,11 +80,18 @@ Every piece of the stack was chosen to serve a specific purpose in the user expe
    npm install
    ```
 
-2. **Env Variables:** Create a `.env` file based on `.env.example`.
-3. **Database:**
+2. **Env Variables:** Create a `.env` file with the following keys:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=
+   SUPABASE_SERVICE_ROLE_KEY=
+   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+   CLERK_SECRET_KEY=
+   CLERK_WEBHOOK_SECRET=
+   ```
+3. **Database:** Apply the SQL migrations from `prisma/migrations/` via the Supabase SQL Editor, or use the Supabase CLI:
    ```bash
-   npx prisma generate
-   npx prisma migrate dev
+   supabase db push
    ```
 4. **Run Server:**
    ```bash
@@ -142,15 +149,9 @@ E2E_CLERK_USER_EMAIL=your-test-user@example.com
 
 The user must already exist in Clerk and have logged in at least once to sync their record.
 
-### Cascade Deletion Tests (Data Integrity)
+### Cascade Deletion
 
-To verify that deletion rules (_Cascade vs SetNull_) protect player data, run:
-
-```bash
-npx tsx --env-file=.env prisma/test-cascade.ts
-```
-
-This script simulates critical scenarios (delete GM, delete Campaign, delete Player) and validates that, for example, characters survive even if their campaign is deleted.
+Deletion rules (_Cascade vs SetNull_) are defined at the database level in the migration SQL files under `prisma/migrations/`. See [Data Schema Guide](docs/DATABASE_SCHEMA.en.md) for the full breakdown.
 
 ---
 
@@ -171,7 +172,7 @@ src/
 │   └── campaign-actions.ts     # Server Actions (create campaign, etc.)
 ├── components/
 │   ├── auth/
-│   │   └── auth-sync.tsx       # Lazy sync: Clerk → Prisma
+│   │   └── auth-sync.tsx       # Lazy sync: Clerk → Supabase
 │   ├── campaigns/creation/     # Multi-step campaign creation form
 │   │   ├── CampaignCreationProvider.tsx  # RHF + Zustand context root
 │   │   ├── CampaignCreationForm.tsx      # Animated narrative form
@@ -185,17 +186,18 @@ src/
 │   ├── clerk-theme.ts          # Grimdark custom theme for Clerk
 │   └── routes/auth.ts          # Public/protected route constants
 ├── data/
-│   └── campaign-queries.ts     # Prisma read queries
+│   ├── campaign-queries.ts     # Supabase read queries (campaigns)
+│   └── encyclopedia-queries.ts # Supabase read queries (bestiary, items, characters)
 ├── lib/
-│   ├── prisma.ts               # Prisma singleton with PrismaPg adapter
+│   ├── supabase/               # Supabase client factory (server + client)
 │   └── notifications.ts        # Toast notification helpers
 ├── hooks/ui/                   # Generic UI hooks (useCarousel)
 ├── providers/                  # App-level providers (AuthProvider)
 └── types/                      # Shared TypeScript types
 prisma/
-├── schema.prisma               # Database schema
+├── schema.prisma               # Database schema (source of truth for structure)
 ├── seed.ts                     # Database seeding script
-└── test-cascade.ts             # Cascade deletion integrity tests
+└── migrations/                 # SQL migration history
 src/proxy.ts                    # Route protection middleware
 ```
 

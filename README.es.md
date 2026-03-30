@@ -13,6 +13,7 @@
 - **El Portal de Piedra:** Carrusel circular 3D con perspectiva para navegar entre campañas, con soporte de teclado y animaciones inmersivas.
 - **Autenticación (Clerk):** Registro e inicio de sesión seguros con sincronización automática de perfiles en la base de datos (_Lazy Sync_).
 - **Creación de Aventuras:** Un _wizard_ animado multipaso que teje tus inputs en narrativa de campaña, impulsado por Zustand + React Hook Form + Framer Motion.
+- **Hub de la Enciclopedia:** Base de conocimiento con tres pestañas (Bestiario, Dramatis Personae, Museo), vista de detalle animada y navegación por sección.
 
 ---
 
@@ -65,8 +66,7 @@ Cada pieza del stack ha sido elegida para cumplir un propósito específico en l
 
 ### Backend e Infraestructura (Robustez)
 
-- **[Supabase (PostgreSQL)](https://supabase.com/):** Base de datos relacional potente para manejar las complejas redes de misiones, personajes e ítems.
-- **[Prisma ORM](https://www.prisma.io/):** Proporciona seguridad de tipos (Type Safety) en toda la capa de datos.
+- **[Supabase (PostgreSQL)](https://supabase.com/):** Base de datos relacional potente para manejar las complejas redes de misiones, personajes e ítems. El cliente `@supabase/supabase-js` se usa directamente para todas las consultas del servidor, sin necesidad de una capa ORM adicional.
 - **[Clerk](https://clerk.com/):** Autenticación de nivel profesional con sincronización automática de perfiles.
 
 ---
@@ -80,11 +80,18 @@ Cada pieza del stack ha sido elegida para cumplir un propósito específico en l
    npm install
    ```
 
-2. **Variables de Env:** Crea un archivo `.env` basándote en `.env.example`.
-3. **Base de Datos:**
+2. **Variables de Env:** Crea un archivo `.env` con las siguientes claves:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=
+   SUPABASE_SERVICE_ROLE_KEY=
+   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+   CLERK_SECRET_KEY=
+   CLERK_WEBHOOK_SECRET=
+   ```
+3. **Base de Datos:** Aplica las migraciones SQL de `prisma/migrations/` desde el SQL Editor de Supabase, o usa la CLI:
    ```bash
-   npx prisma generate
-   npx prisma migrate dev
+   supabase db push
    ```
 4. **Lanzar Servidor:**
    ```bash
@@ -142,15 +149,9 @@ E2E_CLERK_USER_EMAIL=tu-usuario-de-prueba@ejemplo.com
 
 El usuario debe existir en Clerk y haber iniciado sesión en la app al menos una vez para sincronizar su registro.
 
-### Pruebas de Integridad (Borrado en Cascada)
+### Integridad de Datos (Borrado en Cascada)
 
-Para verificar que las reglas de borrado (_Cascade vs SetNull_) protegen los datos de los jugadores, puedes ejecutar:
-
-```bash
-npx tsx --env-file=.env prisma/test-cascade.ts
-```
-
-Este script simula escenarios críticos (borrar GM, borrar Campaña, borrar Jugador) y valida que, por ejemplo, los personajes sobrevivan aunque su campaña sea eliminada.
+Las reglas de borrado (_Cascade vs SetNull_) están definidas a nivel de base de datos en los archivos SQL de `prisma/migrations/`. Consulta la [Guía del Esquema de Datos](docs/DATABASE_SCHEMA.md) para el desglose completo.
 
 ---
 
@@ -171,7 +172,7 @@ src/
 │   └── campaign-actions.ts     # Server Actions (crear campaña, etc.)
 ├── components/
 │   ├── auth/
-│   │   └── auth-sync.tsx       # Sincronización perezosa: Clerk → Prisma
+│   │   └── auth-sync.tsx       # Sincronización perezosa: Clerk → Supabase
 │   ├── campaigns/creation/     # Formulario multipaso de creación de campaña
 │   │   ├── CampaignCreationProvider.tsx  # Raíz de contexto RHF + Zustand
 │   │   ├── CampaignCreationForm.tsx      # Formulario narrativo animado
@@ -185,17 +186,18 @@ src/
 │   ├── clerk-theme.ts          # Tema personalizado Grimdark para Clerk
 │   └── routes/auth.ts          # Constantes de rutas públicas/protegidas
 ├── data/
-│   └── campaign-queries.ts     # Consultas de lectura de Prisma
+│   ├── campaign-queries.ts     # Consultas de lectura Supabase (campañas)
+│   └── encyclopedia-queries.ts # Consultas de lectura Supabase (bestiario, ítems, personajes)
 ├── lib/
-│   ├── prisma.ts               # Singleton de Prisma con adaptador PrismaPg
+│   ├── supabase/               # Factory del cliente Supabase (server + client)
 │   └── notifications.ts        # Ayudantes para notificaciones toast
 ├── hooks/ui/                   # Hooks genéricos de UI (useCarousel)
 ├── providers/                  # Proveedores a nivel de app (AuthProvider)
 └── types/                      # Tipos TypeScript compartidos
 prisma/
-├── schema.prisma               # Esquema de la base de datos
+├── schema.prisma               # Esquema de la base de datos (fuente de verdad estructural)
 ├── seed.ts                     # Script de seeding de la base de datos
-└── test-cascade.ts             # Tests de integridad de borrado en cascada
+└── migrations/                 # Historial de migraciones SQL
 src/proxy.ts                    # Middleware de protección de rutas
 ```
 
