@@ -49,16 +49,17 @@ export async function POST(req: Request) {
     const email = email_addresses[0]?.email_address
     const name = `${first_name || ''} ${last_name || ''}`.trim()
 
-    const { error } = await supabase
-      .from('User')
-      .upsert({
+    const { error } = await supabase.from('User').upsert(
+      {
         id: crypto.randomUUID(),
         clerkId: id,
         email: email,
         name: name,
         image: image_url,
         updatedAt: new Date().toISOString(),
-      }, { onConflict: 'clerkId' })
+      },
+      { onConflict: 'clerkId' }
+    )
 
     if (error) {
       console.error('❌ Error syncing user via Webhook:', error)
@@ -67,10 +68,7 @@ export async function POST(req: Request) {
   }
 
   if (eventType === 'user.deleted') {
-    const { error } = await supabase
-      .from('User')
-      .delete()
-      .eq('clerkId', id)
+    const { error } = await supabase.from('User').delete().eq('clerkId', id)
 
     if (error) {
       console.error('❌ Error deleting user via Webhook:', error)
