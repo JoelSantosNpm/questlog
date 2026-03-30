@@ -17,14 +17,11 @@ export const STORAGE_PATHS = {
   },
 }
 
-/**
- * Helper para obtener la imagen con fallback automático
- */
 export function getEntityImage(
   imageUrl: string | null,
   section: 'BESTIARY' | 'MUSEUM' | 'DRAMATIS_PERSONAE'
 ): string {
-  if (imageUrl) return imageUrl
+  if (imageUrl && imageUrl.trim() !== '') return imageUrl
 
   switch (section) {
     case 'BESTIARY':
