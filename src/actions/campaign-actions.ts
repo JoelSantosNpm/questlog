@@ -1,9 +1,8 @@
 'use server'
 
-import prisma from '@/lib/prisma'
+import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { auth } from '@clerk/nextjs/server'
-import { Campaign } from '@prisma/client'
 
 export type ActionResponse<T = void> = {
   success: boolean
@@ -18,27 +17,46 @@ export interface CreateCampaignDTO {
   system?: string
   location?: string
   isPrivate?: boolean
-  nextSession?: Date
+  nextSession?: string
 }
 
 export interface UpdateCampaignDTO extends Partial<CreateCampaignDTO> {
   id: string
 }
 
-export async function createCampaign(data: CreateCampaignDTO): Promise<ActionResponse<Campaign>> {
+export async function createCampaign(data: CreateCampaignDTO): Promise<ActionResponse> {
   try {
-    const { userId } = await auth()
-
-    if (!userId) {
-      return { success: false, message: 'No estás autorizado' }
-    }
-
     if (!data.name?.trim()) {
       return { success: false, message: 'El nombre de la campaña es obligatorio' }
     }
 
-    const campaign = await prisma.campaign.create({
-      data: {
+    const supabase = createClient()
+    const { userId: clerkId } = await auth()
+
+    if (!clerkId) {
+      return { success: false, message: 'No se pudo identificar la sesión de Clerk' }
+    }
+
+    // Obtenemos el ID interno del usuario en la tabla 'users' de Supabase
+    const { data: userData, error: userError } = await supabase
+      .from('User')
+      .select('id')
+      .eq('clerkId', clerkId)
+      .single()
+
+    if (userError || !userData) {
+      console.error('❌ Error al encontrar usuario en Supabase:', userError)
+      return {
+        success: false,
+        message:
+          'Tu usuario aún no está sincronizado en la base de datos. Por favor, refresca la página.',
+      }
+    }
+
+    const { data: campaign, error } = await supabase
+      .from('Campaign')
+      .insert({
+        id: crypto.randomUUID(),
         name: data.name,
         description: data.description,
         imageUrl: data.imageUrl,
@@ -46,15 +64,17 @@ export async function createCampaign(data: CreateCampaignDTO): Promise<ActionRes
         location: data.location,
         isPrivate: data.isPrivate ?? true,
         nextSession: data.nextSession,
-        gameMaster: {
-          connect: { clerkId: userId },
-        },
-      },
-    })
+        gameMasterId: userData.id,
+        updatedAt: new Date().toISOString(),
+      })
+      .select()
+      .single()
 
-    revalidatePath('/campaigns') // Revalidación de los portales
-    revalidatePath('/colosseum') // Revalidación del dashboard
-    revalidatePath('/') // Revalidación global por si acaso
+    if (error) throw error
+
+    revalidatePath('/campaigns')
+    revalidatePath('/colosseum')
+    revalidatePath('/')
 
     return {
       success: true,
@@ -62,40 +82,21 @@ export async function createCampaign(data: CreateCampaignDTO): Promise<ActionRes
       data: campaign,
     }
   } catch (error) {
-    console.error('Error al crear campaña:', error)
-    return { success: false, message: 'Ocurrió un error al crear la campaña' }
+    const msg = error instanceof Error ? error.message : JSON.stringify(error)
+    console.error('❌ Error al crear campaña:', msg)
+    return { success: false, message: `Error: ${msg}` }
   }
 }
 
-export async function updateCampaign(data: UpdateCampaignDTO): Promise<ActionResponse<Campaign>> {
+export async function updateCampaign(data: UpdateCampaignDTO): Promise<ActionResponse> {
   try {
-    const { userId } = await auth()
+    if (!data.id) return { success: false, message: 'El ID es requerido' }
 
-    if (!userId) {
-      return { success: false, message: 'No estás autorizado' }
-    }
+    const supabase = createClient()
 
-    if (!data.id) {
-      return { success: false, message: 'El ID de la campaña es requerido' }
-    }
-
-    // Verificar si existe y si el usuario es el dueño (gameMaster) a través de Clerk
-    const existing = await prisma.campaign.findUnique({
-      where: { id: data.id },
-      include: { gameMaster: true },
-    })
-
-    if (!existing) {
-      return { success: false, message: 'Campaña no encontrada' }
-    }
-
-    if (existing.gameMaster.clerkId !== userId) {
-      return { success: false, message: 'No tienes permiso para modificar esta campaña' }
-    }
-
-    const updated = await prisma.campaign.update({
-      where: { id: data.id },
-      data: {
+    const { data: updated, error } = await supabase
+      .from('Campaign')
+      .update({
         name: data.name,
         description: data.description,
         imageUrl: data.imageUrl,
@@ -103,15 +104,20 @@ export async function updateCampaign(data: UpdateCampaignDTO): Promise<ActionRes
         location: data.location,
         isPrivate: data.isPrivate,
         nextSession: data.nextSession,
-      },
-    })
+        updatedAt: new Date().toISOString(),
+      })
+      .eq('id', data.id)
+      .select()
+      .single()
+
+    if (error) throw error
 
     revalidatePath('/colosseum')
     revalidatePath(`/campaigns/${data.id}`)
 
     return {
       success: true,
-      message: `Campaña ${updated.name} actualizada con éxito`,
+      message: `Campaña actualizada con éxito`,
       data: updated,
     }
   } catch (error) {
@@ -122,37 +128,15 @@ export async function updateCampaign(data: UpdateCampaignDTO): Promise<ActionRes
 
 export async function deleteCampaign(campaignId: string): Promise<ActionResponse<void>> {
   try {
-    const { userId } = await auth()
+    const supabase = createClient()
+    const { error } = await supabase.from('Campaign').delete().eq('id', campaignId)
 
-    if (!userId) {
-      return { success: false, message: 'No estás autorizado' }
-    }
-
-    // Verificar si existe y si el usuario autor es dueño usando clerkId
-    const existing = await prisma.campaign.findUnique({
-      where: { id: campaignId },
-      include: { gameMaster: true },
-    })
-
-    if (!existing) {
-      return { success: false, message: 'Campaña no encontrada' }
-    }
-
-    if (existing.gameMaster.clerkId !== userId) {
-      return { success: false, message: 'No tienes permiso para eliminar esta campaña' }
-    }
-
-    await prisma.campaign.delete({
-      where: { id: campaignId },
-    })
+    if (error) throw error
 
     revalidatePath('/colosseum')
     revalidatePath('/')
 
-    return {
-      success: true,
-      message: 'Campaña eliminada correctamente',
-    }
+    return { success: true, message: 'Campaña eliminada' }
   } catch (error) {
     console.error('Error al eliminar campaña:', error)
     return { success: false, message: 'Ocurrió un error al eliminar la campaña' }
