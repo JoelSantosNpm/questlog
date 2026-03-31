@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import Image from 'next/image'
 import { m, AnimatePresence } from 'framer-motion'
 import { Info, Shield, Heart, Activity } from 'lucide-react'
 import { type EncyclopediaSection } from './encyclopediaStore'
@@ -29,12 +30,15 @@ const EncyclopediaImage: React.FC<{ item: EncyclopediaItem; section: Encyclopedi
   return (
     <div className='relative group'>
       <div className='absolute -inset-4 bg-amber-500/10 blur-2xl group-hover:bg-amber-500/20 transition-all rounded-full' />
-      <img
-        src={finalSrc}
-        alt={item.name}
-        onError={() => setHasError(true)}
-        className='relative max-h-[60vh] rounded-2xl border border-neutral-800 object-contain shadow-2xl transition-all duration-500 group-hover:scale-[1.02]'
-      />
+      <div className='relative h-[50vh] w-full max-w-sm'>
+        <Image
+          src={finalSrc}
+          alt={item.name}
+          fill
+          onError={() => setHasError(true)}
+          className='rounded-2xl border border-neutral-800 object-contain shadow-2xl transition-all duration-500 group-hover:scale-[1.02]'
+        />
+      </div>
     </div>
   )
 }
