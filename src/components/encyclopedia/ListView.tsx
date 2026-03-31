@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { Search } from 'lucide-react'
-import { useEncyclopediaStore } from './encyclopediaStore'
+import { useSelectedItemId, useSetSelectedItemId } from './encyclopediaStore'
 import { cn } from '@/shared/utils/styles'
 import { EncyclopediaItem } from './types'
 
@@ -11,7 +11,8 @@ interface ListViewProps {
 }
 
 export const ListView: React.FC<ListViewProps> = ({ items }) => {
-  const { selectedItemId, setSelectedItemId } = useEncyclopediaStore()
+  const selectedItemId = useSelectedItemId()
+  const setSelectedItemId = useSetSelectedItemId()
 
   return (
     <section className='flex w-80 flex-col border-r border-neutral-800/50 bg-neutral-950/40 backdrop-blur-sm'>

@@ -4,10 +4,10 @@ import { EncyclopediaSection } from './encyclopediaStore'
 
 // 'section' discriminador de UI — no colisiona con MonsterTemplate.type (tipo de criatura)
 export type BestiaryItem = MonsterTemplate & { section: 'bestiary' }
-export type DramatisPersonaeItem = CharacterTemplate & { section: 'dramatis-personae' }
+export type CastItem = CharacterTemplate & { section: 'cast' }
 export type MuseumItem = ItemTemplate & { section: 'museum' }
 
-export type EncyclopediaItem = BestiaryItem | DramatisPersonaeItem | MuseumItem
+export type EncyclopediaItem = BestiaryItem | CastItem | MuseumItem
 
 export interface SectionConfig {
   id: EncyclopediaSection

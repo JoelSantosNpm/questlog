@@ -14,7 +14,7 @@ interface DetailViewProps {
 
 const SECTION_MAP: Record<EncyclopediaSection, 'BESTIARY' | 'DRAMATIS_PERSONAE' | 'MUSEUM'> = {
   bestiary: 'BESTIARY',
-  'dramatis-personae': 'DRAMATIS_PERSONAE',
+  cast: 'DRAMATIS_PERSONAE',
   museum: 'MUSEUM',
 }
 
@@ -23,7 +23,8 @@ const EncyclopediaImage: React.FC<{ item: EncyclopediaItem; section: Encyclopedi
   section,
 }) => {
   const [hasError, setHasError] = useState(false)
-  const finalSrc = getEntityImage(hasError ? null : item.imageUrl, SECTION_MAP[section])
+  const fallback = getEntityImage(null, SECTION_MAP[section])
+  const finalSrc = hasError ? fallback : getEntityImage(item.imageUrl, SECTION_MAP[section])
 
   return (
     <div className='relative group'>

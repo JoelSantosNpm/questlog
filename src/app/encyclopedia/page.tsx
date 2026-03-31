@@ -1,12 +1,11 @@
-import React from 'react'
+import { EncyclopediaContainer } from '@/components/encyclopedia/EncyclopediaContainer'
+import { EncyclopediaStoreInitializer } from '@/components/encyclopedia/EncyclopediaStoreInitializer'
 import { SideTabs } from '@/components/encyclopedia/SideTabs'
 import {
   getBestiaryItems,
   getCharacterTemplates,
   getMuseumItems,
 } from '@/data/encyclopedia-queries'
-import { EncyclopediaStoreInitializer } from '@/components/encyclopedia/EncyclopediaStoreInitializer'
-import { EncyclopediaContainer } from '@/components/encyclopedia/EncyclopediaContainer'
 
 export default async function EncyclopediaPage() {
   const [bestiary, characters, museum] = await Promise.all([
@@ -17,7 +16,7 @@ export default async function EncyclopediaPage() {
 
   const allData = {
     bestiary,
-    'dramatis-personae': characters,
+    cast: characters,
     museum,
   }
 
