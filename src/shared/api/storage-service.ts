@@ -1,23 +1,19 @@
-import { getSupabaseClient } from '@/lib/supabase'
+import { getSupabaseClient } from '@/shared/lib/supabase'
 
 export const StorageService = {
   /**
    * Sube un archivo al bucket de Supabase con el token de Clerk.
    */
-  async uploadFile(params: {
-    file: File
-    userId: string
-    category: string
-    token: string
-  }) {
+  async uploadFile(params: { file: File; userId: string; category: string; token: string }) {
     const { file, userId, category, token } = params
     const supabase = getSupabaseClient(token)
 
     const fileExt = file.name.split('.').pop()
-    const cleanFileName = file.name.split('.')[0]
+    const cleanFileName = file.name
+      .split('.')[0]
       .replace(/[^a-z0-9]/gi, '_')
       .toLowerCase()
-    
+
     const filePath = `${userId}/${category}/${Date.now()}-${cleanFileName}.${fileExt}`
 
     const { error: uploadError } = await supabase.storage
@@ -29,10 +25,10 @@ export const StorageService = {
 
     if (uploadError) throw uploadError
 
-    const { data: { publicUrl } } = supabase.storage
-      .from('questlog-assets')
-      .getPublicUrl(filePath)
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from('questlog-assets').getPublicUrl(filePath)
 
     return publicUrl
-  }
+  },
 }

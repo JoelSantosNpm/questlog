@@ -1,9 +1,17 @@
 'use client'
 
-import { StorageService } from '@/services/storage-service'
+import { StorageService } from '@/shared/api/storage-service'
 import { FileValidationSchema } from '@/shared/schemas/storage'
 import { useAuth } from '@clerk/nextjs'
-import { ChangeEvent, useCallback, useEffect, useRef, useState, KeyboardEvent, MouseEvent } from 'react'
+import {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  KeyboardEvent,
+  MouseEvent,
+} from 'react'
 import { sileo } from 'sileo'
 
 interface UseImageUploaderProps {
@@ -13,12 +21,12 @@ interface UseImageUploaderProps {
 
 export function useImageUploader({ onUpload, category }: UseImageUploaderProps) {
   const { getToken, userId } = useAuth()
-  
+
   const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
-  
+
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const clearStates = useCallback(() => {
@@ -40,23 +48,26 @@ export function useImageUploader({ onUpload, category }: UseImageUploaderProps) 
     }
   }, [preview])
 
-  const processFile = useCallback((selectedFile: File) => {
-    clearStates()
+  const processFile = useCallback(
+    (selectedFile: File) => {
+      clearStates()
 
-    // VALIDACIÓN CON ZOD
-    const result = FileValidationSchema.safeParse(selectedFile)
-    
-    if (!result.success) {
-      sileo.error({
-        title: 'Anomalía en el Archivo',
-        description: result.error.issues[0].message,
-      })
-      return
-    }
+      // VALIDACIÓN CON ZOD
+      const result = FileValidationSchema.safeParse(selectedFile)
 
-    setFile(selectedFile)
-    setPreview(URL.createObjectURL(selectedFile))
-  }, [clearStates])
+      if (!result.success) {
+        sileo.error({
+          title: 'Anomalía en el Archivo',
+          description: result.error.issues[0].message,
+        })
+        return
+      }
+
+      setFile(selectedFile)
+      setPreview(URL.createObjectURL(selectedFile))
+    },
+    [clearStates]
+  )
 
   const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0]
@@ -89,12 +100,12 @@ export function useImageUploader({ onUpload, category }: UseImageUploaderProps) 
         file,
         userId,
         category,
-        token
+        token,
       })
 
       onUpload(publicUrl)
       setIsSuccess(true)
-      
+
       sileo.success({
         title: 'Imagen Sellada',
         description: 'La ilustración ha sido guardada en los archivos de la campaña.',
@@ -126,6 +137,6 @@ export function useImageUploader({ onUpload, category }: UseImageUploaderProps) 
     handleKeyDown,
     handleUpload,
     handleReset,
-    processFile
+    processFile,
   }
 }

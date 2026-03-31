@@ -3,9 +3,9 @@
 import React from 'react'
 import { Skull, Users, Landmark } from 'lucide-react'
 import { m } from 'framer-motion'
-import { useActiveSection, useSetActiveSection } from './encyclopediaStore'
+import { useActiveSection, useSetActiveSection } from '../model/encyclopediaStore'
 import { cn } from '@/shared/utils/styles'
-import type { SectionConfig } from './types'
+import type { SectionConfig } from '../model/types'
 
 const SECTIONS: SectionConfig[] = [
   { id: 'bestiary', label: 'Bestiario', icon: Skull },

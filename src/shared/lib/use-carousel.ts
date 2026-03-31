@@ -2,8 +2,8 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { MAX_INDEX, getCircularCarousel } from '../../lib/carousel-utils'
-import { PortalCarouselItem } from '@/types/ui'
+import { MAX_INDEX, getCircularCarousel } from '@/shared/lib/carousel-utils'
+import { PortalCarouselItem } from '@/shared/lib/portal'
 
 export interface CarouselOptions {
   visibleRange?: number

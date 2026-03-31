@@ -1,4 +1,4 @@
-import { AUTH_ROUTES } from '@/config/routes/auth'
+import { AUTH_ROUTES } from '@/shared/config/routes/auth'
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 

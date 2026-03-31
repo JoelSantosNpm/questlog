@@ -6,7 +6,7 @@ import { m, AnimatePresence } from 'framer-motion'
 import { Info, Shield, Heart, Activity } from 'lucide-react'
 import { type EncyclopediaSection } from './encyclopediaStore'
 import { EncyclopediaItem } from './types'
-import { getEntityImage } from '@/lib/storage'
+import { getEntityImage } from '@/shared/lib/storage'
 
 interface DetailViewProps {
   item?: EncyclopediaItem

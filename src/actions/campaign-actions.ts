@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@/shared/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { auth } from '@clerk/nextjs/server'
 

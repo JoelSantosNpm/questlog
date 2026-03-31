@@ -1,4 +1,4 @@
-import { PortalCarouselItem } from '@/types/ui'
+import { PortalCarouselItem } from '@/shared/lib/portal'
 
 export const MAX_INDEX = Number.MAX_SAFE_INTEGER - 100 // Margen de seguridad para evitar overflow
 

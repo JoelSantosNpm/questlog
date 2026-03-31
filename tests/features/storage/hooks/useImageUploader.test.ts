@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
-import { useImageUploader } from '@/components/shared/ui/image-uploader/hooks/useImageUploader'
-import { StorageService } from '@/services/storage-service'
+import { useImageUploader } from '@/shared/ui/image-uploader/hooks/useImageUploader'
+import { StorageService } from '@/shared/api/storage-service'
 import { useAuth } from '@clerk/nextjs'
 import { sileo } from 'sileo'
 

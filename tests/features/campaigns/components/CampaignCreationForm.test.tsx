@@ -8,8 +8,8 @@ import {
   CampaignCreationForm,
   useCampaignStore,
   type CampaignFormValues,
-} from '@/components/campaigns/creation'
-import * as campaignActions from '@/actions/campaign-actions'
+} from '@/views/campaigns/ui/creation'
+import * as campaignActions from '@/views/campaigns/api/campaign-actions'
 
 // ─── Mocks ───────────────────────────────────────────────────────────────────
 

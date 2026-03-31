@@ -1,6 +1,6 @@
 'use client'
 
-import { useActiveSection, useCurrentItems, useSelectedItem } from './encyclopediaStore'
+import { useActiveSection, useCurrentItems, useSelectedItem } from '../model/encyclopediaStore'
 import { ListView } from './ListView'
 import { DetailView } from './DetailView'
 

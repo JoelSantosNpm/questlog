@@ -1,11 +1,13 @@
-import { EncyclopediaContainer } from '@/components/encyclopedia/EncyclopediaContainer'
-import { EncyclopediaStoreInitializer } from '@/components/encyclopedia/EncyclopediaStoreInitializer'
-import { SideTabs } from '@/components/encyclopedia/SideTabs'
+import { EncyclopediaContainer } from '@/views/encyclopedia/ui/EncyclopediaContainer'
+import { EncyclopediaStoreInitializer } from '@/views/encyclopedia/ui/EncyclopediaStoreInitializer'
+import { SideTabs } from '@/views/encyclopedia/ui/SideTabs'
 import {
   getBestiaryItems,
   getCharacterTemplates,
   getMuseumItems,
-} from '@/data/encyclopedia-queries'
+} from '@/views/encyclopedia/api/encyclopedia-queries'
+
+export const dynamic = 'force-dynamic'
 
 export default async function EncyclopediaPage() {
   const [bestiary, characters, museum] = await Promise.all([
