@@ -1,26 +1,28 @@
-import prisma from '@/lib/prisma'
+import { createClient } from '@/lib/supabase/server'
 import { Campaign as PortalCampaign } from '@/types/ui/portal'
-import { auth } from '@clerk/nextjs/server'
 
+/**
+ * Obtiene las campañas del usuario actual.
+ * La seguridad se delega al RLS de Supabase.
+ */
 export async function getUserCampaigns(): Promise<PortalCampaign[]> {
-  const { userId } = await auth()
+  const supabase = createClient()
 
-  if (!userId) return []
+  const { data: campaigns, error } = await supabase
+    .from('Campaign')
+    .select('id, name')
+    .order('createdAt', { ascending: false })
 
-  const campaigns = await prisma.campaign.findMany({
-    where: {
-      gameMaster: {
-        clerkId: userId,
-      },
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-    select: {
-      id: true,
-      name: true,
-    },
-  })
+  if (error) {
+    console.error(
+      '❌ Error fetching campaigns from Supabase:',
+      error.message,
+      error.details,
+      error.hint,
+      error.code
+    )
+    return []
+  }
 
   return campaigns.map((c) => ({
     id: c.id,
@@ -29,17 +31,23 @@ export async function getUserCampaigns(): Promise<PortalCampaign[]> {
   }))
 }
 
+/**
+ * Obtiene una campaña por ID.
+ * El RLS de Supabase garantiza que el usuario tenga acceso.
+ */
 export async function getCampaignById(id: string) {
-  const { userId } = await auth()
+  const supabase = createClient()
 
-  if (!userId) return null
+  const { data: campaign, error } = await supabase
+    .from('Campaign')
+    .select('*')
+    .eq('id', id)
+    .single()
 
-  return prisma.campaign.findFirst({
-    where: {
-      id,
-      gameMaster: {
-        clerkId: userId,
-      },
-    },
-  })
+  if (error) {
+    console.error(`❌ Error fetching campaign ${id}:`, error)
+    return null
+  }
+
+  return campaign
 }
