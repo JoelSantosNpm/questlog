@@ -2,20 +2,10 @@ import type { MonsterTemplate, CharacterTemplate, ItemTemplate } from '@prisma/c
 import { LucideIcon } from 'lucide-react'
 import { EncyclopediaSection } from './encyclopediaStore'
 
-// MonsterTemplate has a 'type' column (e.g. "Undead") that conflicts with the discriminator.
-// We Omit it and expose it as 'monsterType' instead.
-export type BestiaryItem = Omit<MonsterTemplate, 'type'> & {
-  type: 'bestiary'
-  monsterType: string
-}
-
-export type DramatisPersonaeItem = CharacterTemplate & {
-  type: 'dramatis-personae'
-}
-
-export type MuseumItem = ItemTemplate & {
-  type: 'museum'
-}
+// 'section' discriminador de UI — no colisiona con MonsterTemplate.type (tipo de criatura)
+export type BestiaryItem = MonsterTemplate & { section: 'bestiary' }
+export type DramatisPersonaeItem = CharacterTemplate & { section: 'dramatis-personae' }
+export type MuseumItem = ItemTemplate & { section: 'museum' }
 
 export type EncyclopediaItem = BestiaryItem | DramatisPersonaeItem | MuseumItem
 

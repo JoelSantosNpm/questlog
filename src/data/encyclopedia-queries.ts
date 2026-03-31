@@ -16,7 +16,7 @@ export async function getBestiaryItems(): Promise<EncyclopediaItem[]> {
     return []
   }
 
-  return data.map(item => ({ ...item, monsterType: item.type, type: 'bestiary' } as EncyclopediaItem))
+  return data.map((item) => ({ ...item, section: 'bestiary' as const }))
 }
 
 /**
@@ -34,7 +34,7 @@ export async function getCharacterTemplates(): Promise<EncyclopediaItem[]> {
     return []
   }
 
-  return data.map(item => ({ ...item, type: 'dramatis-personae' } as EncyclopediaItem))
+  return data.map((item) => ({ ...item, section: 'dramatis-personae' as const }))
 }
 
 /**
@@ -52,5 +52,5 @@ export async function getMuseumItems(): Promise<EncyclopediaItem[]> {
     return []
   }
 
-  return data.map(item => ({ ...item, type: 'museum' } as EncyclopediaItem))
+  return data.map((item) => ({ ...item, section: 'museum' as const }))
 }
