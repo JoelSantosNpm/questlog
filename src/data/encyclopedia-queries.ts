@@ -1,10 +1,10 @@
 import { createClient } from '@/lib/supabase/server'
-import { EncyclopediaItem } from '@/components/encyclopedia/types'
+import { BestiaryItem, DramatisPersonaeItem, MuseumItem } from '@/components/encyclopedia/types'
 
 /**
  * Obtiene los monstruos disponibles para el usuario.
  */
-export async function getBestiaryItems(): Promise<EncyclopediaItem[]> {
+export async function getBestiaryItems(): Promise<BestiaryItem[]> {
   const supabase = createClient()
   const { data, error } = await supabase
     .from('MonsterTemplate')
@@ -22,7 +22,7 @@ export async function getBestiaryItems(): Promise<EncyclopediaItem[]> {
 /**
  * Obtiene las plantillas de personajes.
  */
-export async function getCharacterTemplates(): Promise<EncyclopediaItem[]> {
+export async function getCharacterTemplates(): Promise<DramatisPersonaeItem[]> {
   const supabase = createClient()
   const { data, error } = await supabase
     .from('CharacterTemplate')
@@ -40,7 +40,7 @@ export async function getCharacterTemplates(): Promise<EncyclopediaItem[]> {
 /**
  * Obtiene los ítems del museo.
  */
-export async function getMuseumItems(): Promise<EncyclopediaItem[]> {
+export async function getMuseumItems(): Promise<MuseumItem[]> {
   const supabase = createClient()
   const { data, error } = await supabase
     .from('ItemTemplate')
