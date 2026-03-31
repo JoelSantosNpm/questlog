@@ -1,21 +1,24 @@
 'use client'
 
 import React from 'react'
+import { Skull, Users, Landmark } from 'lucide-react'
 import { m } from 'framer-motion'
 import { useEncyclopediaStore } from './encyclopediaStore'
 import { cn } from '@/shared/utils/styles'
-import { SectionConfig } from './types'
+import type { SectionConfig } from './types'
 
-interface SideTabsProps {
-  sections: SectionConfig[]
-}
+const SECTIONS: SectionConfig[] = [
+  { id: 'bestiary', label: 'Bestiario', icon: Skull },
+  { id: 'dramatis-personae', label: 'Personajes', icon: Users },
+  { id: 'museum', label: 'Museo', icon: Landmark },
+]
 
-export const SideTabs: React.FC<SideTabsProps> = ({ sections }) => {
+export const SideTabs: React.FC = () => {
   const { activeSection, setActiveSection } = useEncyclopediaStore()
 
   return (
     <aside className='flex w-16 flex-col border-r border-neutral-800/50 bg-neutral-900/20'>
-      {sections.map((section) => (
+      {SECTIONS.map((section) => (
         <button
           key={section.id}
           onClick={() => setActiveSection(section.id)}

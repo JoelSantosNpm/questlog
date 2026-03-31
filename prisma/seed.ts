@@ -116,6 +116,28 @@ async function main() {
     updatedAt: new Date().toISOString(),
   })
 
+  console.log('--- Creando Plantilla de Personaje ---')
+  const { data: paladinTemplate, error: paladinError } = await supabase
+    .from('CharacterTemplate')
+    .insert({
+      id: id(),
+      name: 'Paladín de la Luz',
+      description: 'Un guerrero sagrado dedicado a la justicia.',
+      strength: 18,
+      dexterity: 12,
+      constitution: 16,
+      intelligence: 10,
+      wisdom: 12,
+      charisma: 14,
+      ac: 18,
+      speed: 30,
+      authorId: gm.id,
+      updatedAt: new Date().toISOString(),
+    })
+    .select('id')
+    .single()
+  if (paladinError) throw paladinError
+
   console.log('--- Creando Personaje ---')
   const { data: character, error: charError } = await supabase
     .from('Character')
