@@ -263,9 +263,10 @@ model SessionNote {
 // 8. PLANTILLA DE MONSTRUO (Bestiario)
 // ---------------------------------------------------------
 model MonsterTemplate {
-  id       String  @id @default(cuid())
-  name     String
-  type     String 
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  type        String 
   imageUrl String?
 
   challenge Float @default(1.0)
