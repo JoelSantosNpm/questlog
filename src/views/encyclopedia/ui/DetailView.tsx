@@ -1,11 +1,12 @@
 'use client'
 
 import React, { useState } from 'react'
-import Image from 'next/image'
 import { m, AnimatePresence } from 'framer-motion'
 import { Info, Shield, Heart, Activity } from 'lucide-react'
 import { type EncyclopediaSection } from '../model/encyclopediaStore'
 import { EncyclopediaItem } from '../model/types'
+import Image from 'next/image'
+import { cn } from '@/shared/utils/styles'
 import { getEntityImage } from '@/shared/lib/storage'
 
 interface DetailViewProps {
@@ -23,20 +24,22 @@ const EncyclopediaImage: React.FC<{ item: EncyclopediaItem; section: Encyclopedi
   item,
   section,
 }) => {
-  const [hasError, setHasError] = useState(false)
-  const fallback = getEntityImage(null, SECTION_MAP[section])
-  const finalSrc = hasError ? fallback : getEntityImage(item.imageUrl, SECTION_MAP[section])
+  const [src, setSrc] = useState(() => getEntityImage(item.imageUrl, SECTION_MAP[section]))
 
   return (
-    <div className='relative group'>
+    <div className='relative group w-full max-w-sm'>
       <div className='absolute -inset-4 bg-amber-500/10 blur-2xl group-hover:bg-amber-500/20 transition-all rounded-full' />
-      <div className='relative h-[50vh] w-full max-w-sm'>
+      <div className='relative h-[50vh] w-full'>
         <Image
-          src={finalSrc}
+          src={src}
           alt={item.name}
           fill
-          onError={() => setHasError(true)}
-          className='rounded-2xl border border-neutral-800 object-contain shadow-2xl transition-all duration-500 group-hover:scale-[1.02]'
+          sizes='(max-width: 768px) 100vw, 400px'
+          unoptimized={src.includes('/defaults/')}
+          onError={() => setSrc(getEntityImage(null, SECTION_MAP[section]))}
+          className={cn(
+            'rounded-2xl border border-neutral-800 object-contain shadow-2xl transition-all duration-500 group-hover:scale-[1.02]'
+          )}
         />
       </div>
     </div>

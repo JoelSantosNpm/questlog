@@ -1,14 +1,19 @@
 // lib/storage.ts
 
-const BUCKET_NAME = 'questlog-data'
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
+const BASE = () =>
+  `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/system/defaults`
 
 export const STORAGE_PATHS = {
-  // Rutas del sistema (estáticas)
   SYSTEM: {
-    MONSTER_DEFAULT: `${SUPABASE_URL}/storage/v1/object/public/${BUCKET_NAME}/system/defaults/monster.webp`,
-    ITEM_DEFAULT: `${SUPABASE_URL}/storage/v1/object/public/${BUCKET_NAME}/system/defaults/item.webp`,
-    NPC_DEFAULT: `${SUPABASE_URL}/storage/v1/object/public/${BUCKET_NAME}/system/defaults/npc.webp`,
+    get MONSTER_DEFAULT() {
+      return `${BASE()}/monster-placeholder.png`
+    },
+    get ITEM_DEFAULT() {
+      return `${BASE()}/item-placeholder.png`
+    },
+    get NPC_DEFAULT() {
+      return `${BASE()}/npc-placeholder.png`
+    },
   },
 
   // Función para construir rutas de usuario
