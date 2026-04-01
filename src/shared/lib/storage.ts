@@ -24,16 +24,16 @@ export const STORAGE_PATHS = {
 
 export function getEntityImage(
   imageUrl: string | null,
-  section: 'BESTIARY' | 'MUSEUM' | 'DRAMATIS_PERSONAE'
+  section: 'bestiary' | 'cast' | 'museum'
 ): string {
   if (imageUrl && imageUrl.trim() !== '') return imageUrl
 
   switch (section) {
-    case 'BESTIARY':
+    case 'bestiary':
       return STORAGE_PATHS.SYSTEM.MONSTER_DEFAULT
-    case 'MUSEUM':
+    case 'museum':
       return STORAGE_PATHS.SYSTEM.ITEM_DEFAULT
-    case 'DRAMATIS_PERSONAE':
+    case 'cast':
       return STORAGE_PATHS.SYSTEM.NPC_DEFAULT
     default:
       return STORAGE_PATHS.SYSTEM.MONSTER_DEFAULT

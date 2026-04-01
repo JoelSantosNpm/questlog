@@ -14,17 +14,11 @@ interface DetailViewProps {
   activeSection: EncyclopediaSection
 }
 
-const SECTION_MAP: Record<EncyclopediaSection, 'BESTIARY' | 'DRAMATIS_PERSONAE' | 'MUSEUM'> = {
-  bestiary: 'BESTIARY',
-  cast: 'DRAMATIS_PERSONAE',
-  museum: 'MUSEUM',
-}
-
 const EncyclopediaImage: React.FC<{ item: EncyclopediaItem; section: EncyclopediaSection }> = ({
   item,
   section,
 }) => {
-  const [src, setSrc] = useState(() => getEntityImage(item.imageUrl, SECTION_MAP[section]))
+  const [src, setSrc] = useState(() => getEntityImage(item.imageUrl, section))
 
   return (
     <div className='relative group w-full max-w-sm'>
@@ -36,7 +30,7 @@ const EncyclopediaImage: React.FC<{ item: EncyclopediaItem; section: Encyclopedi
           fill
           sizes='(max-width: 768px) 100vw, 400px'
           unoptimized={src.includes('/defaults/')}
-          onError={() => setSrc(getEntityImage(null, SECTION_MAP[section]))}
+          onError={() => setSrc(getEntityImage(null, section))}
           className={cn(
             'rounded-2xl border border-neutral-800 object-contain shadow-2xl transition-all duration-500 group-hover:scale-[1.02]'
           )}
