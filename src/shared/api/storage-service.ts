@@ -1,4 +1,4 @@
-import { getSupabaseClient } from '@/shared/lib/supabase'
+import { getSupabaseClient } from '@/shared/lib/supabase/client'
 
 export const StorageService = {
   /**
