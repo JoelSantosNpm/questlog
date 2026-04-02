@@ -1,5 +1,12 @@
 // ---------------------------------------------------------
 // GENERATOR & DATASOURCE PARA SUPABASE
+//
+// IMPORTANTE: Prisma Client NO se usa en runtime.
+// Este schema cumple dos únicas funciones:
+//   1. Generar tipos TypeScript (via `prisma generate`) usados solo
+//      como `import type` en el código — cero impacto en bundle.
+//   2. Gestionar migraciones SQL (via `prisma migrate` / CLI).
+// Todas las queries en producción se realizan con @supabase/supabase-js.
 // ---------------------------------------------------------
 generator client {
   provider = "prisma-client-js"

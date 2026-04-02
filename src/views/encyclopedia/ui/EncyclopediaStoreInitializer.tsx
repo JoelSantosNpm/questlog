@@ -2,7 +2,7 @@
 
 import { useRef } from 'react'
 import { useEncyclopediaStore, type EncyclopediaSection } from '../model/encyclopediaStore'
-import { EncyclopediaItem } from '../model/encyclopedia'
+import { EncyclopediaItem } from '../model/types'
 
 interface Props {
   data: Record<EncyclopediaSection, EncyclopediaItem[]>

@@ -1,5 +1,5 @@
 import { createClient } from '@/shared/lib/supabase/server'
-import { BestiaryItem, CastItem, MuseumItem } from '../model/encyclopedia'
+import { BestiaryItem, CastItem, MuseumItem } from '../model/types'
 
 /**
  * Obtiene los monstruos disponibles para el usuario.

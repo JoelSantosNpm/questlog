@@ -4,7 +4,7 @@ import React from 'react'
 import { Search } from 'lucide-react'
 import { useSelectedItemId, useSetSelectedItemId } from '../model/encyclopediaStore'
 import { cn } from '@/shared/utils/styles'
-import { EncyclopediaItem } from '../model/encyclopedia'
+import { EncyclopediaItem } from '../model/types'
 
 interface ListViewProps {
   items: EncyclopediaItem[]

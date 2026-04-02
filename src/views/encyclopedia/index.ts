@@ -10,4 +10,4 @@ export type {
   CastItem,
   MuseumItem,
   SectionConfig,
-} from './model/encyclopedia'
+} from './model/types'
