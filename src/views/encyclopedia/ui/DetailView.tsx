@@ -1,6 +1,7 @@
 'use client'
 
 import { m, AnimatePresence } from 'framer-motion'
+import type { ReactNode } from 'react'
 import { type EncyclopediaSection } from '../model/encyclopediaStore'
 import { EncyclopediaItem, BestiaryItem, CastItem, MuseumItem } from '../model/types'
 import { EncyclopediaImage } from './EncyclopediaImage'
@@ -11,6 +12,12 @@ import { ItemProperties } from './ItemProperties'
 interface DetailViewProps {
   item?: EncyclopediaItem
   activeSection: EncyclopediaSection
+}
+
+const SECTION_CONTENT: Record<EncyclopediaSection, (item: EncyclopediaItem) => ReactNode> = {
+  bestiary: (item) => <CombatStats item={item as BestiaryItem} />,
+  cast: (item) => <CombatStats item={item as CastItem} />,
+  museum: (item) => <ItemProperties item={item as MuseumItem} />,
 }
 
 export const DetailView = ({ item, activeSection }: DetailViewProps) => (
@@ -38,10 +45,7 @@ export const DetailView = ({ item, activeSection }: DetailViewProps) => (
                 </h3>
                 <p className='mt-3 leading-relaxed text-neutral-300'>Sin descripción.</p>
               </div>
-              {'strength' in item && !('rarity' in item) && (
-                <CombatStats item={item as BestiaryItem | CastItem} />
-              )}
-              {'rarity' in item && <ItemProperties item={item as MuseumItem} />}
+              {SECTION_CONTENT[activeSection](item)}
             </div>
           </div>
         </m.div>
