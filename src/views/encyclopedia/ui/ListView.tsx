@@ -1,6 +1,5 @@
 'use client'
 
-import React from 'react'
 import { Search } from 'lucide-react'
 import { useSelectedItemId, useSetSelectedItemId } from '../model/encyclopediaStore'
 import { cn } from '@/shared/utils/styles'
@@ -10,7 +9,7 @@ interface ListViewProps {
   items: EncyclopediaItem[]
 }
 
-export const ListView: React.FC<ListViewProps> = ({ items }) => {
+export const ListView = ({ items }: ListViewProps) => {
   const selectedItemId = useSelectedItemId()
   const setSelectedItemId = useSetSelectedItemId()
 

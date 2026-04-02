@@ -1,6 +1,7 @@
 'use client'
 
-import React, { useState } from 'react'
+import { useState } from 'react'
+import type { ReactNode } from 'react'
 import { m, AnimatePresence } from 'framer-motion'
 import { Info, Shield, Heart, Activity } from 'lucide-react'
 import { type EncyclopediaSection } from '../model/encyclopediaStore'
@@ -20,10 +21,18 @@ interface DetailViewProps {
   activeSection: EncyclopediaSection
 }
 
-const EncyclopediaImage: React.FC<{ item: EncyclopediaItem; section: EncyclopediaSection }> = ({
-  item,
-  section,
-}) => {
+interface EncyclopediaImageProps {
+  item: EncyclopediaItem
+  section: EncyclopediaSection
+}
+
+interface StatBoxProps {
+  label: string
+  value: number | string
+  icon?: ReactNode
+}
+
+const EncyclopediaImage = ({ item, section }: EncyclopediaImageProps) => {
   const [src, setSrc] = useState(() => getEntityImage(item.imageUrl, section))
 
   return (
@@ -46,11 +55,7 @@ const EncyclopediaImage: React.FC<{ item: EncyclopediaItem; section: Encyclopedi
   )
 }
 
-const StatBox: React.FC<{ label: string; value: number | string; icon?: React.ReactNode }> = ({
-  label,
-  value,
-  icon,
-}) => (
+const StatBox = ({ label, value, icon }: StatBoxProps) => (
   <div className='flex flex-col items-center justify-center rounded-lg border border-neutral-800 bg-neutral-900/50 p-3'>
     <span className='text-[10px] font-bold uppercase tracking-widest text-neutral-500'>
       {label}
@@ -62,7 +67,7 @@ const StatBox: React.FC<{ label: string; value: number | string; icon?: React.Re
   </div>
 )
 
-export const DetailView: React.FC<DetailViewProps> = ({ item, activeSection }) => {
+export const DetailView = ({ item, activeSection }: DetailViewProps) => {
   return (
     <main className='relative flex-1 overflow-y-auto bg-[radial-gradient(circle_at_top_right,var(--tw-gradient-stops))] from-neutral-900/20 via-transparent to-transparent'>
       <AnimatePresence mode='wait'>

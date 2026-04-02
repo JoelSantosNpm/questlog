@@ -1,6 +1,5 @@
 'use client'
 
-import React from 'react'
 import { Skull, Users, Landmark } from 'lucide-react'
 import { m } from 'framer-motion'
 import { useActiveSection, useSetActiveSection } from '../model/encyclopediaStore'
@@ -13,7 +12,7 @@ const SECTIONS: SectionConfig[] = [
   { id: 'museum', label: 'Museo', icon: Landmark },
 ]
 
-export const SideTabs: React.FC = () => {
+export const SideTabs = () => {
   const activeSection = useActiveSection()
   const setActiveSection = useSetActiveSection()
 
