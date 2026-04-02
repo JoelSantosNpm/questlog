@@ -1,5 +1,5 @@
-import { PortalCarousel } from '@/views/portal/ui'
-import { getUserCampaigns } from '@/views/campaigns/api/campaign-queries'
+import { PortalCarousel } from '@/views/portal'
+import { getUserCampaigns } from '@/views/campaigns'
 import { Campaign as PortalCampaign } from '@/shared/lib/portal'
 import { auth } from '@clerk/nextjs/server'
 import Link from 'next/link'

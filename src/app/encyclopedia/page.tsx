@@ -1,11 +1,11 @@
-import { EncyclopediaContainer } from '@/views/encyclopedia/ui/EncyclopediaContainer'
-import { EncyclopediaStoreInitializer } from '@/views/encyclopedia/ui/EncyclopediaStoreInitializer'
-import { SideTabs } from '@/views/encyclopedia/ui/SideTabs'
 import {
+  EncyclopediaContainer,
+  EncyclopediaStoreInitializer,
+  SideTabs,
   getBestiaryItems,
   getCharacterTemplates,
   getMuseumItems,
-} from '@/views/encyclopedia/api/encyclopedia-queries'
+} from '@/views/encyclopedia'
 
 export const dynamic = 'force-dynamic'
 

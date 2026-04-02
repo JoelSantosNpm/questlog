@@ -1,7 +1,7 @@
 import { create } from 'zustand'
-import type { EncyclopediaItem } from './types'
+import type { EncyclopediaItem, EncyclopediaSection } from './encyclopedia'
 
-export type EncyclopediaSection = 'bestiary' | 'cast' | 'museum'
+export type { EncyclopediaSection }
 
 interface EncyclopediaState {
   activeSection: EncyclopediaSection

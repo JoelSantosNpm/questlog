@@ -1,9 +1,9 @@
 import { useRouter } from 'next/navigation'
 import { useForm, useFormContext, SubmitHandler } from 'react-hook-form'
-import { CAMPAIGN_CREATION_STEPS } from '@/shared/config/campaign-steps'
-import { CampaignFormValues } from '../../../model/types'
+import { CAMPAIGN_CREATION_STEPS } from '../../../config/campaign-steps'
+import { CampaignFormValues } from '../../../model/campaign'
 import { createCampaign } from '@/views/campaigns/api/campaign-actions'
-import { notifyCampaignCreation } from '@/shared/lib/notifications'
+import { notifyCampaignCreation } from '../../../lib/notifications'
 import { useCampaignStore } from '../store/campaignStore'
 
 export function useInitCampaignForm() {

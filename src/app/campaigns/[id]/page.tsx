@@ -1,5 +1,5 @@
 import { auth } from '@clerk/nextjs/server'
-import { getCampaignById } from '@/views/campaigns/api/campaign-queries'
+import { getCampaignById } from '@/views/campaigns'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 

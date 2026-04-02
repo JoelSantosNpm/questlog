@@ -1,4 +1,4 @@
-import CampaignCreationProvider from '@/views/campaigns/ui/creation/CampaignCreationProvider'
+import { CampaignCreationProvider } from '@/views/campaigns'
 import { MysticBackground } from '@/shared/ui'
 
 export default function CreateCampaignPage() {

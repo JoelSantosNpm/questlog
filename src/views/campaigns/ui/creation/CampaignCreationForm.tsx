@@ -3,7 +3,7 @@
 import { m, LazyMotion, domAnimation, AnimatePresence } from 'framer-motion'
 import { useEffect, useRef } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { CampaignFormValues } from '../../model/types'
+import { CampaignFormValues } from '../../model/campaign'
 import { StepControls } from './StepControls'
 import { useCampaignActions } from './hooks/useCampaignForm'
 

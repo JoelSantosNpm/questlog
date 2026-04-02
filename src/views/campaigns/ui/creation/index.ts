@@ -1,5 +1,5 @@
 export * from './CampaignCreationForm'
 export * from './CampaignCreationProvider'
 export * from './StepControls'
-export * from '../../model/types'
+export * from '../../model/campaign'
 export * from './store/campaignStore'
