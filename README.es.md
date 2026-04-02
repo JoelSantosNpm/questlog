@@ -13,7 +13,7 @@
 - **El Portal de Piedra:** Carrusel circular 3D con perspectiva para navegar entre campañas, con soporte de teclado y animaciones inmersivas.
 - **Autenticación (Clerk):** Registro e inicio de sesión seguros con sincronización automática de perfiles en la base de datos (_Lazy Sync_).
 - **Creación de Aventuras:** Un _wizard_ animado multipaso que teje tus inputs en narrativa de campaña, impulsado por Zustand + React Hook Form + Framer Motion.
-- **Hub de la Enciclopedia:** Base de conocimiento con tres pestañas (Bestiario, Dramatis Personae, Museo), vista de detalle animada y navegación por sección.
+- **Hub de la Enciclopedia:** Base de conocimiento con tres pestañas (Bestiario, Elenco, Museo), vista de detalle animada y navegación por sección.
 
 ---
 

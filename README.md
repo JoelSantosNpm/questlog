@@ -13,7 +13,7 @@
 - **The Stone Portal:** 3D perspective circular carousel to navigate between campaigns, with keyboard support and immersive animations.
 - **Authentication (Clerk):** Secure sign-in/sign-up with automatic profile sync to the database (_Lazy Sync_).
 - **Adventure Creation:** An animated multi-step _wizard_ that weaves your inputs into campaign lore, powered by Zustand + React Hook Form + Framer Motion.
-- **Encyclopedia Hub:** Three-tab knowledge base (Bestiary, Dramatis Personae, Museum) with animated detail view and section-based navigation.
+- **Encyclopedia Hub:** Three-tab knowledge base (Bestiary, Cast, Museum) with animated detail view and section-based navigation.
 
 ---
 

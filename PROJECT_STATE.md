@@ -1,12 +1,12 @@
 ﻿# Estado del Proyecto: Questlog
 
-**Última actualización:** 30 de Marzo de 2026
+**Última actualización:** 2 de Abril de 2026
 **Rama actual:** m3-02page-enciclopedia
 
 ## 📌 Resumen de Progreso
 
 Arquitectura base y **Milestone M1 (Auth & Infra)** completados. **M2 (Gestión de Campañas)** completado al 100%.
-Hemos completado **M3-01 (Reestructuración de Datos)**: migración a columnas atómicas de stats, nuevas tablas `ItemTemplate` y `AccessGrant`, enum `Rarity`, y documentación del schema bilingüe. Hemos completado también **A02 (Eliminar Prisma)**: la app usa ahora el cliente Supabase JS directamente, sin ORM. Iniciamos **M3-02: Hub de la Enciclopedia y Navegación**.
+Hemos completado **M3-01 (Reestructuración de Datos)**: migración a columnas atómicas de stats, nuevas tablas `ItemTemplate` y `AccessGrant`, enum `Rarity`, y documentación del schema bilingüe. Hemos completado también **A02 (Eliminar Prisma)**: la app usa ahora el cliente Supabase JS directamente, sin ORM. **M3-02** en progreso: navegación por pestañas y detalle de la enciclopedia completados. **Refactorización a Feature-Sliced Design (FSD) completada**: estructura de `src/` reorganizada con capas canónicas, imports públicos a través de `index.ts` de cada slice, y código de dominio reubicado fuera de `shared/`.
 
 ---
 
@@ -20,7 +20,7 @@ Hemos completado **M3-01 (Reestructuración de Datos)**: migración a columnas a
 - **Fuentes:** Google Fonts (`Inter` para UI, `MedievalSharp` para títulos).
 - **Animaciones:** Framer Motion (`AnimatePresence`, `motion`).
 - **Testing (Unit/Integration):** Vitest 4.x + Testing Library. Config: `vitest.config.ts`. Setup: `vitest.setup.ts`.
-  - Tests existentes: `src/lib/carousel-utils.test.ts` (6), `src/components/campaigns/creation/CampaignCreationForm.test.tsx` (6). Total: 12 tests.
+  - Tests centralizados en `tests/features/`. 29 tests pasando: carousel utils (6), storage service (3), storage schema (4), useImageUploader (6), ImageUploader UI (4), CampaignCreationForm (6).
 - **Testing (E2E):** Playwright con auth via `@clerk/testing`. Config: `playwright.config.ts`. Tests: `e2e/portal-de-piedra.spec.ts` (3 tests: AC 3.1, 3.2, 3.3). Requiere `E2E_CLERK_USER_EMAIL` en `.env`.
 - **Auth & DB:** Clerk (Auth), Supabase (PostgreSQL). El cliente `@supabase/supabase-js` con `service_role` key se usa directamente desde el servidor para todas las operaciones de base de datos. Prisma se mantiene en `devDependencies` como única fuente de verdad del schema: genera tipos TypeScript via `prisma generate` (usados como `import type`, cero impacto en bundle) y gestiona migraciones SQL via CLI.
 
@@ -42,7 +42,7 @@ Hemos completado **M3-01 (Reestructuración de Datos)**: migración a columnas a
 
 Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar campañas.
 
-- **Ubicación:** `src/app/components/portal/`
+- **Ubicación:** `src/views/portal/ui/`
 - **Componentes:**
   - `PortalCarousel`: Contenedor principal, maneja el estado y renderizado.
   - `PortalCard`: Tarjeta individual con lógica de animación y visibilidad.
@@ -56,28 +56,27 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
 
 ### 2. Sistema de Autenticación (Clerk)
 
-- **Ubicación:** `src/config/`, `src/app/providers/`, `src/components/auth/`
-- **Archivos:**
-  - `src/config/clerk-theme.ts`: Tema Grimdark personalizado extendiendo el tema `dark` de Clerk.
-  - `src/config/routes/auth.ts`: Constantes de rutas públicas y protegidas.
-  - `src/app/providers/auth-provider.tsx`: Wrapper de `ClerkProvider` con tema y rutas configuradas.
-  - `src/components/auth/auth-sync.tsx`: Server Component que ejecuta el Lazy Sync en cada sesión.
+- **Ubicación:** `src/shared/config/`, `src/app/providers/`, `src/app/auth/`
+  - **Archivos:**
+    - `src/shared/config/clerk-theme.ts`: Tema Grimdark personalizado extendiendo el tema `dark` de Clerk.
+    - `src/shared/config/routes/auth.ts`: Constantes de rutas públicas y protegidas.
+    - `src/app/providers/auth-provider.tsx`: Wrapper de `ClerkProvider` con tema y rutas configuradas.
+    - `src/app/auth/auth-sync.tsx`: Server Component que ejecuta el Lazy Sync en cada sesión.
   - `src/proxy.ts`: Middleware de protección de rutas con `auth.protect()`.
 - **Rutas protegidas:** Todo excepto `/`, `/sign-in(.*)` y `/sign-up(.*)`.
 
-### 3. Hooks y Lógica (`src/hooks/ui/`)
+### 3. Hooks y Lógica (`src/shared/lib/`)
 
 - **`useCarousel<T>`**: Hook genérico reutilizable para cualquier lógica de carrusel circular.
   - Gestión de índices segura.
   - Cálculo automático de rango visible basado en cantidad de elementos (5 vs 7).
   - Soporte para navegación por puntos (camino más corto).
 
-### 4. Utilidades (`src/lib/`)
+### 4. Utilidades (`src/shared/lib/` y `src/shared/utils/`)
 
 - **`carousel-utils.ts`**:
   - `getCircularCarousel`: Generador de arrays circulares con claves estables.
-  - **Unit Tests:** `carousel-utils.test.ts` (Cobertura de casos borde, wrap-around, arrays vacíos).
-- **`prisma.ts`**: Singleton de Prisma Client con adaptador `PrismaPg` para conexión a Supabase.
+  - **Unit Tests:** `tests/features/ui/utils/carousel-utils.test.ts` (Cobertura de casos borde, wrap-around, arrays vacíos).
 
 ---
 
@@ -85,21 +84,36 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
 
 ```
 ├── src/
-│   ├── app/
-│   ├── components/
-│   ├── config/
-│   ├── data/
-│   ├── hooks/
-│   ├── lib/
-│   ├── providers/
-│   ├── services/
-│   ├── shared/
-│   └── types/
+│   ├── app/                   # Next.js App Router (routing + layouts)
+│   ├── shared/                # Infraestructura sin lógica de negocio
+│   │   ├── api/               # StorageService
+│   │   ├── config/            # clerk-theme, routes/auth
+│   │   ├── lib/               # supabase, storage, portal, carousel…
+│   │   ├── schemas/           # Zod schemas genéricos
+│   │   ├── ui/                # ImageUploader, MysticBackground (barrel: index.ts)
+│   │   └── utils/             # cn()
+│   ├── views/                 # Feature slices (FSD)
+│   │   ├── campaigns/
+│   │   │   ├── api/           # campaign-actions.ts, campaign-queries.ts
+│   │   │   ├── config/        # campaign-steps.ts
+│   │   │   ├── lib/           # notifications.ts
+│   │   │   ├── model/         # campaign.ts
+│   │   │   ├── ui/            # creation/ (form, store, hooks)
+│   │   │   └── index.ts       # Public API del slice
+│   │   ├── encyclopedia/
+│   │   │   ├── api/           # encyclopedia-queries.ts
+│   │   │   ├── model/         # encyclopedia.ts, encyclopediaStore.ts
+│   │   │   ├── ui/            # SideTabs, ListView, DetailView…
+│   │   │   └── index.ts       # Public API del slice
+│   │   └── portal/
+│   │       ├── ui/            # Portal, PortalCard, PortalCarousel
+│   │       └── index.ts       # Public API del slice
+│   └── proxy.ts               # Middleware de rutas
 ├── tests/
-│   ├── artifacts/           # Resultados y trazas de Playwright
-│   ├── e2e/                 # Tests Playwright
-│   └── features/            # Tests Unitarios e Integración por funcionalidad
-└── proxy.ts
+│   ├── artifacts/             # Resultados y trazas de Playwright
+│   ├── e2e/                   # Tests Playwright
+│   └── features/              # Tests Unitarios e Integración por funcionalidad
+└── prisma/                    # Schema (fuente de verdad) + migraciones SQL
 ```
 
 ---
@@ -198,9 +212,16 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
   - _AC 2:_ ✅ Es posible filtrar entidades por stats individuales (ej. `strength > 15`) directamente en una query de Prisma.
   - _AC 3:_ ✅ La migración se aplica en el entorno de desarrollo sin pérdida de datos existentes.
 
-- [ ] **M3-02: Hub de la Enciclopedia y Navegación** [EN PROGRESO]
-  - _Tarea:_ Crear página `/encyclopedia` con pestañas (Bestiario, Museo, Registro) y filtros (Mis Creaciones | Públicos | Compartidos).
-  - _AC:_ El usuario puede navegar a `/encyclopedia`, cambiar entre las tres pestañas y filtrar resultados sin errores.
+- [x] **M3-02: Hub de la Enciclopedia y Navegación** [EN PROGRESO]
+  - _Tarea:_ Crear página `/encyclopedia` con pestañas (Bestiario, Elenco, Museo) y filtros (Mis Creaciones | Públicos | Compartidos).
+  - _Avance:_
+    - ✅ Página `/encyclopedia` creada con datos reales de Supabase.
+    - ✅ Navegación por pestañas (`SideTabs`) con tres secciones: Bestiario, Elenco, Museo.
+    - ✅ `ListView` con búsqueda local y selección de item.
+    - ✅ `DetailView` animado con imagen, stats y fallback a imagen por defecto según sección.
+    - ✅ State management con Zustand (`encyclopediaStore`) + selectores granulares.
+    - ⏳ Filtros (Mis Creaciones | Públicos | Compartidos): pendiente.
+  - _AC:_ El usuario puede navegar a `/encyclopedia`, cambiar entre las tres pestañas y ver detalle de cada item. Falta implementar filtros.
 
 - [ ] **M3-03: Bestiario y Fichas de Monstruos**
   - _Tarea:_ Formulario unificado para `MonsterTemplate` (Librería) y `ActiveMonster` (Instancia de Campaña) con stats atómicos y upload de imagen.
@@ -231,7 +252,8 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
 
 ## 🛠️ Notas de Ingeniería (Compound Context)
 
-- **Tech Stack:** Next.js (App Router), Prisma, Supabase, Clerk, Tailwind.
+- **Tech Stack:** Next.js (App Router), Supabase JS (runtime), Prisma (devDep — tipos + migraciones), Clerk, Tailwind.
+- **Arquitectura Frontend:** Feature-Sliced Design (FSD) — capas `app/`, `views/` (slices con `api/`, `model/`, `ui/`), `shared/`. Cada slice expone su Public API a través de `index.ts` raiz. `app/` solo importa desde esos barrels.
 - **UI Estilo:** Gamificada, texturas de piedra, portales mágicos.
 - **Principio:** No se avanza de Issue hasta cumplir todos sus AC (Criterios de Aceptación).
 - **Testing de Base de Datos:** Se ha creado un script `prisma/seed.ts` para poblar la base de datos con datos de prueba (mock data) vinculados a un usuario real de desarrollo.
@@ -243,9 +265,8 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
 
 ## 📝 Siguientes Pasos Inmediatos
 
-1. **M3-02: Hub de la Enciclopedia** ← EN PROGRESO
-   - Completar navegación entre secciones y filtros.
-   - Conectar datos reales de `MonsterTemplate`, `CharacterTemplate`, `ItemTemplate` desde Supabase.
+1. **M3-02: Filtros de la Enciclopedia** ← PENDIENTE
+   - Implementar filtros: Mis Creaciones | Públicos | Compartidos.
 
 2. **M3-03: Bestiario y Fichas de Monstruos**
    - Ver nota de deuda de schema en esa tarea.
@@ -254,6 +275,8 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
 
 ## 🏗️ Principios Aprendidos / Refactorizaciones
 
+- **Feature-Sliced Design (FSD):** Organizar el código por slices de feature (`views/campaigns/`, `views/encyclopedia/`, `views/portal/`) con segmentos `api/`, `model/`, `ui/` dentro de cada uno. Cada slice expone un `index.ts` como Public API — `app/` nunca importa internos de un slice directamente. El código de dominio (notificaciones de campaña, pasos del wizard) vive en `views/<slice>/lib/` o `views/<slice>/config/`, no en `shared/`. `shared/` es únicamente infraestructura genérica sin lógica de negocio.
+- **Naming basado en dominio:** Archivos de modelo nombrados por dominio (`campaign.ts`, `encyclopedia.ts`) en vez de nombres técnicos genéricos (`types.ts`).
 - **Compound Components & Estado:** Evitar _prop-drilling_ usando `FormProvider` y extrayendo lógicas visuales de navegación de interfaces animadas hacia **Zustand**. Esto facilita aislar el DOM que maneja tags ruidosos como `<form>` y concentrar el _submit_ lejos de los mapeos visuales.
 - **Micro-Interactividad:** Integrar un `isTransitioning` lock en los formularios multicapa para evitar que el usuario de doble-clic y colapse el árbol reactivo durante las animaciones de Framer Motion.
 - **Optimización de Bundle:** Mover `motion` a `<LazyMotion features={domAnimation}>` y `m.div` en UI cargadas globalmente para ahorrar severos picos de ~30kb en renderizados iniciales.
