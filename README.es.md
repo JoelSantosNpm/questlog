@@ -33,6 +33,29 @@
 
 ---
 
+## 🧱 Arquitectura: Feature-Sliced Design (FSD)
+
+La carpeta `src/` sigue **FSD v2.1** con tres capas canónicas:
+
+```
+src/
+├── app/        ← Capa de routing de Next.js (solo wrappers finos)
+├── views/      ← Feature slices (campaigns/, encyclopedia/, portal/)
+│   └── <slice>/
+│       ├── api/    ← Server Actions y queries
+│       ├── model/  ← Tipos de dominio y stores de Zustand
+│       ├── ui/     ← Componentes y hooks
+│       └── index.ts← Public API (app/ solo importa desde aquí)
+└── shared/     ← Infraestructura genérica (sin lógica de negocio)
+    ├── api/    ← StorageService
+    ├── config/ ← Tema de Clerk, constantes de rutas
+    ├── lib/    ← Clientes de Supabase, hooks, utilidades
+    ├── schemas/← Schemas de Zod
+    └── ui/     ← Componentes compartidos (ImageUploader, MysticBackground)
+```
+
+---
+
 ## 🏗️ Arquitectura de Datos: El Corazón del Sistema
 
 El sistema de datos de QuestLog ha evolucionado para priorizar el rendimiento en consultas complejas y la flexibilidad del DM.
@@ -66,7 +89,9 @@ Cada pieza del stack ha sido elegida para cumplir un propósito específico en l
 
 ### Backend e Infraestructura (Robustez)
 
-- **[Supabase (PostgreSQL)](https://supabase.com/):** Base de datos relacional potente para manejar las complejas redes de misiones, personajes e ítems. El cliente `@supabase/supabase-js` se usa directamente para todas las consultas del servidor, sin necesidad de una capa ORM adicional.
+- **[Supabase (PostgreSQL)](https://supabase.com/):** Base de datos relacional potente. El cliente `@supabase/supabase-js` se usa directamente para todas las queries — `service_role` key en el servidor (sin RLS, equivalente a un ORM de confianza), token JWT en el cliente (operaciones de Storage con RLS).
+- **[Prisma](https://www.prisma.io/) (solo `devDependency`):** Cumple dos funciones en tiempo de compilación: genera tipos TypeScript vía `prisma generate` (usados como `import type`, cero impacto en bundle) y gestiona migraciones SQL vía CLI. No se instancia en runtime.
+- **[Sileo](https://www.npmjs.com/package/sileo):** Sistema de notificaciones _toast_ ligero y tematizable para feedback al usuario.
 - **[Clerk](https://clerk.com/):** Autenticación de nivel profesional con sincronización automática de perfiles.
 
 ---

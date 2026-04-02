@@ -62,7 +62,7 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
     - `src/shared/config/routes/auth.ts`: Constantes de rutas públicas y protegidas.
     - `src/app/providers/auth-provider.tsx`: Wrapper de `ClerkProvider` con tema y rutas configuradas.
     - `src/app/auth/auth-sync.tsx`: Server Component que ejecuta el Lazy Sync en cada sesión.
-  - `src/proxy.ts`: Middleware de protección de rutas con `auth.protect()`.
+  - `src/middleware.ts`: Middleware de protección de rutas con `auth.protect()` (ubicación requerida por Next.js).
 - **Rutas protegidas:** Todo excepto `/`, `/sign-in(.*)` y `/sign-up(.*)`.
 
 ### 3. Hooks y Lógica (`src/shared/lib/`)
@@ -102,13 +102,13 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
 │   │   │   └── index.ts       # Public API del slice
 │   │   ├── encyclopedia/
 │   │   │   ├── api/           # encyclopedia-queries.ts
-│   │   │   ├── model/         # encyclopedia.ts, encyclopediaStore.ts
+│   │   │   ├── model/         # types.ts, encyclopediaStore.ts
 │   │   │   ├── ui/            # SideTabs, ListView, DetailView…
 │   │   │   └── index.ts       # Public API del slice
 │   │   └── portal/
 │   │       ├── ui/            # Portal, PortalCard, PortalCarousel
 │   │       └── index.ts       # Public API del slice
-│   └── proxy.ts               # Middleware de rutas
+│   └── middleware.ts          # Middleware de rutas (Clerk, requerido por Next.js)
 ├── tests/
 │   ├── artifacts/             # Resultados y trazas de Playwright
 │   ├── e2e/                   # Tests Playwright

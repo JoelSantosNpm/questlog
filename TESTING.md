@@ -98,7 +98,7 @@ vi.mock('@clerk/nextjs', () => ({
 ### Supabase (Base de datos)
 
 ```typescript
-vi.mock('@/lib/supabase/server', () => ({
+vi.mock('@/shared/lib/supabase/server', () => ({
   createClient: vi.fn(() => ({
     from: vi.fn().mockReturnThis(),
     select: vi.fn().mockReturnThis(),

@@ -33,6 +33,29 @@
 
 ---
 
+## 🧱 Architecture: Feature-Sliced Design (FSD)
+
+The `src/` folder follows **FSD v2.1** with three canonical layers:
+
+```
+src/
+├── app/        ← Next.js routing layer (thin wrappers only)
+├── views/      ← Feature slices (campaigns/, encyclopedia/, portal/)
+│   └── <slice>/
+│       ├── api/    ← Server actions & queries
+│       ├── model/  ← Domain types & Zustand stores
+│       ├── ui/     ← Components & hooks
+│       └── index.ts← Public API (app/ only imports from here)
+└── shared/     ← Generic infrastructure (no business logic)
+    ├── api/    ← StorageService
+    ├── config/ ← Clerk theme, route constants
+    ├── lib/    ← Supabase clients, hooks, utilities
+    ├── schemas/← Zod schemas
+    └── ui/     ← Shared components (ImageUploader, MysticBackground)
+```
+
+---
+
 ## 🏗️ Data Architecture: The Heart of the System
 
 QuestLog's data system has evolved to prioritize performance on complex queries and DM flexibility.
@@ -66,7 +89,9 @@ Every piece of the stack was chosen to serve a specific purpose in the user expe
 
 ### Backend & Infrastructure (Robustness)
 
-- **[Supabase (PostgreSQL)](https://supabase.com/):** Powerful relational database. The `@supabase/supabase-js` client is used directly for all server-side queries, bypassing the need for a separate ORM layer.
+- **[Supabase (PostgreSQL)](https://supabase.com/):** Powerful relational database. The `@supabase/supabase-js` client is used directly for all queries — service role key on the server (bypasses RLS, equivalent to a trusted ORM), JWT token on the client (RLS-enforced upload operations).
+- **[Prisma](https://www.prisma.io/) (`devDependency` only):** Serves two compile-time purposes: generating TypeScript types via `prisma generate` (used as `import type`, zero bundle impact) and managing SQL migrations via CLI. Not instantiated at runtime.
+- **[Sileo](https://www.npmjs.com/package/sileo):** Lightweight, themeable toast notification system for user feedback.
 - **[Clerk](https://clerk.com/):** Professional-grade authentication with automatic profile synchronization.
 
 ---
