@@ -9,6 +9,12 @@ import Image from 'next/image'
 import { cn } from '@/shared/utils/styles'
 import { getEntityImage } from '@/shared/lib/storage'
 
+const SECTION_LABELS: Record<EncyclopediaSection, string> = {
+  bestiary: 'Bestiario',
+  cast: 'Elenco',
+  museum: 'Museo',
+}
+
 interface DetailViewProps {
   item?: EncyclopediaItem
   activeSection: EncyclopediaSection
@@ -79,7 +85,7 @@ export const DetailView: React.FC<DetailViewProps> = ({ item, activeSection }) =
               <header className='mb-8'>
                 <div className='flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-500/60'>
                   <Info className='h-3 w-3' />
-                  {activeSection.replace('-', ' ')}
+                  {SECTION_LABELS[activeSection]}
                   {'rarity' in item && <span>• {item.rarity}</span>}
                 </div>
                 <h2 className='font-medieval mt-2 text-4xl text-neutral-100'>{item.name}</h2>
@@ -107,18 +113,18 @@ export const DetailView: React.FC<DetailViewProps> = ({ item, activeSection }) =
                         icon={<Heart className='h-3 w-3' />}
                       />
                       <StatBox
-                        label='Speed'
-                        value={`${item.speed}ft`}
+                        label='VEL'
+                        value={`${item.speed} pies`}
                         icon={<Activity className='h-3 w-3' />}
                       />
                     </div>
                     <div className='grid grid-cols-6 gap-2'>
-                      <StatBox label='STR' value={item.strength} />
-                      <StatBox label='DEX' value={item.dexterity} />
+                      <StatBox label='FUE' value={item.strength} />
+                      <StatBox label='DES' value={item.dexterity} />
                       <StatBox label='CON' value={item.constitution} />
                       <StatBox label='INT' value={item.intelligence} />
-                      <StatBox label='WIS' value={item.wisdom} />
-                      <StatBox label='CHA' value={item.charisma} />
+                      <StatBox label='SAB' value={item.wisdom} />
+                      <StatBox label='CAR' value={item.charisma} />
                     </div>
                   </div>
                 )}
