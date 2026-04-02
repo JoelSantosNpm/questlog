@@ -18,7 +18,7 @@ vi.mock('sileo', () => ({
   },
 }))
 
-vi.mock('@/services/storage-service', () => ({
+vi.mock('@/shared/api/storage-service', () => ({
   StorageService: {
     uploadFile: vi.fn(),
   },

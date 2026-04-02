@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { StorageService } from '@/shared/api/storage-service'
-import { getSupabaseClient } from '@/shared/lib/supabase'
+import { getSupabaseClient } from '@/shared/lib/supabase/client'
 
 // Mock del cliente de Supabase
-vi.mock('@/shared/lib/supabase', () => ({
+vi.mock('@/shared/lib/supabase/client', () => ({
   getSupabaseClient: vi.fn(),
 }))
 

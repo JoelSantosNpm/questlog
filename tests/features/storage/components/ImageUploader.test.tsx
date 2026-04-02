@@ -20,7 +20,7 @@ vi.mock('sileo', () => ({
 }))
 
 // Mock del servicio de Storage
-vi.mock('@/services/storage-service', () => ({
+vi.mock('@/shared/api/storage-service', () => ({
   StorageService: {
     uploadFile: vi.fn(),
   },

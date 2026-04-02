@@ -17,12 +17,12 @@ vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn() }),
 }))
 
-vi.mock('@/actions/campaign-actions', () => ({
+vi.mock('@/views/campaigns/api/campaign-actions', () => ({
   createCampaign: vi.fn(),
 }))
 
 // notifyCampaignCreation actúa como pass-through: devuelve la misma promise
-vi.mock('@/lib/notifications', () => ({
+vi.mock('@/views/campaigns/lib/notifications', () => ({
   notifyCampaignCreation: (promise: Promise<unknown>) => promise,
 }))
 
