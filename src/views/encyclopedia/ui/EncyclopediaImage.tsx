@@ -23,6 +23,7 @@ export const EncyclopediaImage = ({ item, section }: EncyclopediaImageProps) => 
           src={src}
           alt={item.name}
           fill
+          priority
           sizes='(max-width: 768px) 100vw, 400px'
           unoptimized={src.includes('/defaults/')}
           onError={() => setSrc(getEntityImage(null, section))}
