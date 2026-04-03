@@ -43,7 +43,9 @@ export const DetailView = ({ item, activeSection }: DetailViewProps) => (
                 <h3 className='text-xs font-bold uppercase tracking-widest text-neutral-500'>
                   Descripción
                 </h3>
-                <p className='mt-3 leading-relaxed text-neutral-300'>Sin descripción.</p>
+                <p className='mt-3 leading-relaxed text-neutral-300'>
+                  {item.description ?? 'Sin descripción.'}
+                </p>
               </div>
               {SECTION_CONTENT[activeSection](item)}
             </div>
