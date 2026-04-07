@@ -100,6 +100,11 @@ model CharacterTemplate {
   description String?
   imageUrl    String?
 
+  race           String @default("Desconocido")
+  characterClass String @default("Desconocido")
+  maxHp          Int    @default(8)
+  abilities      Json?
+
   // Stats Atómicos
   strength     Int @default(10)
   dexterity    Int @default(10)
@@ -273,7 +278,9 @@ model MonsterTemplate {
   id          String  @id @default(cuid())
   name        String
   description String?
-  type        String 
+  type        String
+  race           String @default("Desconocido")
+  characterClass String @default("Desconocido")
   imageUrl String?
 
   challenge Float @default(1.0)
