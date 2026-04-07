@@ -5,6 +5,7 @@ interface StatBoxProps {
   value: number | string
   icon?: ReactNode
   size?: 'sm' | 'md'
+  title?: string
 }
 
 const { cos, sin, PI } = Math
@@ -37,7 +38,7 @@ function edgeTriangles(cx: number, cy: number, r: number, base: number, height: 
   }).join(' ')
 }
 
-export const StatBox = ({ label, value, icon, size = 'md' }: StatBoxProps) => {
+export const StatBox = ({ label, value, icon, size = 'md', title }: StatBoxProps) => {
   const r = size === 'sm' ? 24 : 33
   const innerR = size === 'sm' ? 19 : 27
   const triBase = size === 'sm' ? 15 : 17
@@ -55,6 +56,7 @@ export const StatBox = ({ label, value, icon, size = 'md' }: StatBoxProps) => {
     <div
       className='relative flex items-center justify-center'
       style={{ width: svgW, height: svgH }}
+      title={title}
     >
       <svg viewBox={`0 0 ${svgW} ${svgH}`} width={svgW} height={svgH} className='absolute inset-0'>
         {/* Hexágono exterior */}
@@ -86,9 +88,9 @@ export const StatBox = ({ label, value, icon, size = 'md' }: StatBoxProps) => {
           {label}
         </span>
         <div className='flex items-center gap-0.5'>
-          {icon && <span className='text-amber-500/60'>{icon}</span>}
+          {icon && <span className='text-neutral-500'>{icon}</span>}
           <span
-            className={`font-mono font-bold text-amber-500 ${
+            className={`font-mono font-bold text-neutral-400 ${
               valStr.length > 4 ? 'text-[8px]' : size === 'md' ? 'text-sm' : 'text-xs'
             }`}
           >
