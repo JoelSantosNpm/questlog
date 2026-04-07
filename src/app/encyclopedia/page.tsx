@@ -23,7 +23,7 @@ export default async function EncyclopediaPage() {
   }
 
   return (
-    <div className='flex h-[calc(100vh-64px)] w-full overflow-hidden bg-neutral-950 font-sans'>
+    <div className='flex w-full bg-neutral-950 font-sans'>
       <EncyclopediaStoreInitializer data={allData} />
       <SideTabs />
       <EncyclopediaContainer />
