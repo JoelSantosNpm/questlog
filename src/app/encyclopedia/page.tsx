@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import {
   EncyclopediaContainer,
   EncyclopediaStoreInitializer,
@@ -23,10 +24,14 @@ export default async function EncyclopediaPage() {
   }
 
   return (
-    <div className='flex w-full bg-neutral-950 font-sans'>
-      <EncyclopediaStoreInitializer data={allData} />
-      <SideTabs />
-      <EncyclopediaContainer />
+    <div className='relative flex w-full font-sans'>
+      <Image src='/biblioteca.png' alt='' fill className='object-cover object-center' priority />
+      <div className='absolute inset-0 bg-black/60' />
+      <div className='relative flex w-full'>
+        <EncyclopediaStoreInitializer data={allData} />
+        <SideTabs />
+        <EncyclopediaContainer />
+      </div>
     </div>
   )
 }
