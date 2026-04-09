@@ -1,0 +1,119 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# CI Pipeline — Questlog
+#
+# Dispara EXCLUSIVAMENTE en Pull Requests cuyo destino sea la rama `develop`.
+# Un único job secuencial: si cualquier step falla, el workflow se detiene
+# inmediatamente y la PR queda marcada como fallida (comportamiento nativo
+# de GitHub Actions; no se necesita configuración adicional).
+# ─────────────────────────────────────────────────────────────────────────────
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  ci:
+    name: CI Pipeline
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── 1. SETUP ─────────────────────────────────────────────────────────────
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Configura Node 20 y activa la caché integrada de npm
+      # (restaura node_modules desde ~/.npm usando package-lock.json como clave)
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # Caché de la carpeta .next/cache para acelerar builds incrementales
+      - name: Restore .next/cache
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.{ts,tsx,js,jsx,mjs,css}') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+            ${{ runner.os }}-nextjs-
+
+      # ── 2. DEPS ───────────────────────────────────────────────────────────────
+
+      # Instalación limpia y reproducible desde package-lock.json
+      - name: Install dependencies
+        run: npm ci
+
+      # ── 3. BASE DE DATOS / ORM ────────────────────────────────────────────────
+
+      # Genera los tipos TypeScript de Prisma sin necesitar conexión a la DB
+      # (el schema no referencia $DATABASE_URL; generate solo lee el .prisma)
+      - name: Generate Prisma types
+        run: npx prisma generate
+
+      # ── 4. SALUD DE REACT ─────────────────────────────────────────────────────
+
+      - name: React Doctor
+        run: npx react-doctor
+
+      # ── 5. CALIDAD DE CÓDIGO ──────────────────────────────────────────────────
+
+      - name: TypeScript — noEmit check
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npm run lint
+
+      # ── 6. TESTING ────────────────────────────────────────────────────────────
+      #
+      # IMPORTANTE: Si cualquiera de los siguientes steps devuelve exit-code ≠ 0,
+      # GitHub Actions detiene el job en ese punto y marca la PR como fallida.
+      # Ningún step posterior (incluido el Build) se ejecutará.
+      # NODE_ENV=test activa guards de logging en librerías compatibles.
+      # --silent suprime los console.log/warn de los propios test files.
+
+      - name: Unit & Integration Tests (Vitest)
+        env:
+          NODE_ENV: test
+        run: npm run test:run -- --reporter=dot --silent
+
+      # Instalación de binarios de Chromium necesarios para Playwright
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: E2E Tests (Playwright)
+        env:
+          NODE_ENV: test
+          CI: 'true'
+          # Clerk — necesario para clerkSetup() en global.setup.ts y auth.setup.ts
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+          CLERK_TESTING_TOKEN: ${{ secrets.CLERK_TESTING_TOKEN }}
+          # Credenciales del usuario de prueba E2E
+          E2E_CLERK_USER_EMAIL: ${{ secrets.E2E_CLERK_USER_EMAIL }}
+          E2E_CLERK_USER_PASSWORD: ${{ secrets.E2E_CLERK_USER_PASSWORD }}
+          # Supabase — necesario para el dev-server que Playwright levanta internamente
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: npm run test:e2e
+
+      # ── 7. BUILD ──────────────────────────────────────────────────────────────
+      #
+      # Las variables de Supabase se inyectan con valores placeholder porque
+      # Next.js no realiza llamadas reales a Supabase en tiempo de compilación.
+      # Clerk sí se valida estáticamente, por lo que se usa el secret real.
+
+      - name: Build
+        env:
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+          # Supabase — placeholders seguros para la fase de compilación
+          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key-build-only
+          SUPABASE_SERVICE_ROLE_KEY: placeholder-service-role-key-build-only
+        run: npm run build
