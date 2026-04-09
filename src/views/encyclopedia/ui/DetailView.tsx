@@ -36,7 +36,7 @@ export const DetailView = ({ item, activeSection }: DetailViewProps) => (
             <EncyclopediaImage key={item.id} item={item} section={activeSection} />
           </div>
 
-          <div className='w-full max-w-lg border-l border-neutral-800/50 bg-neutral-900/30 p-8 backdrop-blur-md lg:p-12'>
+          <div className='w-full max-w-lg border-l border-neutral-800/50 bg-neutral-900/30 p-4 backdrop-blur-md lg:p-6'>
             <ItemHeader item={item} activeSection={activeSection} />
             <div className='space-y-8'>
               <div>
