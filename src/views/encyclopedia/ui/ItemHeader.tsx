@@ -14,7 +14,7 @@ interface ItemHeaderProps {
 }
 
 export const ItemHeader = ({ item, activeSection }: ItemHeaderProps) => (
-  <header className='mb-8'>
+  <header className='mb-4'>
     <div className='flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-500/60'>
       <Info className='h-3 w-3' />
       {SECTION_LABELS[activeSection]}

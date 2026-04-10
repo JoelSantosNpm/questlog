@@ -33,7 +33,7 @@ export const DetailView = ({ item, activeSection }: DetailViewProps) => (
           className='flex flex-col lg:flex-row'
         >
           <div className='flex flex-1 items-center justify-center p-8 lg:p-12'>
-            <EncyclopediaImage key={item.id} item={item} section={activeSection} />
+            <EncyclopediaImage key={item.id} item={item} section={activeSection} noBackground />
           </div>
 
           <div className='w-full max-w-lg border-l border-neutral-800/50 bg-neutral-900/30 p-4 backdrop-blur-md lg:p-6'>

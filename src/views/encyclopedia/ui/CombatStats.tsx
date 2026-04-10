@@ -1,6 +1,9 @@
+import { useState } from 'react'
 import { MAIN_STATS, SMALL_STATS, signed } from '../config/stats'
 import { BestiaryItem, CastItem } from '../model/types'
 import { StatBox } from './StatBox'
+import { PortraitFrame } from './PortraitFrame'
+import { getEntityImage } from '@/shared/lib/storage'
 
 interface CombatStatsProps {
   item: BestiaryItem | CastItem
@@ -21,8 +24,49 @@ export const CombatStats = ({ item }: CombatStatsProps) => {
     ? (abilities as Array<{ name?: string; description?: string }>)
     : null
 
+  const [imgSrc, setImgSrc] = useState(() => getEntityImage(item.imageUrl, item.section))
+
   return (
     <div className='space-y-6'>
+      <div>
+        <h3 className='mb-3 text-xs font-bold uppercase tracking-widest text-neutral-500'>
+          Estadísticas
+        </h3>
+        <div className='flex justify-around'>
+          {MAIN_STATS.map(({ label, title, key }) => (
+            <StatBox key={key} label={label} title={title} value={signed(item[key] as number)} />
+          ))}
+          <StatBox label='PG' title='Puntos de Golpe' value={signed(item.maxHp)} />
+        </div>
+      </div>
+
+      {/* Retrato del personaje/monstruo entre estadísticas */}
+      <div className='flex justify-center'>
+        <PortraitFrame
+          src={imgSrc}
+          alt={item.name}
+          onError={() => setImgSrc(getEntityImage(null, item.section))}
+        />
+      </div>
+
+      <div>
+        <div className='mt-3 space-y-1'>
+          {SMALL_STATS.map((row, i) => (
+            <div key={i} className='flex justify-center gap-1'>
+              {row.map(({ label, title, key }) => (
+                <StatBox
+                  key={key}
+                  size='sm'
+                  label={label}
+                  title={title}
+                  value={signed(item[key] as number)}
+                />
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div className='grid grid-cols-2 gap-3'>
         {monster && (
           <>
@@ -45,33 +89,6 @@ export const CombatStats = ({ item }: CombatStatsProps) => {
         <div className='rounded-lg border border-neutral-800 bg-neutral-900/50 p-3'>
           <span className='text-[10px] font-bold uppercase text-neutral-500'>Clase</span>
           <p className='mt-1 font-medium capitalize text-neutral-200'>{item.characterClass}</p>
-        </div>
-      </div>
-
-      <div>
-        <h3 className='mb-3 text-xs font-bold uppercase tracking-widest text-neutral-500'>
-          Estadísticas
-        </h3>
-        <div className='flex justify-around'>
-          {MAIN_STATS.map(({ label, title, key }) => (
-            <StatBox key={key} label={label} title={title} value={signed(item[key] as number)} />
-          ))}
-          <StatBox label='PG' title='Puntos de Golpe' value={signed(item.maxHp)} />
-        </div>
-        <div className='mt-3 space-y-1'>
-          {SMALL_STATS.map((row, i) => (
-            <div key={i} className='flex justify-center gap-1'>
-              {row.map(({ label, title, key }) => (
-                <StatBox
-                  key={key}
-                  size='sm'
-                  label={label}
-                  title={title}
-                  value={signed(item[key] as number)}
-                />
-              ))}
-            </div>
-          ))}
         </div>
       </div>
 

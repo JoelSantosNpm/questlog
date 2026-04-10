@@ -6,7 +6,8 @@ const BASE = () =>
 export const STORAGE_PATHS = {
   SYSTEM: {
     get MONSTER_DEFAULT() {
-      return `${BASE()}/monster-placeholder.png`
+      // return `${BASE()}/monster-placeholder.png`
+      return `${BASE()}/Lobo_Barovia_3D.png`
     },
     get ITEM_DEFAULT() {
       return `${BASE()}/item-placeholder.png`
