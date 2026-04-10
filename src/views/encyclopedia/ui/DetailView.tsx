@@ -33,7 +33,7 @@ export const DetailView = ({ item, activeSection }: DetailViewProps) => (
           transition={{ duration: 0.3 }}
           className='flex flex-col lg:flex-row'
         >
-          <div className='relative flex flex-1 items-center justify-center p-8 lg:p-12'>
+          <div className='relative flex-1 overflow-hidden'>
             <Image
               src='/biblioteca_test2.png'
               alt=''
@@ -42,7 +42,13 @@ export const DetailView = ({ item, activeSection }: DetailViewProps) => (
               priority
             />
             <div className='absolute inset-0 bg-black/60' />
-            <EncyclopediaImage key={item.id} item={item} section={activeSection} noBackground />
+            <EncyclopediaImage
+              key={item.id}
+              item={item}
+              section={activeSection}
+              noBackground
+              overlay={{ top: '10%', height: '72%' }}
+            />
           </div>
 
           <div className='w-full max-w-lg border-l border-neutral-800/50 bg-neutral-900/30 p-4 backdrop-blur-md lg:p-6'>
