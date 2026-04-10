@@ -12,13 +12,12 @@ interface EncyclopediaImageProps {
   section: EncyclopediaSection
   noBackground?: boolean
   /**
-   * Cuando se pasa, posiciona la imagen absolute dentro del contenedor.
-   * top: distancia desde el top del contenedor (ej: '15%')
-   * height: altura de la imagen como % del contenedor (ej: '60%')
-   * Ambos % son relativos al contenedor, que con object-cover object-top
-   * mapea 1:1 con los % de la imagen de fondo.
+   * Posiciona la imagen absolute dentro del contenedor relativo al fondo.
+   * bottomFromTop: distancia del top del fondo al BORDE INFERIOR de la imagen (ej: '73%')
+   * height: tamaño de la imagen como % del contenedor — fijo para que
+   *   siempre ocupe la misma proporción del fondo independientemente del zoom.
    */
-  overlay?: { top: string; height: string }
+  overlay?: { bottomFromTop: string; height: string }
 }
 
 export const EncyclopediaImage = ({
@@ -36,7 +35,7 @@ export const EncyclopediaImage = ({
         overlay
           ? {
               position: 'absolute',
-              top: overlay.top,
+              top: `calc(${overlay.bottomFromTop} - ${overlay.height})`,
               height: overlay.height,
               left: '50%',
               transform: 'translateX(-50%)',

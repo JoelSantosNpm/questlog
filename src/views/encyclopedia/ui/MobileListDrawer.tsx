@@ -13,7 +13,7 @@ interface MobileListDrawerProps {
 }
 
 export const MobileListDrawer = ({ items, open, onOpen, onClose }: MobileListDrawerProps) => (
-  <div className='md:hidden'>
+  <div className='lg:hidden'>
     <button
       onClick={onOpen}
       className='fixed bottom-20 left-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-amber-500 text-neutral-950 shadow-lg'
