@@ -29,6 +29,9 @@ export const EncyclopediaImage = ({
           <img
             src={src}
             alt={item.name}
+            loading='eager'
+            fetchPriority='high'
+            decoding='async'
             onError={() => setSrc(getEntityImage(null, section))}
             className='absolute inset-0 h-full w-full object-contain transition-all duration-500 group-hover:scale-[1.02]'
           />
