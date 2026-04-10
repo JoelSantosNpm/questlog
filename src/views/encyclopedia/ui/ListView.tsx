@@ -8,9 +8,10 @@ import { EncyclopediaItem } from '../model/types'
 
 interface ListViewProps {
   items: EncyclopediaItem[]
+  onSelect?: () => void
 }
 
-export const ListView = ({ items }: ListViewProps) => {
+export const ListView = ({ items, onSelect }: ListViewProps) => {
   const selectedItemId = useSelectedItemId()
   const setSelectedItemId = useSetSelectedItemId()
   const [query, setQuery] = useState('')
@@ -38,7 +39,10 @@ export const ListView = ({ items }: ListViewProps) => {
           {filtered.map((item) => (
             <button
               key={item.id}
-              onClick={() => setSelectedItemId(item.id)}
+              onClick={() => {
+                setSelectedItemId(item.id)
+                onSelect?.()
+              }}
               className={cn(
                 'w-full rounded-lg px-4 py-3 text-left transition-all duration-200 cursor-pointer',
                 selectedItemId === item.id || (!selectedItemId && item.id === filtered[0]?.id)
