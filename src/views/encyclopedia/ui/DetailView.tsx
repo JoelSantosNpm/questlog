@@ -1,6 +1,7 @@
 'use client'
 
 import { m, AnimatePresence } from 'framer-motion'
+import Image from 'next/image'
 import type { ReactNode } from 'react'
 import { type EncyclopediaSection } from '../model/encyclopediaStore'
 import { EncyclopediaItem, BestiaryItem, CastItem, MuseumItem } from '../model/types'
@@ -32,7 +33,15 @@ export const DetailView = ({ item, activeSection }: DetailViewProps) => (
           transition={{ duration: 0.3 }}
           className='flex flex-col lg:flex-row'
         >
-          <div className='flex flex-1 items-center justify-center p-8 lg:p-12'>
+          <div className='relative flex flex-1 items-center justify-center p-8 lg:p-12'>
+            <Image
+              src='/biblioteca_test2.png'
+              alt=''
+              fill
+              className='object-cover object-top'
+              priority
+            />
+            <div className='absolute inset-0 bg-black/60' />
             <EncyclopediaImage key={item.id} item={item} section={activeSection} noBackground />
           </div>
 
