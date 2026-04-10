@@ -11,7 +11,9 @@ export function EncyclopediaContainer() {
 
   return (
     <>
-      <ListView items={currentItems} />
+      <div className='w-[20vw] shrink-0'>
+        <ListView items={currentItems} />
+      </div>
       <DetailView item={selectedItem} activeSection={activeSection} />
     </>
   )

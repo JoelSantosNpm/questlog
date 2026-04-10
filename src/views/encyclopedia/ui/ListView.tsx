@@ -20,7 +20,7 @@ export const ListView = ({ items }: ListViewProps) => {
     : items
 
   return (
-    <section className='flex w-80 flex-col border-r border-neutral-800/50 bg-neutral-950/40 backdrop-blur-sm'>
+    <section className='flex w-full flex-col border-r border-neutral-800/50 bg-neutral-950/40 backdrop-blur-sm'>
       <div className='p-4 border-b border-neutral-800/50'>
         <div className='relative'>
           <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500' />

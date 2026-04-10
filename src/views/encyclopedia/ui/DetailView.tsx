@@ -31,9 +31,9 @@ export const DetailView = ({ item, activeSection }: DetailViewProps) => (
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -20 }}
           transition={{ duration: 0.3 }}
-          className='flex flex-col lg:flex-row'
+          className='flex flex-col md:flex-row'
         >
-          <div className='relative flex-1 overflow-hidden'>
+          <div className='relative h-[50vw] min-h-64 shrink-0 overflow-hidden md:min-w-[60%] md:h-auto md:flex-1'>
             <Image
               src='/biblioteca_test2.png'
               alt=''
@@ -51,7 +51,7 @@ export const DetailView = ({ item, activeSection }: DetailViewProps) => (
             />
           </div>
 
-          <div className='w-full max-w-lg border-l border-neutral-800/50 bg-neutral-900/30 p-4 backdrop-blur-md lg:p-6'>
+          <div className='w-full border-t border-neutral-800/50 bg-neutral-900/30 p-4 backdrop-blur-md md:max-w-lg md:border-t-0 md:border-l lg:p-6'>
             <ItemHeader item={item} activeSection={activeSection} />
             <div className='space-y-8'>
               <div>
