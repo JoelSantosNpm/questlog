@@ -17,7 +17,7 @@ export const SideTabs = () => {
   const setActiveSection = useSetActiveSection()
 
   return (
-    <aside className='flex w-16 flex-col border-r border-neutral-800/50 bg-neutral-900/20'>
+    <aside className='flex w-16 h-fit flex-col border-r border-neutral-800/50 bg-neutral-900/20'>
       {SECTIONS.map((section) => (
         <button
           key={section.id}
