@@ -16,7 +16,7 @@ export function UploaderPreview({ src, isUploading, isSuccess }: UploaderPreview
         alt='Vista previa'
         fill
         className={cn(
-          'object-cover transition-all duration-700',
+          'object-contain transition-all duration-700',
           isUploading ? 'scale-110 blur-sm' : 'scale-100'
         )}
       />
@@ -30,7 +30,9 @@ export function UploaderPreview({ src, isUploading, isSuccess }: UploaderPreview
       )}
       {isSuccess && (
         <div className='absolute inset-0 bg-emerald-950/40 flex flex-col items-center justify-center backdrop-blur-[2px] animate-in fade-in duration-500'>
-          <p className='text-[10px] font-bold text-emerald-400 uppercase tracking-widest'>Imagen Sellada</p>
+          <p className='text-[10px] font-bold text-emerald-400 uppercase tracking-widest'>
+            Imagen Sellada
+          </p>
         </div>
       )}
     </>
