@@ -41,6 +41,7 @@ export const ItemHeader = ({ item, activeSection }: ItemHeaderProps) => {
           <PortraitFrame
             src={portraitSrc}
             alt={item.name}
+            variant={activeSection === 'cast' ? 'cast' : 'monster'}
             onError={() => setPortraitSrc(getPortraitImage(null, activeSection))}
           />
         )}
