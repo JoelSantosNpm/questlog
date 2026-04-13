@@ -22,7 +22,7 @@ const SECTION_CONTENT: Record<EncyclopediaSection, (item: EncyclopediaItem) => R
 }
 
 export const DetailView = ({ item, activeSection }: DetailViewProps) => (
-  <main className='relative flex-1 bg-[radial-gradient(circle_at_top_right,var(--tw-gradient-stops))] from-neutral-900/20 via-transparent to-transparent'>
+  <main className='relative flex-1 overflow-hidden bg-[radial-gradient(circle_at_top_right,var(--tw-gradient-stops))] from-neutral-900/20 via-transparent to-transparent'>
     <AnimatePresence mode='wait'>
       {item ? (
         <m.div
@@ -47,7 +47,7 @@ export const DetailView = ({ item, activeSection }: DetailViewProps) => (
               item={item}
               section={activeSection}
               noBackground
-              overlay={{ bottomFromTop: '73%', height: '55%' }}
+              overlay={{ bottomFromTop: '72%', height: '55%' }}
             />
           </div>
 
