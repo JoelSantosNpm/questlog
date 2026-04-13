@@ -3,7 +3,7 @@ import { MAIN_STATS, SMALL_STATS, signed } from '../config/stats'
 import { BestiaryItem, CastItem } from '../model/types'
 import { StatBox } from './StatBox'
 import { PortraitFrame } from './PortraitFrame'
-import { getEntityImage } from '@/shared/lib/storage'
+import { getPortraitImage } from '@/shared/lib/storage'
 
 interface CombatStatsProps {
   item: BestiaryItem | CastItem
@@ -24,7 +24,9 @@ export const CombatStats = ({ item }: CombatStatsProps) => {
     ? (abilities as Array<{ name?: string; description?: string }>)
     : null
 
-  const [imgSrc, setImgSrc] = useState(() => getEntityImage(item.imageUrl, item.section))
+  const [portraitSrc, setPortraitSrc] = useState(() =>
+    getPortraitImage(item.portraitImageUrl ?? null, item.section)
+  )
 
   return (
     <div className='space-y-6'>
@@ -43,9 +45,9 @@ export const CombatStats = ({ item }: CombatStatsProps) => {
       {/* Retrato del personaje/monstruo entre estadísticas */}
       <div className='flex justify-center'>
         <PortraitFrame
-          src={imgSrc}
+          src={portraitSrc}
           alt={item.name}
-          onError={() => setImgSrc(getEntityImage(null, item.section))}
+          onError={() => setPortraitSrc(getPortraitImage(null, item.section))}
         />
       </div>
 

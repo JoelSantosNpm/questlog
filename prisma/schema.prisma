@@ -99,6 +99,7 @@ model CharacterTemplate {
   name        String
   description String?
   imageUrl    String?
+  portraitImageUrl String?
 
   race           String @default("Desconocido")
   characterClass String @default("Desconocido")
@@ -149,6 +150,9 @@ model Character {
 
   templateId String?
   template   CharacterTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+
+  imageUrl         String?
+  portraitImageUrl String?
 
   level     Int    @default(1)
   currentHp Int
@@ -281,7 +285,8 @@ model MonsterTemplate {
   type        String
   race           String @default("Desconocido")
   characterClass String @default("Desconocido")
-  imageUrl String?
+  imageUrl         String?
+  portraitImageUrl String?
 
   challenge Float @default(1.0)
   maxHp     Int
@@ -326,6 +331,8 @@ model ActiveMonster {
   maxHp      Int 
   initiative Int?
   status     String[] 
+  imageUrl         String?
+  portraitImageUrl String?
 
   // Stats Atómicos (Override opcional)
   strength     Int @default(10)
