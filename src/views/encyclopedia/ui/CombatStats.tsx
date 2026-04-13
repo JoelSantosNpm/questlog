@@ -1,9 +1,6 @@
-import { useState } from 'react'
 import { MAIN_STATS, SMALL_STATS, signed } from '../config/stats'
 import { BestiaryItem, CastItem } from '../model/types'
 import { StatBox } from './StatBox'
-import { PortraitFrame } from './PortraitFrame'
-import { getPortraitImage } from '@/shared/lib/storage'
 
 interface CombatStatsProps {
   item: BestiaryItem | CastItem
@@ -24,10 +21,6 @@ export const CombatStats = ({ item }: CombatStatsProps) => {
     ? (abilities as Array<{ name?: string; description?: string }>)
     : null
 
-  const [portraitSrc, setPortraitSrc] = useState(() =>
-    getPortraitImage(item.portraitImageUrl ?? null, item.section)
-  )
-
   return (
     <div className='space-y-6'>
       <div>
@@ -42,31 +35,20 @@ export const CombatStats = ({ item }: CombatStatsProps) => {
         </div>
       </div>
 
-      {/* Retrato del personaje/monstruo entre estadísticas */}
-      <div className='flex justify-center'>
-        <PortraitFrame
-          src={portraitSrc}
-          alt={item.name}
-          onError={() => setPortraitSrc(getPortraitImage(null, item.section))}
-        />
-      </div>
-
-      <div>
-        <div className='mt-3 space-y-1'>
-          {SMALL_STATS.map((row, i) => (
-            <div key={i} className='flex justify-center gap-1'>
-              {row.map(({ label, title, key }) => (
-                <StatBox
-                  key={key}
-                  size='sm'
-                  label={label}
-                  title={title}
-                  value={signed(item[key] as number)}
-                />
-              ))}
-            </div>
-          ))}
-        </div>
+      <div className=' space-y-1'>
+        {SMALL_STATS.map((row, i) => (
+          <div key={i} className='flex justify-center gap-5'>
+            {row.map(({ label, title, key }) => (
+              <StatBox
+                key={key}
+                size='sm'
+                label={label}
+                title={title}
+                value={signed(item[key] as number)}
+              />
+            ))}
+          </div>
+        ))}
       </div>
 
       <div className='grid grid-cols-2 gap-3'>
