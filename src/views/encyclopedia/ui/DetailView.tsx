@@ -40,8 +40,8 @@ export const DetailView = () => {
           >
             <div className='relative h-[50vw] min-h-64 shrink-0 overflow-hidden lg:min-w-[60%] lg:h-auto lg:flex-1'>
               <Image
-                src='/biblioteca_test2.png'
-                alt=''
+                src='/bg_biblioteca.png'
+                alt='imagen del interior de una biblioteca con un pedestal en el centro'
                 fill
                 className='object-cover object-top'
                 priority
