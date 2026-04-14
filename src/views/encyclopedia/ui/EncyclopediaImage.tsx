@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { type EncyclopediaSection } from '../model/encyclopediaStore'
 import { EncyclopediaItem } from '../model/types'
 import { cn } from '@/shared/utils/styles'
-import { getEntityFallbacks } from '@/views/encyclopedia/lib/storage'
+import { getEntityFallbacks } from '@/views/encyclopedia/lib/image-fallbacks'
 
 interface EncyclopediaImageProps {
   item: EncyclopediaItem

@@ -5,7 +5,7 @@ import { Info } from 'lucide-react'
 import { type EncyclopediaSection } from '../model/encyclopediaStore'
 import { EncyclopediaItem, BestiaryItem, CastItem } from '../model/types'
 import { PortraitFrame } from './PortraitFrame'
-import { getPortraitFallbacks } from '@/views/encyclopedia/lib/storage'
+import { getPortraitFallbacks } from '@/views/encyclopedia/lib/image-fallbacks'
 
 const SECTION_LABELS: Record<EncyclopediaSection, string> = {
   bestiary: 'Bestiario',

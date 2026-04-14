@@ -30,6 +30,8 @@ export const STORAGE_PATHS = {
   },
 }
 
+// ************  DEFAULT IMAGE  ************
+
 function getDefaultImage(section: 'bestiary' | 'cast' | 'museum'): string {
   switch (section) {
     case 'bestiary':
@@ -41,13 +43,6 @@ function getDefaultImage(section: 'bestiary' | 'cast' | 'museum'): string {
   }
 }
 
-export function getEntityImage(
-  imageUrl: string | null,
-  section: 'bestiary' | 'cast' | 'museum'
-): string {
-  return getEntityFallbacks(section, imageUrl)[0]
-}
-
 /** Devuelve la lista ordenada de URLs a intentar, garantizando siempre al menos el default. */
 export function getEntityFallbacks(
   section: 'bestiary' | 'cast' | 'museum',
@@ -56,6 +51,8 @@ export function getEntityFallbacks(
   const valid = urls.filter((u): u is string => Boolean(u?.trim()))
   return [...valid, getDefaultImage(section)]
 }
+
+// ************  PORTRAIT IMAGE  ************
 
 function getPortraitDefault(section: 'bestiary' | 'cast'): string {
   switch (section) {
@@ -73,12 +70,4 @@ export function getPortraitFallbacks(
 ): string[] {
   const valid = urls.filter((u): u is string => Boolean(u?.trim()))
   return [...valid, getPortraitDefault(section)]
-}
-
-export function getPortraitImage(
-  portraitImageUrl: string | null,
-  section: 'bestiary' | 'cast',
-  imageUrl?: string | null
-): string {
-  return getPortraitFallbacks(section, portraitImageUrl, imageUrl)[0]
 }
