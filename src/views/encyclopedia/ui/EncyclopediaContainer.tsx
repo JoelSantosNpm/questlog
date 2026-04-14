@@ -1,16 +1,12 @@
 'use client'
 
-import { useState } from 'react'
-import { useActiveSection, useCurrentItems, useSelectedItem } from '../model/encyclopediaStore'
+import { useCurrentItems } from '../model/encyclopediaStore'
 import { ListView } from './ListView'
 import { DetailView } from './DetailView'
 import { MobileListDrawer } from './MobileListDrawer'
 
 export function EncyclopediaContainer() {
-  const activeSection = useActiveSection()
   const currentItems = useCurrentItems()
-  const selectedItem = useSelectedItem()
-  const [drawerOpen, setDrawerOpen] = useState(false)
 
   return (
     <>
@@ -20,14 +16,9 @@ export function EncyclopediaContainer() {
       </div>
 
       {/* Drawer: visible en < md */}
-      <MobileListDrawer
-        items={currentItems}
-        open={drawerOpen}
-        onOpen={() => setDrawerOpen(true)}
-        onClose={() => setDrawerOpen(false)}
-      />
+      <MobileListDrawer items={currentItems} />
 
-      <DetailView item={selectedItem} activeSection={activeSection} />
+      <DetailView />
     </>
   )
 }
