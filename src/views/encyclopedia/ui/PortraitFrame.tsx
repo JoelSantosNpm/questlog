@@ -20,6 +20,8 @@ interface PortraitFrameProps {
   size?: number
   variant?: PortraitVariant
   colors?: FrameColors
+  /** Posición focal de la imagen dentro del círculo. Por defecto 'top' para retratos. */
+  objectPosition?: string
   onError?: () => void
 }
 
@@ -42,6 +44,7 @@ export const PortraitFrame = ({
   size = 112,
   variant = 'monster',
   colors,
+  objectPosition = 'top',
   onError,
 }: PortraitFrameProps) => {
   const [imgSrc, setImgSrc] = useState(src)
@@ -81,6 +84,7 @@ export const PortraitFrame = ({
                 unoptimized={imgSrc.includes('/defaults/')}
                 onError={handleError}
                 className='object-cover'
+                style={{ objectPosition }}
               />
             </div>
           </div>

@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import Image from 'next/image'
 import { type EncyclopediaSection } from '../model/encyclopediaStore'
 import { EncyclopediaItem } from '../model/types'
 import { cn } from '@/shared/utils/styles'
-import { getEntityImage } from '@/shared/lib/storage'
+import { getEntityFallbacks } from '@/shared/lib/storage'
 
 interface EncyclopediaImageProps {
   item: EncyclopediaItem
@@ -26,7 +26,20 @@ export const EncyclopediaImage = ({
   noBackground = false,
   overlay,
 }: EncyclopediaImageProps) => {
-  const [src, setSrc] = useState(() => getEntityImage(item.imageUrl, section))
+  const portraitImageUrl =
+    'portraitImageUrl' in item ? (item.portraitImageUrl as string | null) : null
+
+  const fallbacks = useMemo(
+    () => getEntityFallbacks(section, item.imageUrl, portraitImageUrl),
+    [section, item.imageUrl, portraitImageUrl]
+  )
+
+  const [fallbackIndex, setFallbackIndex] = useState(0)
+  const src = fallbacks[fallbackIndex]
+
+  const handleError = () => {
+    setFallbackIndex((i) => (i + 1 < fallbacks.length ? i + 1 : i))
+  }
 
   return (
     <div
@@ -53,7 +66,7 @@ export const EncyclopediaImage = ({
             loading='eager'
             fetchPriority='high'
             decoding='async'
-            onError={() => setSrc(getEntityImage(null, section))}
+            onError={handleError}
             className='absolute inset-0 h-full w-full object-contain transition-all duration-500 group-hover:scale-[1.02]'
           />
         ) : (
@@ -64,7 +77,7 @@ export const EncyclopediaImage = ({
             priority
             sizes='(max-width: 768px) 100vw, 400px'
             unoptimized={src.includes('/defaults/')}
-            onError={() => setSrc(getEntityImage(null, section))}
+            onError={handleError}
             className={cn(
               'rounded-2xl border border-neutral-800 object-contain shadow-2xl transition-all duration-500 group-hover:scale-[1.02]'
             )}

@@ -23,7 +23,13 @@ export const ItemHeader = ({ item, activeSection }: ItemHeaderProps) => {
   const portraitItem = hasPortrait ? (item as BestiaryItem | CastItem) : null
 
   const [portraitSrc, setPortraitSrc] = useState(() =>
-    hasPortrait ? getPortraitImage(portraitItem!.portraitImageUrl ?? null, activeSection) : ''
+    hasPortrait
+      ? getPortraitImage(
+          portraitItem!.portraitImageUrl ?? null,
+          activeSection as 'bestiary' | 'cast',
+          portraitItem!.imageUrl
+        )
+      : ''
   )
 
   return (
@@ -42,7 +48,11 @@ export const ItemHeader = ({ item, activeSection }: ItemHeaderProps) => {
             src={portraitSrc}
             alt={item.name}
             variant={activeSection === 'cast' ? 'cast' : 'monster'}
-            onError={() => setPortraitSrc(getPortraitImage(null, activeSection))}
+            onError={() =>
+              setPortraitSrc(
+                getPortraitImage(null, activeSection as 'bestiary' | 'cast', portraitItem?.imageUrl)
+              )
+            }
           />
         )}
         <h2 className='font-medieval text-4xl text-neutral-100'>{item.name}</h2>

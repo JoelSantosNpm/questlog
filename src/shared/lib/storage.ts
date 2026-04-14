@@ -30,12 +30,7 @@ export const STORAGE_PATHS = {
   },
 }
 
-export function getEntityImage(
-  imageUrl: string | null,
-  section: 'bestiary' | 'cast' | 'museum'
-): string {
-  if (imageUrl && imageUrl.trim() !== '') return imageUrl
-
+function getDefaultImage(section: 'bestiary' | 'cast' | 'museum'): string {
   switch (section) {
     case 'bestiary':
       return STORAGE_PATHS.SYSTEM.MONSTER_DEFAULT
@@ -43,16 +38,32 @@ export function getEntityImage(
       return STORAGE_PATHS.SYSTEM.ITEM_DEFAULT
     case 'cast':
       return STORAGE_PATHS.SYSTEM.NPC_DEFAULT
-    default:
-      return STORAGE_PATHS.SYSTEM.MONSTER_DEFAULT
   }
+}
+
+export function getEntityImage(
+  imageUrl: string | null,
+  section: 'bestiary' | 'cast' | 'museum'
+): string {
+  return getEntityFallbacks(section, imageUrl)[0]
+}
+
+/** Devuelve la lista ordenada de URLs a intentar, garantizando siempre al menos el default. */
+export function getEntityFallbacks(
+  section: 'bestiary' | 'cast' | 'museum',
+  ...urls: (string | null | undefined)[]
+): string[] {
+  const valid = urls.filter((u): u is string => Boolean(u?.trim()))
+  return [...valid, getDefaultImage(section)]
 }
 
 export function getPortraitImage(
   portraitImageUrl: string | null,
-  section: 'bestiary' | 'cast'
+  section: 'bestiary' | 'cast',
+  imageUrl?: string | null
 ): string {
   if (portraitImageUrl && portraitImageUrl.trim() !== '') return portraitImageUrl
+  if (imageUrl && imageUrl.trim() !== '') return imageUrl
 
   switch (section) {
     case 'bestiary':
