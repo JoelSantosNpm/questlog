@@ -20,7 +20,7 @@ const SECTION_CONTENT: Record<EncyclopediaSection, (item: EncyclopediaItem) => R
   museum: (item) => <ItemProperties item={item as MuseumItem} />,
 }
 
-const IMAGE_OVERLAY = { bottomFromTop: '73%', height: '55%' }
+const IMAGE_OVERLAY = { bottomFromTop: '72%', height: '55%' }
 
 export const DetailView = () => {
   const activeSection = useActiveSection()

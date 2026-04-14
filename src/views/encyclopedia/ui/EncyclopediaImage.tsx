@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { memo, useMemo, useState } from 'react'
 import Image from 'next/image'
 import { type EncyclopediaSection } from '../model/encyclopediaStore'
 import { EncyclopediaItem } from '../model/types'
@@ -20,12 +20,12 @@ interface EncyclopediaImageProps {
   overlay?: { bottomFromTop: string; height: string }
 }
 
-export const EncyclopediaImage = ({
+export const EncyclopediaImage = memo(function EncyclopediaImage({
   item,
   section,
   noBackground = false,
   overlay,
-}: EncyclopediaImageProps) => {
+}: EncyclopediaImageProps) {
   const portraitImageUrl =
     'portraitImageUrl' in item ? (item.portraitImageUrl as string | null) : null
 
@@ -86,4 +86,4 @@ export const EncyclopediaImage = ({
       </div>
     </div>
   )
-}
+})

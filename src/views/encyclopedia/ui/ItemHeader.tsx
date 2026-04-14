@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Info } from 'lucide-react'
 import { type EncyclopediaSection } from '../model/encyclopediaStore'
 import { EncyclopediaItem, BestiaryItem, CastItem } from '../model/types'
 import { PortraitFrame } from './PortraitFrame'
-import { getPortraitImage } from '@/shared/lib/storage'
+import { getPortraitFallbacks } from '@/shared/lib/storage'
 
 const SECTION_LABELS: Record<EncyclopediaSection, string> = {
   bestiary: 'Bestiario',
@@ -22,15 +22,25 @@ export const ItemHeader = ({ item, activeSection }: ItemHeaderProps) => {
   const hasPortrait = activeSection === 'bestiary' || activeSection === 'cast'
   const portraitItem = hasPortrait ? (item as BestiaryItem | CastItem) : null
 
-  const [portraitSrc, setPortraitSrc] = useState(() =>
-    hasPortrait
-      ? getPortraitImage(
-          portraitItem!.portraitImageUrl ?? null,
-          activeSection as 'bestiary' | 'cast',
-          portraitItem!.imageUrl
-        )
-      : ''
+  const fallbacks = useMemo(
+    () =>
+      hasPortrait
+        ? getPortraitFallbacks(
+            activeSection as 'bestiary' | 'cast',
+            portraitItem!.portraitImageUrl,
+            portraitItem!.imageUrl
+          )
+        : [],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [hasPortrait, activeSection, portraitItem?.portraitImageUrl, portraitItem?.imageUrl]
   )
+
+  const [fallbackIndex, setFallbackIndex] = useState(0)
+  const portraitSrc = fallbacks[fallbackIndex] ?? ''
+
+  const handlePortraitError = () => {
+    setFallbackIndex((i) => (i + 1 < fallbacks.length ? i + 1 : i))
+  }
 
   return (
     <header className='mb-4'>
@@ -48,11 +58,7 @@ export const ItemHeader = ({ item, activeSection }: ItemHeaderProps) => {
             src={portraitSrc}
             alt={item.name}
             variant={activeSection === 'cast' ? 'cast' : 'monster'}
-            onError={() =>
-              setPortraitSrc(
-                getPortraitImage(null, activeSection as 'bestiary' | 'cast', portraitItem?.imageUrl)
-              )
-            }
+            onError={handlePortraitError}
           />
         )}
         <h2 className='font-medieval text-4xl text-neutral-100'>{item.name}</h2>

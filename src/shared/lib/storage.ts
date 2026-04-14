@@ -13,14 +13,14 @@ export const STORAGE_PATHS = {
       return `${BASE()}/Lobo_Barovia.png`
     },
     get ITEM_DEFAULT() {
-      return `${BASE()}/item-placeholder.png`
+      return `${BASE()}/unknown_item.png`
     },
     get NPC_DEFAULT() {
       // return `${BASE()}/npc-placeholder.png`
-      return `${BASE()}/personaje_3D_test2.png`
+      return `${BASE()}/unknown_chr_3D.png`
     },
     get NPC_PORTRAIT_DEFAULT() {
-      return `${BASE()}/personaje_portrait_test1.png`
+      return `${BASE()}/unknown_chr.png`
     },
   },
 
@@ -57,20 +57,28 @@ export function getEntityFallbacks(
   return [...valid, getDefaultImage(section)]
 }
 
-export function getPortraitImage(
-  portraitImageUrl: string | null,
-  section: 'bestiary' | 'cast',
-  imageUrl?: string | null
-): string {
-  if (portraitImageUrl && portraitImageUrl.trim() !== '') return portraitImageUrl
-  if (imageUrl && imageUrl.trim() !== '') return imageUrl
-
+function getPortraitDefault(section: 'bestiary' | 'cast'): string {
   switch (section) {
     case 'bestiary':
       return STORAGE_PATHS.SYSTEM.MONSTER_PORTRAIT_DEFAULT
     case 'cast':
       return STORAGE_PATHS.SYSTEM.NPC_PORTRAIT_DEFAULT
-    default:
-      return STORAGE_PATHS.SYSTEM.MONSTER_PORTRAIT_DEFAULT
   }
+}
+
+/** Devuelve la lista ordenada de URLs de retrato a intentar, garantizando siempre el default. */
+export function getPortraitFallbacks(
+  section: 'bestiary' | 'cast',
+  ...urls: (string | null | undefined)[]
+): string[] {
+  const valid = urls.filter((u): u is string => Boolean(u?.trim()))
+  return [...valid, getPortraitDefault(section)]
+}
+
+export function getPortraitImage(
+  portraitImageUrl: string | null,
+  section: 'bestiary' | 'cast',
+  imageUrl?: string | null
+): string {
+  return getPortraitFallbacks(section, portraitImageUrl, imageUrl)[0]
 }

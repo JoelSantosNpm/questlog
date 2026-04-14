@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import Image from 'next/image'
 
 interface FrameColors {
@@ -47,14 +46,8 @@ export const PortraitFrame = ({
   objectPosition = 'top',
   onError,
 }: PortraitFrameProps) => {
-  const [imgSrc, setImgSrc] = useState(src)
   const { ring, halo, fretwork } =
     colors ?? VARIANT_COLORS[variant === 'custom' ? 'monster' : variant]
-
-  const handleError = () => {
-    onError?.()
-    setImgSrc(src)
-  }
 
   return (
     <div className='relative'>
@@ -77,12 +70,12 @@ export const PortraitFrame = ({
               style={{ width: size, height: size }}
             >
               <Image
-                src={imgSrc}
+                src={src}
                 alt={alt}
                 fill
                 sizes={`${size}px`}
-                unoptimized={imgSrc.includes('/defaults/')}
-                onError={handleError}
+                unoptimized={src.includes('/defaults/')}
+                onError={onError}
                 className='object-cover'
                 style={{ objectPosition }}
               />
