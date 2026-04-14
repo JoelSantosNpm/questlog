@@ -7,7 +7,7 @@ export const STORAGE_PATHS = {
   SYSTEM: {
     get MONSTER_DEFAULT() {
       // return `${BASE()}/monster-placeholder.png`
-      return `${BASE()}/Lobo_Barovia_3D_test3.png`
+      return `${BASE()}/Lobo_Barovia_3D.png`
     },
     get MONSTER_PORTRAIT_DEFAULT() {
       return `${BASE()}/Lobo_Barovia.png`
