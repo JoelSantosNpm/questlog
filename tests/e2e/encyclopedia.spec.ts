@@ -34,18 +34,17 @@ test('ENC-02 – la sección activa inicial es Bestiario', async ({ page }) => {
 test('ENC-03 – cambiar entre secciones actualiza la lista visible', async ({ page }) => {
   await page.goto(URL)
 
-  // Sección inicial: Bestiario — esperar que la lista se pueble
-  const listRegion = page.locator('section').filter({ hasText: 'Buscar...' })
-  await expect(listRegion).toBeVisible()
+  // El input de búsqueda está presente siempre que la lista sea visible
+  const searchInput = page.getByPlaceholder('Buscar...')
+  await expect(searchInput).toBeVisible()
 
   // Cambiar a Personajes
   await page.getByRole('button', { name: 'Personajes' }).click()
-  // La lista se actualiza — el spinner/skeleton desaparece y hay items o vacío
-  await expect(listRegion).toBeVisible()
+  await expect(searchInput).toBeVisible()
 
   // Cambiar a Museo
   await page.getByRole('button', { name: 'Museo' }).click()
-  await expect(listRegion).toBeVisible()
+  await expect(searchInput).toBeVisible()
 })
 
 // ─── AC – Búsqueda dentro de sección ─────────────────────────────────────────
@@ -75,8 +74,10 @@ test('ENC-05 – el filtro de búsqueda es insensible a mayúsculas', async ({ p
   const searchInput = page.getByPlaceholder('Buscar...')
   await searchInput.fill(firstItemName.toUpperCase())
 
-  // El item debe seguir visible
-  await expect(page.getByText(firstItemName)).toBeVisible()
+  // El item debe seguir visible en la lista (restringido al botón, no al heading del detalle)
+  await expect(
+    page.locator('button p.font-semibold', { hasText: firstItemName }).first()
+  ).toBeVisible()
 })
 
 // ─── AC – Selección de items ──────────────────────────────────────────────────
