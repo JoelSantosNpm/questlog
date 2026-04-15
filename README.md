@@ -39,19 +39,49 @@ The `src/` folder follows **FSD v2.1** with three canonical layers:
 
 ```
 src/
-├── app/        ← Next.js routing layer (thin wrappers only)
-├── views/      ← Feature slices (campaigns/, encyclopedia/, portal/)
-│   └── <slice>/
-│       ├── api/    ← Server actions & queries
-│       ├── model/  ← Domain types & Zustand stores
-│       ├── ui/     ← Components & hooks
-│       └── index.ts← Public API (app/ only imports from here)
-└── shared/     ← Generic infrastructure (no business logic)
-    ├── api/    ← StorageService
-    ├── config/ ← Clerk theme, route constants
-    ├── lib/    ← Supabase clients, hooks, utilities
-    ├── schemas/← Zod schemas
-    └── ui/     ← Shared components (ImageUploader, MysticBackground)
+├── app/                        # Routes and pages (App Router)
+│   ├── campaigns/              # Campaign pages
+│   │   ├── page.tsx            # Portal carousel (campaign selection)
+│   │   ├── creation/           # Campaign creation form
+│   │   └── [id]/               # Campaign detail
+│   ├── colosseum/              # Combat tracker (El Coliseo)
+│   ├── dashboard/              # Main dashboard
+│   ├── encyclopedia/           # Encyclopedia hub
+│   ├── sign-in/ & sign-up/     # Authentication pages
+│   ├── auth/auth-sync.tsx      # Lazy sync: Clerk → Supabase
+│   └── layout.tsx              # Root layout
+├── views/                      # Feature slices (FSD)
+│   ├── campaigns/
+│   │   ├── api/                # campaign-actions.ts, campaign-queries.ts
+│   │   ├── config/             # campaign-steps.ts
+│   │   ├── lib/                # useCampaignForm.ts, notifications.ts
+│   │   ├── model/              # campaign.ts, campaignStore.ts
+│   │   ├── ui/creation/        # CampaignCreationForm, Provider, StepControls
+│   │   └── index.ts            # Public API
+│   ├── encyclopedia/
+│   │   ├── api/                # encyclopedia-queries.ts
+│   │   ├── config/             # stats.ts
+│   │   ├── lib/                # image-fallbacks.ts
+│   │   ├── model/              # types.ts, encyclopediaStore.ts
+│   │   ├── ui/                 # SideTabs, ListView, DetailView, EncyclopediaImage,
+│   │   │                       #   ItemHeader, PortraitFrame, CombatStats, ItemProperties…
+│   │   └── index.ts            # Public API
+│   └── portal/
+│       ├── lib/                # carousel-utils.ts, use-carousel.ts
+│       ├── ui/                 # Portal, PortalCard, PortalCarousel
+│       └── index.ts            # Public API
+├── shared/
+│   ├── api/                    # StorageService, Campaign interface
+│   ├── config/                 # Clerk theme, route constants
+│   ├── lib/                    # Supabase clients, storage helpers
+│   ├── schemas/                # Zod schemas (storage validation)
+│   ├── ui/                     # ImageUploader, MysticBackground (barrel: index.ts)
+│   └── utils/                  # cn()
+prisma/
+├── schema.prisma               # Database schema (source of truth for structure)
+├── seed.ts                     # Database seeding script
+└── migrations/                 # SQL migration history
+src/middleware.ts               # Route protection (Clerk, required by Next.js)
 ```
 
 ---
@@ -148,20 +178,10 @@ Since this project uses Clerk for authentication, seeding the database requires 
 
 We maintain a two-layer test suite to ensure the "game table" never breaks:
 
-| Layer                  | Tool                       | Scope                                                                  | Command            |
-| :--------------------- | :------------------------- | :--------------------------------------------------------------------- | :----------------- |
-| **Unit & Integration** | Vitest 4 + Testing Library | Pure utils, Zustand store, React components with mocked server actions | `npm run test:run` |
-| **End-to-End**         | Playwright (Chromium)      | Full browser flows: Portal carousel + campaign creation wizard         | `npm run test:e2e` |
-
-### Test Commands
-
-```bash
-npm run test          # Vitest in watch mode (development)
-npm run test:run      # Vitest single run (CI)
-npm run test:coverage # Vitest run with v8 coverage report
-npm run test:e2e      # Playwright E2E (headless)
-npm run test:e2e:ui   # Playwright E2E with interactive UI
-```
+| Layer                  | Tool                       | Scope                                                                                            | Command            |
+| :--------------------- | :------------------------- | :----------------------------------------------------------------------------------------------- | :----------------- |
+| **Unit & Integration** | Vitest 4 + Testing Library | Pure utils, Zustand store, React components (campaigns, encyclopedia) with mocked server actions | `npm run test:run` |
+| **End-to-End**         | Playwright (Chromium)      | Full browser flows: Portal carousel, campaign creation wizard, encyclopedia navigation           | `npm run test:e2e` |
 
 ### Running E2E Tests
 
@@ -180,63 +200,22 @@ Deletion rules (_Cascade vs SetNull_) are defined at the database level in the m
 
 ---
 
-## 📂 Project Structure
+## 📜 Scripts and commands
 
-```
-src/
-├── app/                        # Routes and pages (App Router)
-│   ├── campaigns/              # Campaign pages
-│   │   ├── page.tsx            # Portal carousel (campaign selection)
-│   │   ├── creation/           # Campaign creation form
-│   │   └── [id]/               # Campaign detail
-│   ├── colosseum/              # Combat tracker (El Coliseo)
-│   ├── dashboard/              # Main dashboard
-│   ├── sign-in/ & sign-up/     # Authentication pages
-│   └── layout.tsx              # Root layout (includes AuthSync)
-├── actions/
-│   └── campaign-actions.ts     # Server Actions (create campaign, etc.)
-├── components/
-│   ├── auth/
-│   │   └── auth-sync.tsx       # Lazy sync: Clerk → Supabase
-│   ├── campaigns/creation/     # Multi-step campaign creation form
-│   │   ├── CampaignCreationProvider.tsx  # RHF + Zustand context root
-│   │   ├── CampaignCreationForm.tsx      # Animated narrative form
-│   │   ├── StepControls.tsx             # Next/Skip/Submit step buttons
-│   │   ├── hooks/useCampaignForm.ts      # Form and step logic
-│   │   └── store/campaignStore.ts        # Step state in Zustand
-│   ├── portal/                 # 3D carousel components
-│   └── shared/ui/              # Reusable UI components
-├── config/
-│   ├── campaign-steps.ts       # Step definitions for campaign creation
-│   ├── clerk-theme.ts          # Grimdark custom theme for Clerk
-│   └── routes/auth.ts          # Public/protected route constants
-├── data/
-│   ├── campaign-queries.ts     # Supabase read queries (campaigns)
-│   └── encyclopedia-queries.ts # Supabase read queries (bestiary, items, characters)
-├── lib/
-│   ├── supabase/               # Supabase client factory (server + client)
-│   └── notifications.ts        # Toast notification helpers
-├── hooks/ui/                   # Generic UI hooks (useCarousel)
-├── providers/                  # App-level providers (AuthProvider)
-└── types/                      # Shared TypeScript types
-prisma/
-├── schema.prisma               # Database schema (source of truth for structure)
-├── seed.ts                     # Database seeding script
-└── migrations/                 # SQL migration history
-src/proxy.ts                    # Route protection middleware
-```
-
-## 📜 Scripts
-
-| Command                        | Description                |
-| ------------------------------ | -------------------------- |
-| `npm run dev`                  | Start development server   |
-| `npm run build`                | Build for production       |
-| `npm run start`                | Start production server    |
-| `npm run lint`                 | Run ESLint                 |
-| `npm test`                     | Run unit tests             |
-| `npm run db:seed`              | Seed the database          |
-| `npx -y react-doctor@latest .` | Audit React project health |
+| Command                        | Description                        |
+| ------------------------------ | ---------------------------------- |
+| `npm run dev`                  | Start development server           |
+| `npm run build`                | Build for production               |
+| `npm run start`                | Start production server            |
+| `npm run lint`                 | Run ESLint                         |
+| `npm run test`                 | Vitest in watch mode               |
+| `npm run test:ui`              | Vitest with interactive browser UI |
+| `npm run test:run`             | Vitest single run (CI)             |
+| `npm run test:coverage`        | Vitest with v8 coverage report     |
+| `npm run test:e2e`             | Playwright E2E (headless)          |
+| `npm run test:e2e:ui`          | Playwright E2E with interactive UI |
+| `npm run db:seed`              | Seed the database                  |
+| `npx -y react-doctor@latest .` | Audit React project health         |
 
 ## 🔒 Private Project
 

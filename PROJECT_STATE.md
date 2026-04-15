@@ -1,12 +1,12 @@
 ﻿# Estado del Proyecto: Questlog
 
-**Última actualización:** 2 de Abril de 2026
+**Última actualización:** 15 de Abril de 2026
 **Rama actual:** m3-02page-enciclopedia
 
 ## 📌 Resumen de Progreso
 
 Arquitectura base y **Milestone M1 (Auth & Infra)** completados. **M2 (Gestión de Campañas)** completado al 100%.
-Hemos completado **M3-01 (Reestructuración de Datos)**: migración a columnas atómicas de stats, nuevas tablas `ItemTemplate` y `AccessGrant`, enum `Rarity`, y documentación del schema bilingüe. Hemos completado también **A02 (Eliminar Prisma)**: la app usa ahora el cliente Supabase JS directamente, sin ORM. **M3-02** en progreso: navegación por pestañas y detalle de la enciclopedia completados. **Refactorización a Feature-Sliced Design (FSD) completada**: estructura de `src/` reorganizada con capas canónicas, imports públicos a través de `index.ts` de cada slice, y código de dominio reubicado fuera de `shared/`.
+Hemos completado **M3-01 (Reestructuración de Datos)**: migración a columnas atómicas de stats, nuevas tablas `ItemTemplate` y `AccessGrant`, enum `Rarity`, y documentación del schema bilingüe. Hemos completado también **A02 (Eliminar Prisma)**: la app usa ahora el cliente Supabase JS directamente, sin ORM. **M3-02** completado: enciclopedia con navegación por pestañas, vista de detalle animada, cadena de fallback de imágenes con indicadores visuales, y suite completa de tests unitarios y E2E. **Refactorización a Feature-Sliced Design (FSD) completada**: estructura de `src/` reorganizada con capas canónicas, imports públicos a través de `index.ts` de cada slice, y código de dominio reubicado fuera de `shared/`.
 
 ---
 
@@ -20,8 +20,8 @@ Hemos completado **M3-01 (Reestructuración de Datos)**: migración a columnas a
 - **Fuentes:** Google Fonts (`Inter` para UI, `MedievalSharp` para títulos).
 - **Animaciones:** Framer Motion (`AnimatePresence`, `motion`).
 - **Testing (Unit/Integration):** Vitest 4.x + Testing Library. Config: `vitest.config.ts`. Setup: `vitest.setup.ts`.
-  - Tests centralizados en `tests/features/`. 29 tests pasando: carousel utils (6), storage service (3), storage schema (4), useImageUploader (6), ImageUploader UI (4), CampaignCreationForm (6).
-- **Testing (E2E):** Playwright con auth via `@clerk/testing`. Config: `playwright.config.ts`. Tests: `e2e/portal-de-piedra.spec.ts` (3 tests: AC 3.1, 3.2, 3.3). Requiere `E2E_CLERK_USER_EMAIL` en `.env`.
+  - Tests centralizados en `tests/features/`. 99 tests pasando: carousel utils (6), storage service (3), storage schema (4), useImageUploader (6), ImageUploader UI (4), CampaignCreationForm (6), encyclopediaStore (9), image-fallbacks (17), ListView (12), ItemHeader (22), EncyclopediaImage (10).
+- **Testing (E2E):** Playwright con auth via `@clerk/testing`. Config: `playwright.config.ts`. Tests: `e2e/portal-de-piedra.spec.ts` (3 tests: AC 3.1, 3.2, 3.3), `e2e/encyclopedia.spec.ts` (8 tests, 1 skip). Requiere `E2E_CLERK_USER_EMAIL` en `.env`.
 - **Auth & DB:** Clerk (Auth), Supabase (PostgreSQL). El cliente `@supabase/supabase-js` con `service_role` key se usa directamente desde el servidor para todas las operaciones de base de datos. Prisma se mantiene en `devDependencies` como única fuente de verdad del schema: genera tipos TypeScript via `prisma generate` (usados como `import type`, cero impacto en bundle) y gestiona migraciones SQL via CLI.
 
 ### Layout Global (`src/app/layout.tsx`)
@@ -65,18 +65,29 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
   - `src/middleware.ts`: Middleware de protección de rutas con `auth.protect()` (ubicación requerida por Next.js).
 - **Rutas protegidas:** Todo excepto `/`, `/sign-in(.*)` y `/sign-up(.*)`.
 
-### 3. Hooks y Lógica (`src/shared/lib/`)
+### 3. Hooks y Lógica (`src/views/portal/lib/`)
 
 - **`useCarousel<T>`**: Hook genérico reutilizable para cualquier lógica de carrusel circular.
   - Gestión de índices segura.
   - Cálculo automático de rango visible basado en cantidad de elementos (5 vs 7).
   - Soporte para navegación por puntos (camino más corto).
 
-### 4. Utilidades (`src/shared/lib/` y `src/shared/utils/`)
+### 4. Utilidades (`src/views/portal/lib/`)
 
 - **`carousel-utils.ts`**:
   - `getCircularCarousel`: Generador de arrays circulares con claves estables.
   - **Unit Tests:** `tests/features/ui/utils/carousel-utils.test.ts` (Cobertura de casos borde, wrap-around, arrays vacíos).
+
+### 5. Enciclopedia (`src/views/encyclopedia/`)
+
+- **`encyclopediaStore`** (Zustand): Estado global de sección activa, item seleccionado y listas por sección. Selectores granulares para evitar re-renders no necesarios.
+- **`EncyclopediaImage`**: Imagen principal del item con cadena de fallback (`imageUrl` → `portraitImageUrl` → default). Muestra indicador `OctagonAlert` si la URL está vacía o falla al cargar. Notifica al componente padre mediante `onMissingChange`.
+- **`PortraitFrame`**: Marco decorativo circular con variantes de color por sección (rojo bestiario, azul elenco). Acepta `showBadge` para mostrar el indicador de imagen no disponible en el retrato.
+- **`ItemHeader`**: Encabezado del detalle con sección, nombre e imagen de retrato. Muestra `OctagonAlert` en el label de sección en museo cuando `imageMissing` es `true`, y en el `PortraitFrame` cuando el retrato falla o está vacío.
+- **`DetailView`**: Orquestador del panel de detalle. Eleva el estado `imageMissing` desde `EncyclopediaImage` y lo pasa a `ItemHeader` para el indicador del museo.
+- **`image-fallbacks.ts`**: Funciones puras `getEntityFallbacks` y `getPortraitFallbacks` — construyen la cadena de URLs garantizando siempre al menos el default de sección.
+- **Unit Tests:** `encyclopediaStore.test.ts` (9), `image-fallbacks.test.ts` (17), `ListView.test.tsx` (12), `ItemHeader.test.tsx` (22), `EncyclopediaImage.test.tsx` (10).
+- **E2E Tests:** `encyclopedia.spec.ts` — 8 escenarios (ENC-01 a ENC-08) cubriendo navegación por pestañas, búsqueda, selección de items y vista de detalle.
 
 ---
 
@@ -86,26 +97,29 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
 ├── src/
 │   ├── app/                   # Next.js App Router (routing + layouts)
 │   ├── shared/                # Infraestructura sin lógica de negocio
-│   │   ├── api/               # StorageService
+│   │   ├── api/               # StorageService, Campaign interface
 │   │   ├── config/            # clerk-theme, routes/auth
-│   │   ├── lib/               # supabase, storage, portal, carousel…
-│   │   ├── schemas/           # Zod schemas genéricos
+│   │   ├── lib/               # supabase, storage
+│   │   ├── schemas/           # Zod schemas genéricos (storage)
 │   │   ├── ui/                # ImageUploader, MysticBackground (barrel: index.ts)
 │   │   └── utils/             # cn()
 │   ├── views/                 # Feature slices (FSD)
 │   │   ├── campaigns/
 │   │   │   ├── api/           # campaign-actions.ts, campaign-queries.ts
 │   │   │   ├── config/        # campaign-steps.ts
-│   │   │   ├── lib/           # notifications.ts
-│   │   │   ├── model/         # campaign.ts
-│   │   │   ├── ui/            # creation/ (form, store, hooks)
+│   │   │   ├── lib/           # useCampaignForm.ts, notifications.ts
+│   │   │   ├── model/         # campaign.ts, campaignStore.ts
+│   │   │   ├── ui/            # creation/ (form, provider, controls)
 │   │   │   └── index.ts       # Public API del slice
 │   │   ├── encyclopedia/
 │   │   │   ├── api/           # encyclopedia-queries.ts
+│   │   │   ├── config/        # stats.ts
+│   │   │   ├── lib/           # image-fallbacks.ts
 │   │   │   ├── model/         # types.ts, encyclopediaStore.ts
-│   │   │   ├── ui/            # SideTabs, ListView, DetailView…
+│   │   │   ├── ui/            # SideTabs, ListView, DetailView, EncyclopediaImage…
 │   │   │   └── index.ts       # Public API del slice
 │   │   └── portal/
+│   │       ├── lib/           # carousel-utils.ts, use-carousel.ts
 │   │       ├── ui/            # Portal, PortalCard, PortalCarousel
 │   │       └── index.ts       # Public API del slice
 │   └── middleware.ts          # Middleware de rutas (Clerk, requerido por Next.js)
@@ -212,7 +226,7 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
   - _AC 2:_ ✅ Es posible filtrar entidades por stats individuales (ej. `strength > 15`) directamente en una query de Prisma.
   - _AC 3:_ ✅ La migración se aplica en el entorno de desarrollo sin pérdida de datos existentes.
 
-- [x] **M3-02: Hub de la Enciclopedia y Navegación** [EN PROGRESO]
+- [x] **M3-02: Hub de la Enciclopedia y Navegación** [COMPLETADO]
   - _Tarea:_ Crear página `/encyclopedia` con pestañas (Bestiario, Elenco, Museo) y filtros (Mis Creaciones | Públicos | Compartidos).
   - _Avance:_
     - ✅ Página `/encyclopedia` creada con datos reales de Supabase.
@@ -220,8 +234,13 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
     - ✅ `ListView` con búsqueda local y selección de item.
     - ✅ `DetailView` animado con imagen, stats y fallback a imagen por defecto según sección.
     - ✅ State management con Zustand (`encyclopediaStore`) + selectores granulares.
-    - ⏳ Filtros (Mis Creaciones | Públicos | Compartidos): pendiente.
-  - _AC:_ El usuario puede navegar a `/encyclopedia`, cambiar entre las tres pestañas y ver detalle de cada item. Falta implementar filtros.
+    - ✅ Cadena de fallback de imágenes (`imageUrl` → `portraitImageUrl` → default por sección).
+    - ✅ Indicador visual `OctagonAlert` en la imagen principal y en el retrato cuando la URL está vacía o falla.
+    - ✅ `DetailView` eleva estado `imageMissing` desde `EncyclopediaImage` hacia `ItemHeader` para mostrar indicador en el label de sección (museo).
+    - ✅ Suite completa de tests unitarios: `encyclopediaStore` (9), `image-fallbacks` (17), `ListView` (12), `ItemHeader` (22), `EncyclopediaImage` (10).
+    - ✅ Suite E2E: `encyclopedia.spec.ts` — 8 escenarios pasando (ENC-01 a ENC-08), 1 skip intencional (ENC-06 requiere 2+ items).
+    - ⏳ Filtros (Mis Creaciones | Públicos | Compartidos): pendiente para próximo milestone.
+  - _AC:_ ✅ El usuario puede navegar a `/encyclopedia`, cambiar entre las tres pestañas y ver detalle de cada item. Los items con imagen rota o sin URL muestran el indicador `OctagonAlert`.
 
 - [ ] **M3-03: Bestiario y Fichas de Monstruos**
   - _Tarea:_ Formulario unificado para `MonsterTemplate` (Librería) y `ActiveMonster` (Instancia de Campaña) con stats atómicos y upload de imagen.
@@ -265,11 +284,13 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
 
 ## 📝 Siguientes Pasos Inmediatos
 
-1. **M3-02: Filtros de la Enciclopedia** ← PENDIENTE
-   - Implementar filtros: Mis Creaciones | Públicos | Compartidos.
-
-2. **M3-03: Bestiario y Fichas de Monstruos**
+1. **M3-03: Bestiario y Fichas de Monstruos**
    - Ver nota de deuda de schema en esa tarea.
+
+2. **M3-04: Módulo de Inventario y Museo**
+
+3. **M3-02: Filtros de la Enciclopedia** (backlog menor)
+   - Implementar filtros: Mis Creaciones | Públicos | Compartidos.
 
 ---
 
