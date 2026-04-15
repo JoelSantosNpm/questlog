@@ -3,8 +3,8 @@
 import React, { useEffect } from 'react'
 import { FormProvider } from 'react-hook-form'
 import { CampaignCreationForm } from './CampaignCreationForm'
-import { useInitCampaignForm } from './hooks/useCampaignForm'
-import { useCampaignStore } from './store/campaignStore'
+import { useInitCampaignForm } from '../../lib/useCampaignForm'
+import { useCampaignStore } from '../../model/campaignStore'
 
 export default function CampaignCreationProvider() {
   const methods = useInitCampaignForm()

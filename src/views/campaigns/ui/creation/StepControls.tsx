@@ -1,4 +1,4 @@
-import { useCampaignActions } from './hooks/useCampaignForm'
+import { useCampaignActions } from '../../lib/useCampaignForm'
 
 export function StepControls() {
   const { isLastStep, activeStep, nextStep, skipStep, isTransitioning } = useCampaignActions()

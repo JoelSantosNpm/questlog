@@ -1,6 +1,10 @@
-import { PortalCarouselItem } from '@/shared/lib/portal'
-
 export const MAX_INDEX = Number.MAX_SAFE_INTEGER - 100 // Margen de seguridad para evitar overflow
+
+export type PortalCarouselItem<T> = {
+  key: string
+  item: T
+  position: number
+}
 
 /**
  * Genera un array circular de elementos para un carrusel infinito.

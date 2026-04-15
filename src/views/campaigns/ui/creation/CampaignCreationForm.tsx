@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { CampaignFormValues } from '../../model/campaign'
 import { StepControls } from './StepControls'
-import { useCampaignActions } from './hooks/useCampaignForm'
+import { useCampaignActions } from '../../lib/useCampaignForm'
 
 export function CampaignCreationForm() {
   const {

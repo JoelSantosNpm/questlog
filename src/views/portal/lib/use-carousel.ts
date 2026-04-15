@@ -1,9 +1,7 @@
-// Hook personalizado para la lógica del carrusel estandar
 'use client'
 
 import { useMemo, useState } from 'react'
-import { MAX_INDEX, getCircularCarousel } from '@/shared/lib/carousel-utils'
-import { PortalCarouselItem } from '@/shared/lib/portal'
+import { MAX_INDEX, getCircularCarousel, type PortalCarouselItem } from './carousel-utils'
 
 export interface CarouselOptions {
   visibleRange?: number

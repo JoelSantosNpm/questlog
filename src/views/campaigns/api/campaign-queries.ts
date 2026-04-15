@@ -1,5 +1,5 @@
 import { createClient } from '@/shared/lib/supabase/server'
-import { Campaign as PortalCampaign } from '@/shared/lib/portal'
+import { Campaign as PortalCampaign } from '@/shared/api/campaign'
 
 /**
  * Obtiene las campañas del usuario actual.

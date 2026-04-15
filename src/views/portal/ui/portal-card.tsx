@@ -1,7 +1,7 @@
 'use client'
 import { m } from 'framer-motion'
 import { Portal } from './Portal'
-import { Campaign } from '@/shared/lib/portal'
+import { Campaign } from '@/shared/api/campaign'
 
 interface PortalCardProps {
   position: number

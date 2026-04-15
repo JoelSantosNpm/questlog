@@ -4,9 +4,9 @@
 import { AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useEffect, useRef } from 'react'
-import { Campaign } from '@/shared/lib/portal'
+import { Campaign } from '@/shared/api/campaign'
 import { PortalCard } from './portal-card'
-import { useCarousel } from '@/shared/lib/use-carousel'
+import { useCarousel } from '../lib/use-carousel'
 
 interface PortalCarouselProps {
   campaigns: Campaign[]
