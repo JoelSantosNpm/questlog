@@ -2,7 +2,7 @@
 
 import { m, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import {
   useActiveSection,
   useSelectedItem,
@@ -25,6 +25,7 @@ const IMAGE_OVERLAY = { bottomFromTop: '72%', height: '55%' }
 export const DetailView = () => {
   const activeSection = useActiveSection()
   const item = useSelectedItem()
+  const [imageMissing, setImageMissing] = useState(false)
 
   return (
     <main className='relative flex-1 overflow-hidden bg-[radial-gradient(circle_at_top_right,var(--tw-gradient-stops))] from-neutral-900/20 via-transparent to-transparent'>
@@ -53,11 +54,12 @@ export const DetailView = () => {
                 section={activeSection}
                 noBackground
                 overlay={IMAGE_OVERLAY}
+                onMissingChange={setImageMissing}
               />
             </div>
 
             <div className='w-full border-t border-neutral-800/50 bg-neutral-900/30 p-4 backdrop-blur-md lg:max-w-lg lg:border-t-0 lg:border-l lg:p-6'>
-              <ItemHeader item={item} activeSection={activeSection} />
+              <ItemHeader item={item} activeSection={activeSection} imageMissing={imageMissing} />
               <div className='space-y-8'>
                 <div>
                   <h3 className='text-xs font-bold uppercase tracking-widest text-neutral-500'>

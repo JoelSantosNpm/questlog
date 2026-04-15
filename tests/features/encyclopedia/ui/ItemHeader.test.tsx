@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { ItemHeader } from '@/views/encyclopedia/ui/ItemHeader'
 import type { BestiaryItem, CastItem, MuseumItem } from '@/views/encyclopedia/model/types'
 import type { Rarity } from '@prisma/client'
@@ -7,11 +7,14 @@ import type { Rarity } from '@prisma/client'
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
 vi.mock('next/image', () => ({
-  default: ({ src, alt }: { src: string; alt: string }) => <img src={src} alt={alt} />,
+  default: ({ src, alt, onError }: { src: string; alt: string; onError?: () => void }) => (
+    <img src={src} alt={alt} onError={onError} />
+  ),
 }))
 
 vi.mock('lucide-react', () => ({
   Info: () => <svg data-testid='icon-info' />,
+  OctagonAlert: () => <svg data-testid='icon-octagon-alert' />,
 }))
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
@@ -175,6 +178,69 @@ describe('ItemHeader', () => {
       render(<ItemHeader item={withPortrait} activeSection='bestiary' />)
       const img = screen.getByRole('img', { name: 'Bestia Prueba' }) as HTMLImageElement
       expect(img.src).toContain('portrait.png')
+    })
+  })
+
+  describe('Indicador de imagen no disponible (retrato)', () => {
+    it('muestra el badge cuando no hay URL de retrato configurada', () => {
+      render(<ItemHeader item={MONSTER} activeSection='bestiary' />)
+      expect(screen.getByTitle('URL de retrato no disponible')).toBeInTheDocument()
+    })
+
+    it('no muestra el badge cuando la imagen del retrato no ha fallado', () => {
+      const withPortrait: BestiaryItem = {
+        ...MONSTER,
+        portraitImageUrl: 'https://example.com/portrait.png',
+      }
+      render(<ItemHeader item={withPortrait} activeSection='bestiary' />)
+      expect(screen.queryByTitle('URL de retrato no disponible')).not.toBeInTheDocument()
+    })
+
+    it('muestra el badge cuando la URL del retrato falla al cargarse', () => {
+      const withPortrait: BestiaryItem = {
+        ...MONSTER,
+        portraitImageUrl: 'https://example.com/broken.png',
+      }
+      render(<ItemHeader item={withPortrait} activeSection='bestiary' />)
+      fireEvent.error(screen.getByRole('img', { name: 'Bestia Prueba' }))
+      expect(screen.getByTitle('URL de retrato no disponible')).toBeInTheDocument()
+    })
+
+    it('muestra el badge en cast cuando la URL del retrato del NPC falla', () => {
+      const withPortrait: CastItem = {
+        ...NPC,
+        portraitImageUrl: 'https://example.com/broken-npc.png',
+      }
+      render(<ItemHeader item={withPortrait} activeSection='cast' />)
+      fireEvent.error(screen.getByRole('img', { name: 'Taberna' }))
+      expect(screen.getByTitle('URL de retrato no disponible')).toBeInTheDocument()
+    })
+
+    it('no muestra el badge en la sección museum (sin retrato)', () => {
+      render(<ItemHeader item={SWORD} activeSection='museum' />)
+      expect(screen.queryByTitle('URL de retrato no disponible')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('Indicador de imagen no disponible (museo)', () => {
+    it('no muestra el indicador en museum cuando imageMissing es false', () => {
+      render(<ItemHeader item={SWORD} activeSection='museum' imageMissing={false} />)
+      expect(screen.queryByTitle('URL de avatar no disponible')).not.toBeInTheDocument()
+    })
+
+    it('muestra el indicador en museum cuando imageMissing es true', () => {
+      render(<ItemHeader item={SWORD} activeSection='museum' imageMissing={true} />)
+      expect(screen.getByTitle('URL de avatar no disponible')).toBeInTheDocument()
+    })
+
+    it('no muestra el indicador de museum en bestiary aunque imageMissing sea true', () => {
+      render(<ItemHeader item={MONSTER} activeSection='bestiary' imageMissing={true} />)
+      expect(screen.queryByTitle('URL de avatar no disponible')).not.toBeInTheDocument()
+    })
+
+    it('no muestra el indicador de museum en cast aunque imageMissing sea true', () => {
+      render(<ItemHeader item={NPC} activeSection='cast' imageMissing={true} />)
+      expect(screen.queryByTitle('URL de avatar no disponible')).not.toBeInTheDocument()
     })
   })
 })

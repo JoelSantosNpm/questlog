@@ -1,6 +1,6 @@
 'use client'
 
-import { memo, useMemo, useState } from 'react'
+import { memo, useEffect, useMemo, useState } from 'react'
 import Image from 'next/image'
 import { OctagonAlert } from 'lucide-react'
 import { type EncyclopediaSection } from '../model/encyclopediaStore'
@@ -19,6 +19,8 @@ interface EncyclopediaImageProps {
    *   siempre ocupe la misma proporción del fondo independientemente del zoom.
    */
   overlay?: { bottomFromTop: string; height: string }
+  /** Callback invocado cuando el estado de imagen faltante cambia */
+  onMissingChange?: (missing: boolean) => void
 }
 
 export const EncyclopediaImage = memo(function EncyclopediaImage({
@@ -26,6 +28,7 @@ export const EncyclopediaImage = memo(function EncyclopediaImage({
   section,
   noBackground = false,
   overlay,
+  onMissingChange,
 }: EncyclopediaImageProps) {
   const portraitImageUrl =
     'portraitImageUrl' in item ? (item.portraitImageUrl as string | null) : null
@@ -37,7 +40,11 @@ export const EncyclopediaImage = memo(function EncyclopediaImage({
 
   const [fallbackIndex, setFallbackIndex] = useState(0)
   const src = fallbacks[fallbackIndex]
-  const missingImageUrl = fallbackIndex > 0
+  const missingImageUrl = fallbackIndex > 0 || fallbacks.length === 1
+
+  useEffect(() => {
+    onMissingChange?.(missingImageUrl)
+  }, [missingImageUrl, onMissingChange])
 
   const handleError = () => {
     setFallbackIndex((i) => (i + 1 < fallbacks.length ? i + 1 : i))

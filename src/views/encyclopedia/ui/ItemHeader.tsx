@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { Info } from 'lucide-react'
+import { Info, OctagonAlert } from 'lucide-react'
 import { type EncyclopediaSection } from '../model/encyclopediaStore'
 import { EncyclopediaItem, BestiaryItem, CastItem } from '../model/types'
 import { PortraitFrame } from './PortraitFrame'
@@ -16,9 +16,11 @@ const SECTION_LABELS: Record<EncyclopediaSection, string> = {
 interface ItemHeaderProps {
   item: EncyclopediaItem
   activeSection: EncyclopediaSection
+  /** Indica que la imagen principal del ítem no pudo cargarse (pasado desde DetailView) */
+  imageMissing?: boolean
 }
 
-export const ItemHeader = ({ item, activeSection }: ItemHeaderProps) => {
+export const ItemHeader = ({ item, activeSection, imageMissing = false }: ItemHeaderProps) => {
   const hasPortrait = activeSection === 'bestiary' || activeSection === 'cast'
   const portraitItem = hasPortrait ? (item as BestiaryItem | CastItem) : null
 
@@ -37,7 +39,7 @@ export const ItemHeader = ({ item, activeSection }: ItemHeaderProps) => {
 
   const [fallbackIndex, setFallbackIndex] = useState(0)
   const portraitSrc = fallbacks[fallbackIndex] ?? ''
-  const missingImageUrl = fallbackIndex > 0
+  const missingImageUrl = fallbackIndex > 0 || fallbacks.length === 1
 
   const handlePortraitError = () => {
     setFallbackIndex((i) => (i + 1 < fallbacks.length ? i + 1 : i))
@@ -48,6 +50,11 @@ export const ItemHeader = ({ item, activeSection }: ItemHeaderProps) => {
       <div className='flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-500/60'>
         <Info className='h-3 w-3' />
         {SECTION_LABELS[activeSection]}
+        {activeSection === 'museum' && imageMissing && (
+          <div title='URL de avatar no disponible' className='cursor-help'>
+            <OctagonAlert className='h-3 w-3 text-amber-500/70' />
+          </div>
+        )}
         {activeSection === 'bestiary' && (item as BestiaryItem).type && (
           <span>• {(item as BestiaryItem).type}</span>
         )}
