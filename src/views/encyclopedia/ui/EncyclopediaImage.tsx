@@ -2,6 +2,7 @@
 
 import { memo, useMemo, useState } from 'react'
 import Image from 'next/image'
+import { OctagonAlert } from 'lucide-react'
 import { type EncyclopediaSection } from '../model/encyclopediaStore'
 import { EncyclopediaItem } from '../model/types'
 import { cn } from '@/shared/utils/styles'
@@ -36,6 +37,7 @@ export const EncyclopediaImage = memo(function EncyclopediaImage({
 
   const [fallbackIndex, setFallbackIndex] = useState(0)
   const src = fallbacks[fallbackIndex]
+  const missingImageUrl = fallbackIndex > 0
 
   const handleError = () => {
     setFallbackIndex((i) => (i + 1 < fallbacks.length ? i + 1 : i))
@@ -44,6 +46,9 @@ export const EncyclopediaImage = memo(function EncyclopediaImage({
   return (
     <div
       className='relative group w-full max-w-sm'
+      aria-label={
+        missingImageUrl ? 'Imagen no disponible, mostrando imagen por defecto' : undefined
+      }
       style={
         overlay
           ? {
@@ -57,6 +62,14 @@ export const EncyclopediaImage = memo(function EncyclopediaImage({
       }
     >
       <div className='absolute -inset-4 bg-amber-500/10 blur-2xl group-hover:bg-amber-500/20 transition-all rounded-full' />
+      {missingImageUrl && (
+        <div
+          title='URL de avatar no disponible'
+          className='absolute -top-1 -right-1 z-10 flex h-5 w-5 items-center justify-center cursor-help'
+        >
+          <OctagonAlert className='h-5  text-amber-500/70' />
+        </div>
+      )}
       <div className='relative h-full w-full'>
         {noBackground ? (
           // eslint-disable-next-line @next/next/no-img-element

@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import { OctagonAlert } from 'lucide-react'
 
 interface FrameColors {
   /** Gradiente CSS para los anillos exterior e interior */
@@ -22,6 +23,8 @@ interface PortraitFrameProps {
   /** Posición focal de la imagen dentro del círculo. Por defecto 'top' para retratos. */
   objectPosition?: string
   onError?: () => void
+  /** Muestra el badge de imagen no disponible */
+  showBadge?: boolean
 }
 
 const VARIANT_COLORS: Record<Exclude<PortraitVariant, 'custom'>, FrameColors> = {
@@ -45,12 +48,21 @@ export const PortraitFrame = ({
   colors,
   objectPosition = 'top',
   onError,
+  showBadge = false,
 }: PortraitFrameProps) => {
   const { ring, halo, fretwork } =
     colors ?? VARIANT_COLORS[variant === 'custom' ? 'monster' : variant]
 
   return (
     <div className='relative'>
+      {showBadge && (
+        <div
+          title='URL de retrato no disponible'
+          className='absolute -top-1 -right-1 z-10 flex h-5 w-5 items-center justify-center cursor-help'
+        >
+          <OctagonAlert className='h-5  text-amber-500/70' />
+        </div>
+      )}
       {/* Halo exterior difuminado */}
       <div className='absolute inset-0 rounded-full blur-md' style={{ background: halo }} />
       {/* Anillo exterior */}

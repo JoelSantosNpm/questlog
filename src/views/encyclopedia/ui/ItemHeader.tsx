@@ -37,6 +37,7 @@ export const ItemHeader = ({ item, activeSection }: ItemHeaderProps) => {
 
   const [fallbackIndex, setFallbackIndex] = useState(0)
   const portraitSrc = fallbacks[fallbackIndex] ?? ''
+  const missingImageUrl = fallbackIndex > 0
 
   const handlePortraitError = () => {
     setFallbackIndex((i) => (i + 1 < fallbacks.length ? i + 1 : i))
@@ -59,6 +60,7 @@ export const ItemHeader = ({ item, activeSection }: ItemHeaderProps) => {
             alt={item.name}
             variant={activeSection === 'cast' ? 'cast' : 'monster'}
             onError={handlePortraitError}
+            showBadge={missingImageUrl}
           />
         )}
         <h2 className='font-medieval text-4xl text-neutral-100'>{item.name}</h2>
