@@ -1,23 +1,19 @@
-import { PortalCarousel } from '@/views/portal'
-import { getUserCampaigns } from '@/views/campaigns'
 import { Campaign as PortalCampaign } from '@/shared/api/campaign'
+import { getUserCampaigns } from '@/views/campaigns'
+import { PortalCarousel } from '@/views/portal'
 import { auth } from '@clerk/nextjs/server'
 import Link from 'next/link'
 
 export const revalidate = 0 // Forzar regeneración dinámica en cada request
 
 export default async function PortalsPage() {
-  await auth.protect()
+  const { userId } = await auth()
 
   const dbCampaigns = await getUserCampaigns()
 
   const allCampaigns: PortalCampaign[] = [
     ...dbCampaigns,
-    {
-      id: 'new-campaign',
-      name: 'Nueva Campaña',
-      variant: 'new',
-    },
+    ...(userId ? [{ id: 'new-campaign', name: 'Nueva Campaña', variant: 'new' as const }] : []),
   ]
 
   return (

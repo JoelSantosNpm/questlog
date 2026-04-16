@@ -1,6 +1,6 @@
+import { AuthSync } from '@/app/auth'
 import { AuthProvider } from '@/app/providers/auth-provider'
 import { FramerMotionProvider } from '@/app/providers/framer-motion-provider'
-import { AuthSync } from '@/app/auth'
 import { cn } from '@/shared/utils/styles'
 import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
 import type { Metadata } from 'next'
@@ -55,16 +55,21 @@ export default async function RootLayout({
                 </Link>
               </div>
               <div className='flex items-center gap-6'>
-                <SignedIn>
-                  <Link
-                    href='/encyclopedia'
-                    className='group flex items-center gap-2 text-neutral-400 transition-colors hover:text-amber-500'
-                    title='Encyclopedia'
-                  >
-                    <BookOpen className='h-5 w-5 transition-transform group-hover:scale-110' />
-                    <span className='hidden text-sm font-medium sm:block'>Enciclopedia</span>
-                  </Link>
-                </SignedIn>
+                <Link
+                  href='/encyclopedia'
+                  className='group flex items-center gap-2 text-neutral-400 transition-colors hover:text-amber-500'
+                  title='Encyclopedia'
+                >
+                  <BookOpen className='h-5 w-5 transition-transform group-hover:scale-110' />
+                  <span className='hidden text-sm font-medium sm:block'>Enciclopedia</span>
+                </Link>
+                <Link
+                  href='/campaigns'
+                  className='group flex items-center gap-2 text-neutral-400 transition-colors hover:text-amber-500'
+                  title='Campañas'
+                >
+                  <span className='hidden text-sm font-medium sm:block'>Campañas</span>
+                </Link>
                 <SignedOut>
                   <SignInButton mode='modal'>
                     <button className='rounded px-4 py-2 font-bold text-amber-500 hover:bg-neutral-800 transition-colors cursor-pointer'>
