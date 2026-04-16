@@ -1,12 +1,12 @@
 'use client'
 
-import { memo, useEffect, useMemo, useState } from 'react'
-import Image from 'next/image'
-import { OctagonAlert } from 'lucide-react'
-import { type EncyclopediaSection } from '../model/encyclopediaStore'
-import { EncyclopediaItem } from '../model/types'
 import { cn } from '@/shared/utils/styles'
 import { getEntityFallbacks } from '@/views/encyclopedia/lib/image-fallbacks'
+import { OctagonAlert } from 'lucide-react'
+import Image from 'next/image'
+import { memo, useEffect, useMemo, useState } from 'react'
+import { type EncyclopediaSection } from '../model/encyclopediaStore'
+import { EncyclopediaItem } from '../model/types'
 
 interface EncyclopediaImageProps {
   item: EncyclopediaItem
@@ -79,15 +79,15 @@ export const EncyclopediaImage = memo(function EncyclopediaImage({
       )}
       <div className='relative h-full w-full'>
         {noBackground ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={src}
             alt={item.name}
-            loading='eager'
-            fetchPriority='high'
-            decoding='async'
+            fill
+            priority
+            sizes='(max-width: 1024px) 100vw, 60vw'
+            unoptimized={src.includes('/defaults/')}
             onError={handleError}
-            className='absolute inset-0 h-full w-full object-contain transition-all duration-500 group-hover:scale-[1.02]'
+            className='object-contain transition-all duration-500 group-hover:scale-[1.02]'
           />
         ) : (
           <Image
