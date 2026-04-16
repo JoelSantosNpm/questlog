@@ -72,9 +72,9 @@ export const EncyclopediaImage = memo(function EncyclopediaImage({
       {missingImageUrl && (
         <div
           title='URL de avatar no disponible'
-          className='absolute -top-1 -right-1 z-10 flex h-5 w-5 items-center justify-center cursor-help'
+          className='absolute top-2 right-2 z-10 flex h-5 w-5 items-center justify-center cursor-help'
         >
-          <OctagonAlert className='h-5  text-amber-500/70' />
+          <OctagonAlert className='h-5 text-amber-500/70' />
         </div>
       )}
       <div className='relative h-full w-full'>

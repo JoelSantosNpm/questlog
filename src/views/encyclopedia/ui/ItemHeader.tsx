@@ -55,7 +55,7 @@ export const ItemHeader = ({ item, activeSection, imageMissing = false }: ItemHe
         )}
         {'rarity' in item && activeSection === 'museum' && <span>• {item.rarity}</span>}
       </div>
-      <div className='mt-2 flex items-center gap-4'>
+      <div className='mt-2 flex flex-col sm:flex-row items-center gap-3 sm:gap-4'>
         {hasPortrait && (
           <PortraitFrame
             src={portraitSrc}
@@ -65,7 +65,9 @@ export const ItemHeader = ({ item, activeSection, imageMissing = false }: ItemHe
             showBadge={missingImageUrl}
           />
         )}
-        <h2 className='font-medieval text-4xl text-neutral-100'>{item.name}</h2>
+        <h2 className='font-medieval text-2xl sm:text-4xl text-neutral-100 min-w-0 break-words leading-tight'>
+          {item.name}
+        </h2>
       </div>
     </header>
   )
