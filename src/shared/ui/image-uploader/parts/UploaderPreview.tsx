@@ -1,6 +1,6 @@
-import Image from 'next/image'
-import { Loader2 } from 'lucide-react'
 import { cn } from '@/shared/utils/styles'
+import { Loader2 } from 'lucide-react'
+import Image from 'next/image'
 
 interface UploaderPreviewProps {
   src: string
@@ -15,6 +15,7 @@ export function UploaderPreview({ src, isUploading, isSuccess }: UploaderPreview
         src={src}
         alt='Vista previa'
         fill
+        sizes='(max-width: 768px) 100vw, 50vw'
         className={cn(
           'object-contain transition-all duration-700',
           isUploading ? 'scale-110 blur-sm' : 'scale-100'

@@ -1,6 +1,6 @@
 'use client'
 
-import { m, AnimatePresence } from 'framer-motion'
+import { AnimatePresence, m } from 'framer-motion'
 import Image from 'next/image'
 import { useState, type ReactNode } from 'react'
 import {
@@ -8,10 +8,10 @@ import {
   useSelectedItem,
   type EncyclopediaSection,
 } from '../model/encyclopediaStore'
-import { EncyclopediaItem, BestiaryItem, CastItem, MuseumItem } from '../model/types'
+import { BestiaryItem, CastItem, EncyclopediaItem, MuseumItem } from '../model/types'
+import { CombatStats } from './CombatStats'
 import { EncyclopediaImage } from './EncyclopediaImage'
 import { ItemHeader } from './ItemHeader'
-import { CombatStats } from './CombatStats'
 import { ItemProperties } from './ItemProperties'
 
 const SECTION_CONTENT: Record<EncyclopediaSection, (item: EncyclopediaItem) => ReactNode> = {
@@ -44,6 +44,7 @@ export const DetailView = () => {
                 src='/bg_biblioteca.png'
                 alt='imagen del interior de una biblioteca con un pedestal en el centro'
                 fill
+                sizes='(max-width: 1024px) 100vw, 60vw'
                 className='object-cover object-top'
                 priority
               />
