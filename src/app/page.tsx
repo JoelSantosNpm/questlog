@@ -1,4 +1,3 @@
-import { SignedIn, SignedOut, SignInButton } from '@clerk/nextjs'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -39,17 +38,35 @@ export default function LandingPage() {
         <div className='flex flex-col gap-4 sm:flex-row'>
           <Link
             href='/encyclopedia'
-            className='rounded-md bg-stone-800 border border-stone-600 px-8 py-3 text-lg font-bold text-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.2)] transition-all hover:bg-stone-700 hover:text-amber-400 hover:shadow-[0_0_25px_rgba(245,158,11,0.4)]'
+            className='group relative overflow-hidden rounded-xl border border-stone-600 w-52 h-32 flex items-end p-4 transition-all hover:border-amber-500/60 hover:shadow-[0_0_20px_rgba(245,158,11,0.25)]'
           >
-            Explorar Enciclopedia
+            <Image
+              src='/Encyclopedia.webp'
+              alt='Enciclopedia'
+              fill
+              sizes='208px'
+              className='object-cover object-center transition-transform duration-500 group-hover:scale-105'
+            />
+            <div className='absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent' />
+            <span className='relative z-10 text-base font-bold text-amber-500'>
+              Explorar Enciclopedia
+            </span>
           </Link>
           <Link
             href='/campaigns'
-            className='rounded-md border border-stone-600 px-8 py-3 text-lg font-bold text-neutral-400 transition-all hover:bg-stone-800 hover:text-amber-400'
+            className='group relative overflow-hidden rounded-xl border border-stone-600 w-52 h-32 flex items-end p-4 transition-all hover:border-amber-500/60 hover:shadow-[0_0_20px_rgba(245,158,11,0.25)]'
           >
-            Ver Campañas
+            <Image
+              src='/Campañas.webp'
+              alt='Campañas'
+              fill
+              sizes='208px'
+              className='object-cover object-center transition-transform duration-500 group-hover:scale-105'
+            />
+            <div className='absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent' />
+            <span className='relative z-10 text-base font-bold text-neutral-200'>Ver Campañas</span>
           </Link>
-          <SignedOut>
+          {/* <SignedOut>
             <SignInButton mode='modal'>
               <button className='rounded-md border border-amber-800/50 px-8 py-3 text-lg font-bold text-amber-700 transition-all hover:bg-stone-800 hover:text-amber-500 cursor-pointer'>
                 Iniciar Sesión
@@ -63,7 +80,7 @@ export default function LandingPage() {
             >
               Mi Panel
             </Link>
-          </SignedIn>
+          </SignedIn> */}
         </div>
       </div>
     </div>
