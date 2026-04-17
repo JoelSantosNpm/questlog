@@ -57,23 +57,23 @@ export const PortalCarousel = ({ campaigns }: PortalCarouselProps) => {
   return (
     <section
       ref={containerRef}
-      className='relative flex h-screen w-full flex-col items-center justify-center overflow-hidden bg-stone-950 outline-none'
+      className='relative flex w-full flex-col items-center gap-8 overflow-x-hidden py-10 outline-none'
       onKeyDown={handleKeyDown}
-      tabIndex={0} // Hacemos que el contenedor sea focusable
+      tabIndex={0} // que el contenedor sea focusable
       aria-label='Selector de Campañas'
       role='region'
       aria-roledescription='carousel'
     >
       {/* 3D Scene Container */}
       <div
-        className='relative flex h-150 w-full items-center justify-center'
+        className='relative flex h-120 w-full items-center justify-center'
         style={{ perspective: '1000px' }}
         role='list'
       >
         <AnimatePresence>
           {visibleItems.map((item) => (
             <PortalCard
-              key={item.key} // Usamos la key compuesta para permitir duplicados virtuales
+              key={item.key}
               position={item.position}
               campaign={item.item} // .item tras refactorización genérica
               visibleRange={Math.floor((visibleItems.length - 1) / 2)}
@@ -83,7 +83,7 @@ export const PortalCarousel = ({ campaigns }: PortalCarouselProps) => {
       </div>
 
       {/* Navigation Controls */}
-      <div className='absolute bottom-10 z-50 flex flex-col items-center gap-6'>
+      <div className='flex flex-col items-center gap-6'>
         {/* Buttons */}
         <div className='flex gap-8'>
           <button
@@ -119,9 +119,6 @@ export const PortalCarousel = ({ campaigns }: PortalCarouselProps) => {
           ))}
         </div>
       </div>
-
-      {/* Optional: Background Ambience */}
-      <div className='absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-stone-900 via-stone-950 to-black opacity-80' />
     </section>
   )
 }
