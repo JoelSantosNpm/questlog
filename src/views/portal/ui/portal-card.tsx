@@ -12,11 +12,6 @@ interface PortalCardProps {
 export const PortalCard = ({ position, visibleRange = 3, campaign }: PortalCardProps) => {
   const isActive = position === 0
 
-  const PORTAL_SPACING = {
-    x: 280, // px entre centros de portal — fijo y predecible
-    y: Math.abs(position) * 50,
-  }
-
   // Calculamos la opacidad basada en la posición
   const opacity = Math.abs(position) >= visibleRange ? 0 : 1
 
