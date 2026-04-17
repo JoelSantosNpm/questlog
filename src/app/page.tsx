@@ -66,21 +66,6 @@ export default function LandingPage() {
             <div className='absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent' />
             <span className='relative z-10 text-base font-bold text-neutral-200'>Ver Campañas</span>
           </Link>
-          {/* <SignedOut>
-            <SignInButton mode='modal'>
-              <button className='rounded-md border border-amber-800/50 px-8 py-3 text-lg font-bold text-amber-700 transition-all hover:bg-stone-800 hover:text-amber-500 cursor-pointer'>
-                Iniciar Sesión
-              </button>
-            </SignInButton>
-          </SignedOut>
-          <SignedIn>
-            <Link
-              href='/dashboard'
-              className='rounded-md border border-stone-600 px-8 py-3 text-lg font-bold text-neutral-400 transition-all hover:bg-stone-800 hover:text-amber-400'
-            >
-              Mi Panel
-            </Link>
-          </SignedIn> */}
         </div>
       </div>
     </div>
