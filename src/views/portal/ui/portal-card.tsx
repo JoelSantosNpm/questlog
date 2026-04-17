@@ -1,7 +1,7 @@
 'use client'
+import { Campaign } from '@/shared/api/campaign'
 import { m } from 'framer-motion'
 import { Portal } from './Portal'
-import { Campaign } from '@/shared/api/campaign'
 
 interface PortalCardProps {
   position: number
@@ -12,6 +12,11 @@ interface PortalCardProps {
 export const PortalCard = ({ position, visibleRange = 3, campaign }: PortalCardProps) => {
   const isActive = position === 0
 
+  const PORTAL_SPACING = {
+    x: 280, // px entre centros de portal — fijo y predecible
+    y: Math.abs(position) * 50,
+  }
+
   // Calculamos la opacidad basada en la posición
   const opacity = Math.abs(position) >= visibleRange ? 0 : 1
 
@@ -19,8 +24,8 @@ export const PortalCard = ({ position, visibleRange = 3, campaign }: PortalCardP
     <m.div
       initial={false}
       animate={{
-        x: position * 380, // Reduced spacing for tighter cluster
-        y: Math.abs(position) * 50, // Arch effect: side cards move up
+        x: position * 340,
+        y: Math.abs(position) * 50,
         scale: isActive ? 1.15 : 0.85,
         rotateY: position * -30, // Inward rotation -25
         z: Math.abs(position) * -100, // Depth pushback -100
@@ -35,7 +40,7 @@ export const PortalCard = ({ position, visibleRange = 3, campaign }: PortalCardP
         zIndex: isActive ? 50 : 50 - Math.abs(position),
         transformStyle: 'preserve-3d',
       }}
-      className='absolute flex h-125 cursor-pointer items-center justify-center perspective-origin-center'
+      className='absolute flex cursor-pointer items-center justify-center perspective-origin-center'
     >
       {campaign.variant === 'new' ? (
         <Portal
