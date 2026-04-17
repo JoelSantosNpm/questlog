@@ -16,8 +16,8 @@ export const PortalCard = ({ position, visibleRange = 3, campaign }: PortalCardP
   const opacity = Math.abs(position) >= visibleRange ? 0 : 1
 
   const factorX = 320
-  const factorY = 15
-  const offsetY = -70
+  const factorY = 20
+  const offsetY = -25
   // (2 = cuadrática, 1 = lineal)
   const exponent = 2
   const absPos = Math.abs(position)
@@ -32,9 +32,9 @@ export const PortalCard = ({ position, visibleRange = 3, campaign }: PortalCardP
         // Trayectoria en X: El signo de 'position' mantiene la dirección (izq/der)
         x: position * factorX,
         y: expMagnitude * factorY + offsetY,
-        scale: isActive ? 1.1 : 1,
+        scale: isActive ? 1 : 1,
         rotateY: position * -30,
-        rotateZ: position * 5,
+        rotateZ: position * 4,
         z: expMagnitude * 5,
         opacity,
       }}

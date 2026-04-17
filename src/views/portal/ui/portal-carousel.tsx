@@ -5,6 +5,7 @@ import { Campaign } from '@/shared/api/campaign'
 import { useMediaQuery } from '@/shared/lib/hooks/use-media-query'
 import { AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import Image from 'next/image'
 import { useEffect, useRef } from 'react'
 import { useCarousel } from '../lib/use-carousel'
 import { PortalCard } from './portal-card'
@@ -58,12 +59,26 @@ export const PortalCarousel = ({ campaigns }: PortalCarouselProps) => {
     <section
       ref={containerRef}
       className='relative flex w-full flex-col items-center gap-8 overflow-x-hidden py-10 outline-none'
+      style={{ isolation: 'isolate' }}
       onKeyDown={handleKeyDown}
       tabIndex={0} // que el contenedor sea focusable
       aria-label='Selector de Campañas'
       role='region'
       aria-roledescription='carousel'
     >
+      {/* Background */}
+      <Image
+        src='/suelo6.png'
+        alt=''
+        fill
+        priority
+        sizes='100vw'
+        className='-z-10 object-cover object-center'
+        aria-hidden
+      />
+      {/* Overlay para oscurecer el fondo */}
+      <div className='pointer-events-none absolute inset-0 -z-5 bg-black/70' aria-hidden />
+
       {/* 3D Scene Container */}
       <div
         className='relative flex h-120 w-full items-center justify-center'
