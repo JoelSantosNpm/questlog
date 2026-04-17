@@ -11,7 +11,7 @@ const portalVariants = cva(
       size: {
         sm: 'h-32 w-22 md:h-40 md:w-28',
         default: 'h-64 w-44 md:h-80 md:w-56',
-        lg: 'h-96 w-64 md:h-[450px] md:w-[300px]',
+        lg: 'h-[45dvh] w-[calc(45dvh*(2/3))] max-h-[450px] max-w-[300px] min-h-[200px] min-w-[133px]',
       },
     },
     defaultVariants: {

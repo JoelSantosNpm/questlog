@@ -8,9 +8,15 @@ export interface CarouselOptions {
 }
 
 /**
- * Hook genérico para lógica de carrusel circular.
- * @param items Array de datos genérico T
- * @param options Configuración opcional
+ * Lógica de carrusel circular infinito con navegación por índice acumulativo.
+ *
+ * Gestiona un "ventana deslizante" de `visibleRange` posiciones a cada lado
+ * del ítem activo, calculada por `getCircularCarousel`. El índice interno
+ * crece sin límite (±MAX_INDEX) para conservar la dirección de las animaciones
+ * de Framer Motion; el indicador de dots se deriva como `index mod N`.
+ *
+ * @param items  Array de datos a mostrar en el carrusel.
+ * @param options `visibleRange` — posiciones renderizadas a cada lado (la última es invisible).
  */
 export const useCarousel = <T>(items: T[], options?: CarouselOptions) => {
   const [activeIndex, setActiveIndex] = useState(0)

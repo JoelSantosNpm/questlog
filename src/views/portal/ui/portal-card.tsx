@@ -15,15 +15,26 @@ export const PortalCard = ({ position, visibleRange = 3, campaign }: PortalCardP
   // Calculamos la opacidad basada en la posición
   const opacity = Math.abs(position) >= visibleRange ? 0 : 1
 
+  const factorX = 320
+  const factorY = 15
+  // (2 = cuadrática, 1 = lineal)
+  const exponent = 2
+  const absPos = Math.abs(position)
+
+  // magnitud exponencial
+  const expMagnitude = Math.pow(absPos, exponent)
+
   return (
     <m.div
       initial={false}
       animate={{
-        x: position * 340,
-        y: Math.abs(position) * 50,
-        scale: isActive ? 1.15 : 0.85,
-        rotateY: position * -30, // Inward rotation -25
-        z: Math.abs(position) * -100, // Depth pushback -100
+        // Trayectoria en X: El signo de 'position' mantiene la dirección (izq/der)
+        x: position * factorX,
+        y: expMagnitude * factorY - 150,
+        scale: isActive ? 1.1 : 1,
+        rotateY: position * -30,
+        rotateZ: position * 5,
+        z: expMagnitude * 5,
         opacity,
       }}
       transition={{
@@ -32,10 +43,11 @@ export const PortalCard = ({ position, visibleRange = 3, campaign }: PortalCardP
         damping: 20,
       }}
       style={{
-        zIndex: isActive ? 50 : 50 - Math.abs(position),
+        // El zIndex sigue siendo lineal para evitar parpadeos extraños
+        zIndex: isActive ? 50 : Math.floor(50 - absPos),
         transformStyle: 'preserve-3d',
       }}
-      className='absolute flex cursor-pointer items-center justify-center perspective-origin-center'
+      className='absolute flex cursor-pointer items-center justify-center'
     >
       {campaign.variant === 'new' ? (
         <Portal

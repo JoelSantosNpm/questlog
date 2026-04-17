@@ -1,12 +1,13 @@
 // Layout del carrusel de portales
 'use client'
 
+import { Campaign } from '@/shared/api/campaign'
+import { useMediaQuery } from '@/shared/lib/hooks/use-media-query'
 import { AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useEffect, useRef } from 'react'
-import { Campaign } from '@/shared/api/campaign'
-import { PortalCard } from './portal-card'
 import { useCarousel } from '../lib/use-carousel'
+import { PortalCard } from './portal-card'
 
 interface PortalCarouselProps {
   campaigns: Campaign[]
@@ -14,6 +15,18 @@ interface PortalCarouselProps {
 
 export const PortalCarousel = ({ campaigns }: PortalCarouselProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
+
+  // Responsive logic for carousel items - now using useSyncExternalStore
+  const isMobile = useMediaQuery('(max-width: 600px)')
+  const isTablet = useMediaQuery('(max-width: 1000px)')
+  const isLaptop = useMediaQuery('(max-width: 1750px)')
+
+  const getVisibleRange = () => {
+    if (isMobile) return 1
+    if (isTablet) return 2
+    if (isLaptop) return 3
+    return 4
+  }
 
   const {
     visibleItems,
@@ -23,7 +36,7 @@ export const PortalCarousel = ({ campaigns }: PortalCarouselProps) => {
     currentIndicator,
     canGoNext,
     canGoPrev,
-  } = useCarousel(campaigns)
+  } = useCarousel(campaigns, { visibleRange: getVisibleRange() })
 
   // Focus inicial para permitir navegación por teclado inmediata
   useEffect(() => {
