@@ -73,7 +73,7 @@ export default async function RootLayout({
                 <SignedOut>
                   <SignInButton mode='modal'>
                     <button className='rounded px-4 py-2 font-bold text-amber-500 hover:bg-neutral-800 transition-colors cursor-pointer'>
-                      Entrar
+                      Iniciar sesión
                     </button>
                   </SignInButton>
                 </SignedOut>
