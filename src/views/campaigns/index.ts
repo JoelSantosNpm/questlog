@@ -1,6 +1,10 @@
 // Public API — campaigns slice
-export { getUserCampaigns, getCampaignById } from './api/campaign-queries'
 export { createCampaign, updateCampaign } from './api/campaign-actions'
 export type { ActionResponse, CreateCampaignDTO, UpdateCampaignDTO } from './api/campaign-actions'
-export { default as CampaignCreationProvider } from './ui/creation/CampaignCreationProvider'
+export { useCampaign, useUserCampaigns } from './api/campaign-hooks'
+export { getCampaignById, getUserCampaigns } from './api/campaign-queries'
+export { prefetchCampaignDetail, prefetchCampaignList } from './api/prefetch'
+export { CAMPAIGN_KEYS } from './api/query-keys'
 export type { CampaignFormValues } from './model/campaign'
+export { useCampaignStore } from './model/campaignStore'
+export { default as CampaignCreationProvider } from './ui/creation/CampaignCreationProvider'

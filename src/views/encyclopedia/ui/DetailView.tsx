@@ -3,11 +3,8 @@
 import { AnimatePresence, m } from 'framer-motion'
 import Image from 'next/image'
 import { useState, type ReactNode } from 'react'
-import {
-  useActiveSection,
-  useSelectedItem,
-  type EncyclopediaSection,
-} from '../model/encyclopediaStore'
+import { useSelectedItem } from '../lib/use-encyclopedia-items'
+import { useActiveSection, type EncyclopediaSection } from '../model/encyclopediaStore'
 import { BestiaryItem, CastItem, EncyclopediaItem, MuseumItem } from '../model/types'
 import { CombatStats } from './CombatStats'
 import { EncyclopediaImage } from './EncyclopediaImage'

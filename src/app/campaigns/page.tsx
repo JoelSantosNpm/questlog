@@ -1,5 +1,6 @@
-import { Campaign as PortalCampaign } from '@/shared/api/campaign'
-import { getUserCampaigns } from '@/views/campaigns'
+import type { Campaign as PortalCampaign } from '@/shared/api/campaign'
+import { getQueryClient } from '@/shared/api/query-client'
+import { prefetchCampaignList } from '@/views/campaigns'
 import { PortalCarousel } from '@/views/portal'
 import { SignedIn } from '@clerk/nextjs'
 import { auth } from '@clerk/nextjs/server'
@@ -9,8 +10,9 @@ export const revalidate = 0 // Forzar regeneración dinámica en cada request
 
 export default async function PortalsPage() {
   const { userId } = await auth()
+  const queryClient = getQueryClient()
 
-  const dbCampaigns = await getUserCampaigns()
+  const dbCampaigns = await prefetchCampaignList(queryClient)
 
   const allCampaigns: PortalCampaign[] = [
     ...dbCampaigns,

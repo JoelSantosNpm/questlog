@@ -1,39 +1,32 @@
 import { create } from 'zustand'
-import type { EncyclopediaItem, EncyclopediaSection } from './types'
+import type { EncyclopediaSection } from './types'
 
 export type { EncyclopediaSection }
 
-interface EncyclopediaState {
+interface EncyclopediaUIState {
   activeSection: EncyclopediaSection
   selectedItemId: string | null
-  itemsBySection: Record<EncyclopediaSection, EncyclopediaItem[]>
+  searchQuery: string
   setActiveSection: (section: EncyclopediaSection) => void
   setSelectedItemId: (id: string | null) => void
-  setItems: (items: Record<EncyclopediaSection, EncyclopediaItem[]>) => void
+  setSearchQuery: (query: string) => void
 }
 
-export const useEncyclopediaStore = create<EncyclopediaState>((set) => ({
+export const useEncyclopediaStore = create<EncyclopediaUIState>((set) => ({
   activeSection: 'bestiary',
   selectedItemId: null,
-  itemsBySection: {
-    bestiary: [],
-    cast: [],
-    museum: [],
-  },
-  setActiveSection: (section) => set({ activeSection: section, selectedItemId: null }),
+  searchQuery: '',
+  setActiveSection: (section) =>
+    set({ activeSection: section, selectedItemId: null, searchQuery: '' }),
   setSelectedItemId: (id) => set({ selectedItemId: id }),
-  setItems: (items) => set({ itemsBySection: items }),
+  setSearchQuery: (query) => set({ searchQuery: query }),
 }))
 
-// Selectores — evitan re-renders en componentes que no consumen el campo completo
+// Selectores
 export const useActiveSection = () => useEncyclopediaStore((s) => s.activeSection)
 export const useSelectedItemId = () => useEncyclopediaStore((s) => s.selectedItemId)
-export const useCurrentItems = () =>
-  useEncyclopediaStore((s) => s.itemsBySection[s.activeSection] ?? [])
-export const useSelectedItem = () =>
-  useEncyclopediaStore((s) => {
-    const items = s.itemsBySection[s.activeSection] ?? []
-    return items.find((i) => i.id === s.selectedItemId) ?? items[0]
-  })
+export const useSearchQuery = () => useEncyclopediaStore((s) => s.searchQuery)
+
 export const useSetActiveSection = () => useEncyclopediaStore((s) => s.setActiveSection)
 export const useSetSelectedItemId = () => useEncyclopediaStore((s) => s.setSelectedItemId)
+export const useSetSearchQuery = () => useEncyclopediaStore((s) => s.setSearchQuery)

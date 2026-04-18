@@ -1,8 +1,8 @@
 'use client'
 
-import { useCurrentItems } from '../model/encyclopediaStore'
-import { ListView } from './ListView'
+import { useCurrentItems } from '../lib/use-encyclopedia-items'
 import { DetailView } from './DetailView'
+import { ListView } from './ListView'
 import { MobileListDrawer } from './MobileListDrawer'
 
 export function EncyclopediaContainer() {
