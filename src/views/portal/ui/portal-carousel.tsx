@@ -68,7 +68,7 @@ export const PortalCarousel = ({ campaigns }: PortalCarouselProps) => {
     >
       {/* Background */}
       <Image
-        src='/suelo6.png'
+        src='/suelo.png'
         alt=''
         fill
         priority
