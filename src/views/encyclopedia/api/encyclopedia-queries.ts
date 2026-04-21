@@ -1,7 +1,6 @@
 'use server'
 
 import { prisma } from '@/shared/lib/prisma'
-import { createClient } from '@/shared/lib/supabase/server'
 import { BestiaryItem, CastItem, MuseumItem } from '../model/types'
 
 /**
@@ -13,8 +12,8 @@ export async function getBestiaryItems(): Promise<BestiaryItem[]> {
       orderBy: { name: 'asc' },
     })
 
-    return data.map((item) => ({ 
-      ...item, 
+    return data.map((item) => ({
+      ...item,
       section: 'bestiary' as const,
     }))
   } catch (error) {
@@ -32,8 +31,8 @@ export async function getCharacterTemplates(): Promise<CastItem[]> {
       orderBy: { name: 'asc' },
     })
 
-    return data.map((item) => ({ 
-      ...item, 
+    return data.map((item) => ({
+      ...item,
       section: 'cast' as const,
     }))
   } catch (error) {
@@ -51,8 +50,8 @@ export async function getMuseumItems(): Promise<MuseumItem[]> {
       orderBy: { name: 'asc' },
     })
 
-    return data.map((item) => ({ 
-      ...item, 
+    return data.map((item) => ({
+      ...item,
       section: 'museum' as const,
     }))
   } catch (error) {
