@@ -27,11 +27,11 @@ export default function LandingPage() {
         <div className='max-w-2xl space-y-4'>
           <p className='text-lg leading-relaxed text-neutral-300 md:text-2xl'>
             La plataforma definitiva para que los Dungeon Masters gestionen sus campañas de D&D con
-            el poder de la piedra y el acero.
+            el poder de la pluma y el acero.
           </p>
           <p className='mx-auto max-w-xl text-neutral-500'>
-            Crea tu mundo, maneja personajes, monstruos y objetos. Sumérgete en una experiencia
-            oscura medieval única para organizar tus aventuras.
+            Crea tu mundo, maneja personajes, monstruos y objetos. Sumérgete en tu propia
+            experiencia de fantasía oscura única para organizar tus aventuras.
           </p>
         </div>
 
@@ -64,7 +64,7 @@ export default function LandingPage() {
               className='object-cover object-center transition-transform duration-500 group-hover:scale-105'
             />
             <div className='absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent' />
-            <span className='relative z-10 text-base font-bold text-neutral-200'>Ver Campañas</span>
+            <span className='relative z-10 text-base font-bold text-amber-500'>Ver Campañas</span>
           </Link>
         </div>
       </div>
