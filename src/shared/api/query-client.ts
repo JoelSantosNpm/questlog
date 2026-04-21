@@ -1,5 +1,14 @@
 import { QueryClient } from '@tanstack/react-query'
 import { cache } from 'react'
 
-// cache() is used to memoize the QueryClient across a single request
-export const getQueryClient = cache(() => new QueryClient())
+// queryClient de servidor
+export const getQueryClient = cache(
+  () =>
+    new QueryClient({
+      defaultOptions: {
+        queries: {
+          staleTime: 60 * 1000,
+        },
+      },
+    })
+)
