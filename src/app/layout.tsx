@@ -30,15 +30,15 @@ export default async function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <AuthProvider>
-      <html lang='es' className='dark h-full'>
-        <body
-          className={cn(
-            inter.className,
-            medieval.variable,
-            'flex min-h-screen flex-col bg-neutral-950 font-sans text-neutral-100 antialiased selection:bg-amber-500/30'
-          )}
-        >
+    <html lang='es' className='dark h-full'>
+      <body
+        className={cn(
+          inter.className,
+          medieval.variable,
+          'flex min-h-screen flex-col bg-neutral-950 font-sans text-neutral-100 antialiased selection:bg-amber-500/30'
+        )}
+      >
+        <AuthProvider>
           {/* Sincronización de Usuario (Lazy Sync) */}
           <AuthSync />
 
@@ -100,8 +100,8 @@ export default async function RootLayout({
             </p>
           </footer>
           <Toaster theme='light' position='top-center' />
-        </body>
-      </html>
-    </AuthProvider>
+        </AuthProvider>
+      </body>
+    </html>
   )
 }
