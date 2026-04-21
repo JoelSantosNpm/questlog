@@ -2,10 +2,10 @@
 
 import { useQuery } from '@tanstack/react-query'
 import {
-  fetchCharacterTemplates,
-  fetchMuseumItems,
-} from './encyclopedia-client-queries'
-import { getBestiaryItems } from './encyclopedia-queries'
+  getBestiaryItems,
+  getCharacterTemplates,
+  getMuseumItems,
+} from './encyclopedia-queries'
 import { ENCYCLOPEDIA_KEYS } from './query-keys'
 
 export function useBestiary() {
@@ -18,13 +18,13 @@ export function useBestiary() {
 export function useCharacterTemplates() {
   return useQuery({
     queryKey: ENCYCLOPEDIA_KEYS.cast(),
-    queryFn: fetchCharacterTemplates,
+    queryFn: () => getCharacterTemplates(),
   })
 }
 
 export function useMuseumItems() {
   return useQuery({
     queryKey: ENCYCLOPEDIA_KEYS.museum(),
-    queryFn: fetchMuseumItems,
+    queryFn: () => getMuseumItems(),
   })
 }

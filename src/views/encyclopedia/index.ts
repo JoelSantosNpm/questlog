@@ -1,7 +1,11 @@
 // Public API — encyclopedia slice
 export { useBestiary, useCharacterTemplates, useMuseumItems } from './api/encyclopedia-hooks'
 export { getBestiaryItems, getCharacterTemplates, getMuseumItems } from './api/encyclopedia-queries'
-export { createMonster, updateMonster, deleteMonster } from './api/actions'
+export { 
+  createMonster, updateMonster, deleteMonster,
+  createCharacterTemplate, updateCharacterTemplate, deleteCharacterTemplate,
+  createItemTemplate, updateItemTemplate, deleteItemTemplate
+} from './api/actions'
 export { prefetchEncyclopediaData } from './api/prefetch'
 export { useCurrentItems, useSelectedItem } from './lib/use-encyclopedia-items'
 export type {
