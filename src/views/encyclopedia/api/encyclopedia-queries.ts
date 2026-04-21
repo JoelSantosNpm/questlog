@@ -1,3 +1,6 @@
+'use server'
+
+import { prisma } from '@/shared/lib/prisma'
 import { createClient } from '@/shared/lib/supabase/server'
 import { BestiaryItem, CastItem, MuseumItem } from '../model/types'
 
@@ -5,18 +8,19 @@ import { BestiaryItem, CastItem, MuseumItem } from '../model/types'
  * Obtiene los monstruos disponibles para el usuario.
  */
 export async function getBestiaryItems(): Promise<BestiaryItem[]> {
-  const supabase = createClient()
-  const { data, error } = await supabase
-    .from('MonsterTemplate')
-    .select('*')
-    .order('name', { ascending: true })
+  try {
+    const data = await prisma.monsterTemplate.findMany({
+      orderBy: { name: 'asc' },
+    })
 
-  if (error) {
-    console.error('❌ Error fetching bestiary:', error)
+    return data.map((item) => ({ 
+      ...item, 
+      section: 'bestiary' as const,
+    }))
+  } catch (error) {
+    console.error('❌ Error fetching bestiary with Prisma:', error)
     return []
   }
-
-  return data.map((item) => ({ ...item, section: 'bestiary' as const }))
 }
 
 /**

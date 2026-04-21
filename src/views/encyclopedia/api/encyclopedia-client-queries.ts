@@ -1,10 +1,4 @@
-import type { BestiaryItem, CastItem, MuseumItem } from '../model/types'
-
-export async function fetchBestiaryItems(): Promise<BestiaryItem[]> {
-  const res = await fetch('/api/encyclopedia/bestiary')
-  if (!res.ok) throw new Error('Failed to fetch bestiary')
-  return res.json()
-}
+import type { CastItem, MuseumItem } from '../model/types'
 
 export async function fetchCharacterTemplates(): Promise<CastItem[]> {
   const res = await fetch('/api/encyclopedia/cast')
