@@ -12,6 +12,7 @@ export function useCampaignList(filter: CampaignFilter = 'all') {
     queryKey: [...CAMPAIGN_KEYS.list(), filter, userId],
     queryFn: () => (userId ? getCampaigns(filter, userId) : []),
     enabled: !!userId,
+    staleTime: 1000 * 60 * 30,
   })
 }
 
@@ -20,5 +21,6 @@ export function useCampaign(id: string) {
     queryKey: CAMPAIGN_KEYS.detail(id),
     queryFn: () => getCampaignById(id),
     enabled: !!id,
+    staleTime: 1000 * 60 * 30,
   })
 }
