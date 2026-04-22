@@ -28,46 +28,6 @@ export async function getCampaigns(filter: CampaignFilter = 'all', clerkId?: str
 }
 
 /**
- * Obtiene las campañas del usuario actual.
- */
-// export async function getAccessibleCampaigns(clerkId: string): Promise<PortalCampaign[]> {
-//   try {
-//     const campaigns = await prisma.campaign.findMany({
-//       where: {
-//         OR: [
-//           {
-//             gameMaster: {
-//               clerkId: clerkId,
-//             },
-//           },
-//           {
-//             isPrivate: false,
-//           },
-//         ],
-//       },
-//       include: {
-//         gameMaster: {
-//           select: {
-//             name: true,
-//           },
-//         },
-//       },
-//       orderBy: {
-//         createdAt: 'desc', // Para que las más nuevas salgan primero
-//       },
-//     })
-//     return campaigns.map((c) => ({
-//       id: c.id,
-//       name: c.name,
-//       variant: 'existing',
-//     }))
-//   } catch (error) {
-//     console.error('❌ Error fetching campaigns from Prisma:', error)
-//     return []
-//   }
-// }
-
-/**
  * Obtiene una campaña por ID.
  */
 export async function getCampaignById(id: string) {

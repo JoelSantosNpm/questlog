@@ -14,14 +14,6 @@ export function useCampaignList(filter: CampaignFilter = 'all') {
     enabled: !!userId,
   })
 }
-// export function useAccessibleCampaigns(filter: CampaignFilter = 'all') {
-//   const { userId } = useAuth()
-//   return useQuery({
-//     queryKey: CAMPAIGN_KEYS.list(),
-//     queryFn: () => (userId ? getCampaigns(filter, userId) : []),
-//     enabled: !!userId,
-//   })
-// }
 
 export function useCampaign(id: string) {
   return useQuery({
