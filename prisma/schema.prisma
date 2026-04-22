@@ -75,7 +75,7 @@ model Campaign {
   system           String  @default("D&D 5e")
   location         String?
   nextSession      DateTime?
-  isPrivate        Boolean @default(true)
+  isPublic        Boolean @default(false)
   parentCampaignId String?
 
   gameMasterId String
@@ -121,7 +121,7 @@ model CharacterTemplate {
   authorId String?
   author   User?   @relation("CreatedCharacterTemplates", fields: [authorId], references: [id], onDelete: SetNull)
 
-  isPublished Boolean @default(false)
+  isPublic Boolean @default(false)
   version     Int     @default(1)
   price       Float   @default(0.0)
 
@@ -308,7 +308,7 @@ model MonsterTemplate {
   authorId String?
   author   User?   @relation("CreatedMonsters", fields: [authorId], references: [id], onDelete: SetNull)
 
-  isPublished Boolean @default(false)
+  isPublic Boolean @default(false)
   price       Float   @default(0.0)
   version     Int     @default(1)
 
