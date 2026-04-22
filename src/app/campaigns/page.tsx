@@ -4,6 +4,7 @@ import { prefetchCampaignList } from '@/views/campaigns'
 import { PortalCarousel } from '@/views/portal'
 import { SignedIn } from '@clerk/nextjs'
 import { auth } from '@clerk/nextjs/server'
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
 import Link from 'next/link'
 
 export const revalidate = 0 // Forzar regeneración dinámica en cada request
@@ -12,7 +13,7 @@ export default async function PortalsPage() {
   const { userId } = await auth()
   const queryClient = getQueryClient()
 
-  const dbCampaigns = await prefetchCampaignList(queryClient)
+  const dbCampaigns = await prefetchCampaignList(queryClient, userId ?? undefined)
 
   const allCampaigns: PortalCampaign[] = [
     ...dbCampaigns,
@@ -31,7 +32,9 @@ export default async function PortalsPage() {
           </Link>
         </SignedIn>
       </div>
-      <PortalCarousel campaigns={allCampaigns} />
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <PortalCarousel campaigns={allCampaigns} />
+      </HydrationBoundary>
     </div>
   )
 }

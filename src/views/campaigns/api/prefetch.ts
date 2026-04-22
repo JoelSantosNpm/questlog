@@ -1,19 +1,23 @@
 import type { Campaign } from '@/shared/api/campaign'
 import type { QueryClient } from '@tanstack/react-query'
-import { getCampaignById, getUserCampaigns } from './campaign-queries'
+import { CampaignFilter, getCampaignById, getCampaigns } from './campaign-queries'
 import { CAMPAIGN_KEYS } from './query-keys'
 
 /**
  * Precarga la lista de campañas del usuario en el QueryClient del servidor.
  * Devuelve los datos ya cacheados para que la page no tenga que volver a leerlos.
  */
-export async function prefetchCampaignList(queryClient: QueryClient): Promise<Campaign[]> {
+export async function prefetchCampaignList(
+  queryClient: QueryClient,
+  userId?: string,
+  filter: CampaignFilter = 'all'
+): Promise<Campaign[]> {
   await queryClient.prefetchQuery({
-    queryKey: CAMPAIGN_KEYS.list(),
-    queryFn: getUserCampaigns,
+    queryKey: [...CAMPAIGN_KEYS.list(), filter, userId],
+    queryFn: () => getCampaigns(filter, userId),
   })
 
-  return queryClient.getQueryData<Campaign[]>(CAMPAIGN_KEYS.list()) ?? []
+  return queryClient.getQueryData<Campaign[]>([...CAMPAIGN_KEYS.list(), filter, userId]) ?? []
 }
 
 /**
@@ -25,9 +29,9 @@ export async function prefetchCampaignDetail(
   id: string
 ): Promise<Campaign | null> {
   await queryClient.prefetchQuery({
-    queryKey: CAMPAIGN_KEYS.detail(id),
+    queryKey: [...CAMPAIGN_KEYS.detail(id)],
     queryFn: () => getCampaignById(id),
   })
 
-  return queryClient.getQueryData<Campaign>(CAMPAIGN_KEYS.detail(id)) ?? null
+  return queryClient.getQueryData<Campaign>([...CAMPAIGN_KEYS.detail(id)]) ?? null
 }

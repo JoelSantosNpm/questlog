@@ -1,9 +1,9 @@
 'use server'
 
-import type { Campaign } from '@prisma/client'
-import { createClient } from '@/shared/lib/supabase/server'
-import { revalidatePath } from 'next/cache'
+import { prisma } from '@/shared/lib/prisma'
 import { auth } from '@clerk/nextjs/server'
+import type { Campaign } from '@prisma/client'
+import { revalidatePath } from 'next/cache'
 
 export type ActionResponse<T = void> = {
   success: boolean
@@ -31,32 +31,14 @@ export async function createCampaign(data: CreateCampaignDTO): Promise<ActionRes
       return { success: false, message: 'El nombre de la campaña es obligatorio' }
     }
 
-    const supabase = createClient()
     const { userId: clerkId } = await auth()
-
     if (!clerkId) {
       return { success: false, message: 'No se pudo identificar la sesión de Clerk' }
     }
 
-    // Obtenemos el ID interno del usuario en la tabla 'users' de Supabase
-    const { data: userData, error: userError } = await supabase
-      .from('User')
-      .select('id')
-      .eq('clerkId', clerkId)
-      .single()
-
-    if (userError || !userData) {
-      console.error('❌ Error al encontrar usuario en Supabase:', userError)
-      return {
-        success: false,
-        message:
-          'Tu usuario aún no está sincronizado en la base de datos. Por favor, refresca la página.',
-      }
-    }
-
-    const { data: campaign, error } = await supabase
-      .from('Campaign')
-      .insert({
+    // Asumimos que el userId de Clerk es el gameMasterId en Prisma
+    const campaign = await prisma.campaign.create({
+      data: {
         id: crypto.randomUUID(),
         name: data.name,
         description: data.description,
@@ -65,13 +47,10 @@ export async function createCampaign(data: CreateCampaignDTO): Promise<ActionRes
         location: data.location,
         isPrivate: data.isPrivate ?? true,
         nextSession: data.nextSession,
-        gameMasterId: userData.id,
+        gameMasterId: clerkId,
         updatedAt: new Date().toISOString(),
-      })
-      .select()
-      .single()
-
-    if (error) throw error
+      },
+    })
 
     revalidatePath('/campaigns')
     revalidatePath('/colosseum')
@@ -85,19 +64,18 @@ export async function createCampaign(data: CreateCampaignDTO): Promise<ActionRes
   } catch (error) {
     const msg = error instanceof Error ? error.message : JSON.stringify(error)
     console.error('❌ Error al crear campaña:', msg)
+
     return { success: false, message: `Error: ${msg}` }
   }
 }
 
-export async function updateCampaign(data: UpdateCampaignDTO): Promise<ActionResponse> {
+export async function updateCampaign(data: UpdateCampaignDTO): Promise<ActionResponse<Campaign>> {
   try {
     if (!data.id) return { success: false, message: 'El ID es requerido' }
 
-    const supabase = createClient()
-
-    const { data: updated, error } = await supabase
-      .from('Campaign')
-      .update({
+    const updated = await prisma.campaign.update({
+      where: { id: data.id },
+      data: {
         name: data.name,
         description: data.description,
         imageUrl: data.imageUrl,
@@ -106,12 +84,8 @@ export async function updateCampaign(data: UpdateCampaignDTO): Promise<ActionRes
         isPrivate: data.isPrivate,
         nextSession: data.nextSession,
         updatedAt: new Date().toISOString(),
-      })
-      .eq('id', data.id)
-      .select()
-      .single()
-
-    if (error) throw error
+      },
+    })
 
     revalidatePath('/colosseum')
     revalidatePath(`/campaigns/${data.id}`)
@@ -123,16 +97,14 @@ export async function updateCampaign(data: UpdateCampaignDTO): Promise<ActionRes
     }
   } catch (error) {
     console.error('Error al actualizar campaña:', error)
+
     return { success: false, message: 'Ocurrió un error al actualizar la campaña' }
   }
 }
 
 export async function deleteCampaign(campaignId: string): Promise<ActionResponse<void>> {
   try {
-    const supabase = createClient()
-    const { error } = await supabase.from('Campaign').delete().eq('id', campaignId)
-
-    if (error) throw error
+    await prisma.campaign.delete({ where: { id: campaignId } })
 
     revalidatePath('/colosseum')
     revalidatePath('/')
