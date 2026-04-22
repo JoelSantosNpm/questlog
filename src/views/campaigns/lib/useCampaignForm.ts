@@ -1,10 +1,10 @@
 import { useRouter } from 'next/navigation'
-import { useForm, useFormContext, SubmitHandler } from 'react-hook-form'
-import { CAMPAIGN_CREATION_STEPS } from '../config/campaign-steps'
-import { CampaignFormValues } from '../model/campaign'
+import { SubmitHandler, useForm, useFormContext } from 'react-hook-form'
 import { createCampaign } from '../api/campaign-actions'
-import { notifyCampaignCreation } from './notifications'
+import { CAMPAIGN_CREATION_STEPS } from '../config/campaign-steps'
+import { CampaignFormValues } from '../model/campaign-types'
 import { useCampaignStore } from '../model/campaignStore'
+import { notifyCampaignCreation } from './notifications'
 
 export function useInitCampaignForm() {
   const methods = useForm<CampaignFormValues>({ mode: 'onChange' })

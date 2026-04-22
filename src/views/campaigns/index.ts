@@ -8,6 +8,6 @@ export {
   prefetchCampaignList as prefetchCampaignList,
 } from './api/prefetch'
 export { CAMPAIGN_KEYS } from './api/query-keys'
-export type { CampaignFormValues } from './model/campaign'
+export type { CampaignFormValues } from './model/campaign-types'
 export { useCampaignStore } from './model/campaignStore'
 export { default as CampaignCreationProvider } from './ui/creation/CampaignCreationProvider'

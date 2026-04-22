@@ -1,11 +1,11 @@
 'use client'
 
-import { m, LazyMotion, domAnimation, AnimatePresence } from 'framer-motion'
+import { AnimatePresence, LazyMotion, domAnimation, m } from 'framer-motion'
 import { useEffect, useRef } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { CampaignFormValues } from '../../model/campaign'
-import { StepControls } from './StepControls'
 import { useCampaignActions } from '../../lib/useCampaignForm'
+import { CampaignFormValues } from '../../model/campaign-types'
+import { StepControls } from './StepControls'
 
 export function CampaignCreationForm() {
   const {

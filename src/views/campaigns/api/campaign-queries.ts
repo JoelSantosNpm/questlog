@@ -2,13 +2,12 @@
 
 import { prisma } from '@/shared/lib/prisma'
 import { Prisma } from '@prisma/client'
-
-export type CampaignFilter = 'all' | 'public' | 'owned'
+import { CampaignFilter } from '../model/campaign-types'
 
 export async function getCampaigns(filter: CampaignFilter = 'all', clerkId?: string) {
   // Condiciones base del OR
   const conditions: Prisma.CampaignWhereInput[] =
-    filter === 'all' || filter === 'public' ? [{ isPrivate: false }] : [{ isPrivate: true }]
+    filter === 'all' || filter === 'public' ? [{ isPublic: true }] : [{ isPublic: false }]
 
   // Si el usuario está logueado y no pedimos "solo públicas", añadimos sus accesos
   if (clerkId && (filter === 'all' || filter === 'owned')) {

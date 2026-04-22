@@ -1,6 +1,7 @@
 import type { Campaign } from '@/shared/api/campaign'
 import type { QueryClient } from '@tanstack/react-query'
-import { CampaignFilter, getCampaignById, getCampaigns } from './campaign-queries'
+import { CampaignFilter } from '../model/campaign-types'
+import { getCampaignById, getCampaigns } from './campaign-queries'
 import { CAMPAIGN_KEYS } from './query-keys'
 
 /**
