@@ -18,6 +18,14 @@
 
 ---
 
+### Adventure Creation Form
+
+![Adventure Creation Form](public/screenshots/campaign-creation.png)
+
+> A narrative-driven multi-step wizard that turns your inputs into campaign lore
+
+---
+
 ## 🔮 The Illustrated Tome
 
 ### The Stone Portal — Campaign Selection
@@ -26,11 +34,11 @@
 
 > Navigate your campaigns through a 3D stone portal carousel
 
-### Adventure Creation Form
+### Encyclopedia
 
-![Adventure Creation Form](public/screenshots/campaign-creation.png)
+![Encyclopedia](public/screenshots/encyclopedia.png)
 
-> A narrative-driven multi-step wizard that turns your inputs into campaign lore
+> A place to discover other's templates of monsters, characters or items. Or see your own ones
 
 ---
 
