@@ -27,12 +27,13 @@ export async function prefetchCampaignList(
  */
 export async function prefetchCampaignDetail(
   queryClient: QueryClient,
-  id: string
+  id: string,
+  userId?: string
 ): Promise<Campaign | null> {
   await queryClient.prefetchQuery({
-    queryKey: [...CAMPAIGN_KEYS.detail(id)],
-    queryFn: () => getCampaignById(id),
+    queryKey: [...CAMPAIGN_KEYS.detail(id), userId],
+    queryFn: () => getCampaignById(id, userId),
   })
 
-  return queryClient.getQueryData<Campaign>([...CAMPAIGN_KEYS.detail(id)]) ?? null
+  return queryClient.getQueryData<Campaign>([...CAMPAIGN_KEYS.detail(id), userId]) ?? null
 }

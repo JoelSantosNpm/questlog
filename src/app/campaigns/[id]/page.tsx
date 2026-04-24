@@ -1,6 +1,5 @@
 import { getQueryClient } from '@/shared/api/query-client'
 import { prefetchCampaignDetail } from '@/views/campaigns'
-import { auth } from '@clerk/nextjs/server'
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -10,7 +9,7 @@ interface PageProps {
 }
 
 export default async function CampaignPage({ params }: PageProps) {
-  const [, { id }] = await Promise.all([auth.protect(), params])
+  const { id } = await params
   const queryClient = getQueryClient()
 
   const campaign = await prefetchCampaignDetail(queryClient, id)
