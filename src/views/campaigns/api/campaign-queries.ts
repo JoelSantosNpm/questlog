@@ -36,11 +36,12 @@ export async function getCampaigns(filter: CampaignFilter = 'all', clerkId?: str
  */
 export async function getCampaignById(id: string, clerkId?: string) {
   try {
+    const orConditions: Prisma.CampaignWhereInput[] = [{ isPublic: true }]
+    if (clerkId) {
+      orConditions.push({ gameMaster: { clerkId } })
+    }
     return await prisma.campaign.findFirst({
-      where: {
-        id: id,
-        OR: [{ isPublic: true }, { gameMaster: { clerkId: clerkId ?? 'no-user' } }],
-      },
+      where: { id, OR: orConditions },
       include: {
         gameMaster: { select: { name: true } },
       },
