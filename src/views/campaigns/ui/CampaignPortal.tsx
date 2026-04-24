@@ -1,8 +1,9 @@
 'use client'
 
 import type { Campaign } from '@/shared/api/campaign'
-import { PortalCarousel, useUserCampaigns } from '@/views/campaigns'
 import { useAuth } from '@clerk/nextjs'
+import { useCampaignList as useUserCampaigns } from '../api/campaign-hooks'
+import { PortalCarousel } from './portal/ui/portal-carousel'
 
 export function CampaignPortal() {
   const { userId } = useAuth()

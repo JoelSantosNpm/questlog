@@ -1,10 +1,9 @@
 import { getQueryClient } from '@/shared/api/query-client'
-import { prefetchCampaignList } from '@/views/campaigns'
+import { CampaignPortal, prefetchCampaignList } from '@/views/campaigns'
 import { SignedIn } from '@clerk/nextjs'
 import { auth } from '@clerk/nextjs/server'
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
 import Link from 'next/link'
-import { CampaignPortal } from './CampaignPortal'
 
 export const revalidate = 0 // Forzar regeneración dinámica en cada request
 

@@ -10,6 +10,7 @@ export {
 export { CAMPAIGN_KEYS } from './api/query-keys'
 export type { CampaignFormValues } from './model/campaign-types'
 export { useCampaignStore } from './model/campaignStore'
+export { CampaignPortal } from './ui/CampaignPortal'
 export { default as CampaignCreationProvider } from './ui/creation/CampaignCreationProvider'
 // Portal UI (moved from views/portal — only used by campaigns)
 export { getCircularCarousel } from './ui/portal/lib/carousel-utils'
