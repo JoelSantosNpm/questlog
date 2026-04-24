@@ -20,17 +20,25 @@
 
 ## 🔮 El Tomo Ilustrado
 
+### Formulario de Creación de Aventura
+
+![Formulario de Creación de Aventura](public/screenshots/campaign-creation.png)
+
+> Un _wizard_ narrativo multipaso que convierte tus inputs en lore de campaña
+
+---
+
 ### El Portal de Piedra — Selección de Campaña
 
 ![El Portal de Piedra — Selección de Campaña](public/screenshots/campaign-portals.png)
 
 > Navega tus campañas a través de un carrusel de portales de piedra en 3D
 
-### Formulario de Creación de Aventura
+### Encyilopedia
 
-![Formulario de Creación de Aventura](public/screenshots/campaign-creation.png)
+![Enciclopedia](public/screenshots/encyclopedia.png)
 
-> Un _wizard_ narrativo multipaso que convierte tus inputs en lore de campaña
+> Un lugar donde descubrir las plantilles de monstruos, personajes o items de otros usuarios. O ver las tuyas.
 
 ---
 

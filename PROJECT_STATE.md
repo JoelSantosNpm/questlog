@@ -241,7 +241,6 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
 
 - [ ] **M3-03: Bestiario y Fichas de Monstruos**
   - _Tarea:_ Formulario unificado para `MonsterTemplate` (Librería) y `ActiveMonster` (Instancia de Campaña) con stats atómicos y upload de imagen.
-  - _⚠️ Deuda de Schema:_ `MonsterTemplate` y `ActiveMonster` carecen de campo `description`. Agregar `description String?` en el schema de Prisma, generar la migración correspondiente, y usar `item.description` en `DetailView.tsx` (sección "Descripción" actualmente hardcodeada con 'Sin descripción.').
   - _AC:_ El DM puede crear y editar una ficha de monstruo con stats atómicos y asociarla a una campaña; la imagen se sube y se muestra correctamente.
 
 - [ ] **M3-04: Módulo de Inventario y Museo**
@@ -282,7 +281,6 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
 ## 📝 Siguientes Pasos Inmediatos
 
 1. **M3-03: Bestiario y Fichas de Monstruos**
-   - Ver nota de deuda de schema en esa tarea (añadir `description String?` a `MonsterTemplate` y `ActiveMonster`).
 
 2. **M3-04: Módulo de Inventario y Museo**
 
