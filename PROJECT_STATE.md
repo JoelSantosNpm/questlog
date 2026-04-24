@@ -1,12 +1,12 @@
 ﻿# Estado del Proyecto: Questlog
 
-**Última actualización:** 15 de Abril de 2026
+**Última actualización:** 24 de Abril de 2026
 **Rama actual:** m3-02page-enciclopedia
 
 ## 📌 Resumen de Progreso
 
 Arquitectura base y **Milestone M1 (Auth & Infra)** completados. **M2 (Gestión de Campañas)** completado al 100%.
-Hemos completado **M3-01 (Reestructuración de Datos)**: migración a columnas atómicas de stats, nuevas tablas `ItemTemplate` y `AccessGrant`, enum `Rarity`, y documentación del schema bilingüe. Hemos completado también **A02 (Eliminar Prisma)**: la app usa ahora el cliente Supabase JS directamente, sin ORM. **M3-02** completado: enciclopedia con navegación por pestañas, vista de detalle animada, cadena de fallback de imágenes con indicadores visuales, y suite completa de tests unitarios y E2E. **Refactorización a Feature-Sliced Design (FSD) completada**: estructura de `src/` reorganizada con capas canónicas, imports públicos a través de `index.ts` de cada slice, y código de dominio reubicado fuera de `shared/`.
+Hemos completado **M3-01 (Reestructuración de Datos)**: migración a columnas atómicas de stats, nuevas tablas `ItemTemplate` y `AccessGrant`, enum `Rarity`, y documentación del schema bilingüe. Hemos completado también **A02 (Eliminar Prisma)**: la app usa ahora Prisma directamente como ORM de runtime con cliente ligero. **M3-02** completado: enciclopedia con navegación por pestañas, vista de detalle animada, cadena de fallback de imágenes con indicadores visuales, y suite completa de tests unitarios y E2E. **Refactorización a Feature-Sliced Design (FSD) completada**: estructura de `src/` reorganizada con capas canónicas, imports públicos a través de `index.ts` de cada slice, y código de dominio reubicado fuera de `shared/`. **Refactorización a Server Actions (Prisma)**: todas las queries y mutations de campañas y enciclopedia usan Prisma con server actions, sin route handlers. **Control de acceso por visibilidad**: campañas públicas accesibles sin autenticación; campañas privadas solo para su dueño (404 para el resto). **Suite de tests de campañas ampliada**: 29 nuevos tests cubriendo queries, hooks y mutations.
 
 ---
 
@@ -20,9 +20,9 @@ Hemos completado **M3-01 (Reestructuración de Datos)**: migración a columnas a
 - **Fuentes:** Google Fonts (`Inter` para UI, `MedievalSharp` para títulos).
 - **Animaciones:** Framer Motion (`AnimatePresence`, `motion`).
 - **Testing (Unit/Integration):** Vitest 4.x + Testing Library. Config: `vitest.config.ts`. Setup: `vitest.setup.ts`.
-  - Tests centralizados en `tests/features/`. 99 tests pasando: carousel utils (6), storage service (3), storage schema (4), useImageUploader (6), ImageUploader UI (4), CampaignCreationForm (6), encyclopediaStore (9), image-fallbacks (17), ListView (12), ItemHeader (22), EncyclopediaImage (10).
+  - Tests centralizados en `tests/features/`. **137 tests pasando** en 15 archivos: carousel utils (6), storage service (3), storage schema (4), useImageUploader (6), ImageUploader UI (4), CampaignCreationForm (6), encyclopediaStore (9), image-fallbacks (17), ListView (13), ItemHeader (22), EncyclopediaImage (10), **campaign-queries (11)**, **campaign-hooks (9)**, **campaign-mutations (9)**.
 - **Testing (E2E):** Playwright con auth via `@clerk/testing`. Config: `playwright.config.ts`. Tests: `e2e/portal-de-piedra.spec.ts` (3 tests: AC 3.1, 3.2, 3.3), `e2e/encyclopedia.spec.ts` (8 tests, 1 skip). Requiere `E2E_CLERK_USER_EMAIL` en `.env`.
-- **Auth & DB:** Clerk (Auth), Supabase (PostgreSQL). El cliente `@supabase/supabase-js` con `service_role` key se usa directamente desde el servidor para todas las operaciones de base de datos. Prisma se mantiene en `devDependencies` como única fuente de verdad del schema: genera tipos TypeScript via `prisma generate` (usados como `import type`, cero impacto en bundle) y gestiona migraciones SQL via CLI.
+- **Auth & DB:** Clerk (Auth), Supabase/PostgreSQL (host). **Prisma Client** como ORM de runtime para todas las queries y mutations (server actions). `schema.prisma` es la única fuente de verdad: tipos TypeScript via `prisma generate`, migraciones SQL via CLI, y queries en runtime. `@supabase/supabase-js` se usa únicamente para operaciones de **Storage** (imágenes).
 
 ### Layout Global (`src/app/layout.tsx`)
 
@@ -63,7 +63,7 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
     - `src/app/providers/auth-provider.tsx`: Wrapper de `ClerkProvider` con tema y rutas configuradas.
     - `src/app/auth/auth-sync.tsx`: Server Component que ejecuta el Lazy Sync en cada sesión.
   - `src/middleware.ts`: Middleware de protección de rutas con `auth.protect()` (ubicación requerida por Next.js).
-- **Rutas protegidas:** Todo excepto `/`, `/sign-in(.*)` y `/sign-up(.*)`.
+- **Rutas protegidas:** Todo excepto `/`, `/sign-in(.*)`, `/sign-up(.*)` y detalles de campañas públicas (`/campaigns/[id]` cuando `isPublic: true`).
 
 ### 3. Hooks y Lógica (`src/views/portal/lib/`)
 
@@ -86,7 +86,7 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
 - **`ItemHeader`**: Encabezado del detalle con sección, nombre e imagen de retrato. Muestra `OctagonAlert` en el label de sección en museo cuando `imageMissing` es `true`, y en el `PortraitFrame` cuando el retrato falla o está vacío.
 - **`DetailView`**: Orquestador del panel de detalle. Eleva el estado `imageMissing` desde `EncyclopediaImage` y lo pasa a `ItemHeader` para el indicador del museo.
 - **`image-fallbacks.ts`**: Funciones puras `getEntityFallbacks` y `getPortraitFallbacks` — construyen la cadena de URLs garantizando siempre al menos el default de sección.
-- **Unit Tests:** `encyclopediaStore.test.ts` (9), `image-fallbacks.test.ts` (17), `ListView.test.tsx` (12), `ItemHeader.test.tsx` (22), `EncyclopediaImage.test.tsx` (10).
+- **Unit Tests:** `encyclopediaStore.test.ts` (9), `image-fallbacks.test.ts` (17), `ListView.test.tsx` (13), `ItemHeader.test.tsx` (22), `EncyclopediaImage.test.tsx` (10).
 - **E2E Tests:** `encyclopedia.spec.ts` — 8 escenarios (ENC-01 a ENC-08) cubriendo navegación por pestañas, búsqueda, selección de items y vista de detalle.
 
 ---
@@ -130,17 +130,15 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
 └── prisma/                    # Schema (fuente de verdad) + migraciones SQL
 ```
 
+> 📁 Para la estructura detallada de carpetas del proyecto, ver [README.md](README.md#arquitectura-feature-sliced-design-fsd).
+
 ---
-
-## �️ Roadmap de Funcionalidades
-
-# 🛡️ Questlog Project State
 
 ## 📍 Estado Actual
 
 **Milestone:** M3: La Forja de la Enciclopedia (Datos, Imágenes y Estructuras)
-**Tarea completada:** M3-01: Reestructuración de Datos (Atómicos vs JSON)
-**En curso:** M3-02: Hub de la Enciclopedia y Navegación
+**Tarea completada:** M3-02: Hub de la Enciclopedia y Navegación + Control de acceso público/privado de campañas
+**En curso:** M3-03: Bestiario y Fichas de Monstruos
 
 ---
 
@@ -189,18 +187,17 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
 
 ### M3: La Forja de la Enciclopedia (Datos, Imágenes y Estructuras) [EN PROGRESO]
 
-- [x] **A02: Eliminación de Prisma como ORM de runtime** [COMPLETADO]
-  - _Objetivo:_ Simplificar el stack eliminando la dependencia de Prisma en runtime, usando el cliente Supabase JS directamente.
+- [x] **A02: Refactorización del ORM — Prisma como única fuente de verdad** [COMPLETADO]
+  - _Objetivo:_ Unificar el acceso a datos usando Prisma Client como ORM de runtime (server actions), eliminando el cliente Supabase JS de la capa de datos.
   - _Cambios realizados:_
-    - ✅ `src/lib/prisma.ts` eliminado.
-    - ✅ `src/services/campaign-service.ts` eliminado (sin uso).
-    - ✅ `prisma.config.ts` eliminado.
-    - ✅ `src/lib/supabase/server.ts` reescrito con `service_role` key (sin RLS, equiv. Prisma).
-    - ✅ `campaign-actions.ts`, `campaign-queries.ts`, `encyclopedia-queries.ts`, `auth-sync.tsx`, `webhooks/clerk/route.ts`: todos migrados a cliente Supabase nativo con nombres de tabla PascalCase.
-    - ✅ `encyclopedia/types.ts` migrado a `import type` desde `@prisma/client` (generado, sin runtime).
-    - ✅ `@prisma/adapter-pg` y `pg` eliminados. `@prisma/client` y `prisma` movidos a `devDependencies`.
-    - ✅ `build` script actualizado: `prisma generate && next build` para que Vercel genere los tipos.
-  - _AC:_ ✅ La app funciona sin Prisma en runtime. `schema.prisma` es la única fuente de verdad: tipos TypeScript (via `prisma generate`) + migraciones SQL (via CLI).
+    - ✅ `campaign-queries.ts`, `campaign-mutations.ts`, `encyclopedia-queries.ts`, `auth-sync.tsx`, `webhooks/clerk/route.ts`: todos usan `prisma` de `@/shared/lib/prisma`.
+    - ✅ `campaign-hooks.ts`: normaliza `null → undefined` en query keys (Clerk devuelve `null`, TanStack Query requiere `undefined` para consistencia con el prefetch SSR).
+    - ✅ `prefetchCampaignDetail`: recibe `userId` y lo propaga a la query para correcta hidratación.
+    - ✅ `getCampaignById`: fix de seguridad — el OR de `gameMaster` solo se añade si `clerkId` tiene valor (evita que Prisma ignore la condición y exponga campañas privadas).
+    - ✅ `[id]/page.tsx`: obtiene `userId` en paralelo con `params` via `Promise.all([auth(), params])`; campañas públicas accesibles sin login, privadas devuelven 404 para no autorizados.
+    - ✅ `@prisma/adapter-pg` y `pg` eliminados del runtime.
+    - ✅ `build` script: `prisma generate && next build` para que Vercel regenere tipos en CI.
+  - _AC:_ ✅ `schema.prisma` es la única fuente de verdad: tipos TypeScript (via `prisma generate`) + migraciones SQL (via CLI) + queries de runtime (via Prisma Client).
 
 - [x] **M3-00: Infraestructura de Imágenes (Storage)**
   - _Tareas:_
@@ -237,7 +234,7 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
     - ✅ Cadena de fallback de imágenes (`imageUrl` → `portraitImageUrl` → default por sección).
     - ✅ Indicador visual `OctagonAlert` en la imagen principal y en el retrato cuando la URL está vacía o falla.
     - ✅ `DetailView` eleva estado `imageMissing` desde `EncyclopediaImage` hacia `ItemHeader` para mostrar indicador en el label de sección (museo).
-    - ✅ Suite completa de tests unitarios: `encyclopediaStore` (9), `image-fallbacks` (17), `ListView` (12), `ItemHeader` (22), `EncyclopediaImage` (10).
+    - ✅ Suite completa de tests unitarios: `encyclopediaStore` (9), `image-fallbacks` (17), `ListView` (13), `ItemHeader` (22), `EncyclopediaImage` (10).
     - ✅ Suite E2E: `encyclopedia.spec.ts` — 8 escenarios pasando (ENC-01 a ENC-08), 1 skip intencional (ENC-06 requiere 2+ items).
     - ⏳ Filtros (Mis Creaciones | Públicos | Compartidos): pendiente para próximo milestone.
   - _AC:_ ✅ El usuario puede navegar a `/encyclopedia`, cambiar entre las tres pestañas y ver detalle de cada item. Los items con imagen rota o sin URL muestran el indicador `OctagonAlert`.
@@ -271,7 +268,7 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
 
 ## 🛠️ Notas de Ingeniería (Compound Context)
 
-- **Tech Stack:** Next.js (App Router), Supabase JS (runtime), Prisma (devDep — tipos + migraciones), Clerk, Tailwind.
+- **Tech Stack:** Next.js (App Router), Prisma Client (ORM runtime — queries + mutations), Supabase (PostgreSQL host + Storage), Clerk, Tailwind.
 - **Arquitectura Frontend:** Feature-Sliced Design (FSD) — capas `app/`, `views/` (slices con `api/`, `model/`, `ui/`), `shared/`. Cada slice expone su Public API a través de `index.ts` raiz. `app/` solo importa desde esos barrels.
 - **UI Estilo:** Gamificada, texturas de piedra, portales mágicos.
 - **Principio:** No se avanza de Issue hasta cumplir todos sus AC (Criterios de Aceptación).
@@ -285,11 +282,13 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
 ## 📝 Siguientes Pasos Inmediatos
 
 1. **M3-03: Bestiario y Fichas de Monstruos**
-   - Ver nota de deuda de schema en esa tarea.
+   - Ver nota de deuda de schema en esa tarea (añadir `description String?` a `MonsterTemplate` y `ActiveMonster`).
 
 2. **M3-04: Módulo de Inventario y Museo**
 
-3. **M3-02: Filtros de la Enciclopedia** (backlog menor)
+3. **M3-05: Registro de Personajes (Template & Instance)**
+
+4. **M3-02: Filtros de la Enciclopedia** (backlog menor)
    - Implementar filtros: Mis Creaciones | Públicos | Compartidos.
 
 ---
@@ -297,7 +296,7 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
 ## 🏗️ Principios Aprendidos / Refactorizaciones
 
 - **Feature-Sliced Design (FSD):** Organizar el código por slices de feature (`views/campaigns/`, `views/encyclopedia/`, `views/portal/`) con segmentos `api/`, `model/`, `ui/` dentro de cada uno. Cada slice expone un `index.ts` como Public API — `app/` nunca importa internos de un slice directamente. El código de dominio (notificaciones de campaña, pasos del wizard) vive en `views/<slice>/lib/` o `views/<slice>/config/`, no en `shared/`. `shared/` es únicamente infraestructura genérica sin lógica de negocio.
-- **Naming basado en dominio:** Archivos de modelo nombrados por dominio (`campaign.ts`, `encyclopedia.ts`) en vez de nombres técnicos genéricos (`types.ts`).
+- **Normalización null→undefined en hooks:** Clerk devuelve `null` cuando no hay sesión; TanStack Query usa `undefined` en las query keys del prefetch SSR. El mismatch provoca que la hidratación no encuentre los datos cacheados y dispara un refetch que causa el error de timing `'CampaignPage' cannot have a negative time stamp` en Turbopack. Solución: `rawUserId ?? undefined` en todos los hooks que consumen `useAuth()`.
 - **Compound Components & Estado:** Evitar _prop-drilling_ usando `FormProvider` y extrayendo lógicas visuales de navegación de interfaces animadas hacia **Zustand**. Esto facilita aislar el DOM que maneja tags ruidosos como `<form>` y concentrar el _submit_ lejos de los mapeos visuales.
 - **Micro-Interactividad:** Integrar un `isTransitioning` lock en los formularios multicapa para evitar que el usuario de doble-clic y colapse el árbol reactivo durante las animaciones de Framer Motion.
 - **Optimización de Bundle:** Mover `motion` a `<LazyMotion features={domAnimation}>` y `m.div` en UI cargadas globalmente para ahorrar severos picos de ~30kb en renderizados iniciales.

@@ -9,7 +9,7 @@ Este documento describe las prácticas, herramientas y organización del sistema
 - **Mocks:** Vitest `vi` para servicios y módulos externos.
 - **Coverage:** `@vitest/coverage-v8`.
 
-> **Tests actuales:** 99 tests unitarios pasando (6 carousel utils, 3 storage service, 4 storage schema, 6 useImageUploader, 4 ImageUploader UI, 6 CampaignCreationForm, 9 encyclopediaStore, 17 image-fallbacks, 12 ListView, 22 ItemHeader, 10 EncyclopediaImage) + 11 E2E pasando (3 portal-de-piedra, 8 encyclopedia).
+> **Tests actuales:** 137 tests unitarios pasando (6 carousel utils, 3 storage service, 4 storage schema, 6 useImageUploader, 4 ImageUploader UI, 6 CampaignCreationForm, 9 encyclopediaStore, 17 image-fallbacks, 13 ListView, 22 ItemHeader, 10 EncyclopediaImage, **11 campaign-queries, 9 campaign-hooks, 9 campaign-mutations**) + 11 E2E pasando (3 portal-de-piedra, 8 encyclopedia).
 
 ---
 
@@ -21,6 +21,10 @@ Adoptamos una estructura centralizada en la carpeta raíz `tests/` para maximiza
 tests/
 ├── features/    # Tests organizados por funcionalidad (Unit/Integration/UI)
 │   ├── campaigns/
+│   │   ├── api/
+│   │   │   ├── campaign-queries.test.ts   # Filtros, seguridad (null/undefined), errores Prisma
+│   │   │   ├── campaign-hooks.test.ts     # Normalización null→undefined en query keys
+│   │   │   └── campaign-mutations.test.ts # Llamadas a actions + invalidación de caché
 │   │   └── components/CampaignCreationForm.test.tsx
 │   ├── encyclopedia/
 │   │   ├── lib/image-fallbacks.test.ts
@@ -98,6 +102,22 @@ Verificamos la comunicación entre nuestra lógica y servicios externos.
 ---
 
 ## 🛡️ Infraestructura de Mocks Comunes
+
+### Prisma (ORM de servidor)
+
+```typescript
+vi.mock('@/shared/lib/prisma', () => ({
+  prisma: {
+    campaign: {
+      findMany: vi.fn(),
+      findFirst: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+    },
+  },
+}))
+```
 
 ### Clerk (Autenticación)
 

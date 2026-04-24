@@ -14,6 +14,7 @@
 - **Authentication (Clerk):** Secure sign-in/sign-up with automatic profile sync to the database (_Lazy Sync_).
 - **Adventure Creation:** An animated multi-step _wizard_ that weaves your inputs into campaign lore, powered by Zustand + React Hook Form + Framer Motion.
 - **Encyclopedia Hub:** Three-tab knowledge base (Bestiary, Cast, Museum) with animated detail view and section-based navigation.
+- **Public Campaign Access:** Campaign detail pages are publicly viewable without login. Private campaigns return a 404 for unauthorized visitors.
 
 ---
 
@@ -48,18 +49,18 @@ src/
 │   ├── dashboard/              # Main dashboard
 │   ├── encyclopedia/           # Encyclopedia hub
 │   ├── sign-in/ & sign-up/     # Authentication pages
-│   ├── auth/auth-sync.tsx      # Lazy sync: Clerk → Supabase
+│   ├── auth/auth-sync.tsx      # Lazy sync: Clerk → DB (Prisma upsert)
 │   └── layout.tsx              # Root layout
 ├── views/                      # Feature slices (FSD)
 │   ├── campaigns/
-│   │   ├── api/                # campaign-actions.ts, campaign-queries.ts
+│   │   ├── api/                # campaign-queries.ts, campaign-hooks.ts, campaign-mutations.ts, prefetch.ts
 │   │   ├── config/             # campaign-steps.ts
 │   │   ├── lib/                # useCampaignForm.ts, notifications.ts
 │   │   ├── model/              # campaign.ts, campaignStore.ts
 │   │   ├── ui/creation/        # CampaignCreationForm, Provider, StepControls
 │   │   └── index.ts            # Public API
 │   ├── encyclopedia/
-│   │   ├── api/                # encyclopedia-queries.ts
+│   │   ├── api/                # encyclopedia-queries.ts, encyclopedia-hooks.ts, prefetch.ts
 │   │   ├── config/             # stats.ts
 │   │   ├── lib/                # image-fallbacks.ts
 │   │   ├── model/              # types.ts, encyclopediaStore.ts
@@ -73,7 +74,7 @@ src/
 ├── shared/
 │   ├── api/                    # StorageService, Campaign interface
 │   ├── config/                 # Clerk theme, route constants
-│   ├── lib/                    # Supabase clients, storage helpers
+│   ├── lib/                    # Prisma client, Supabase storage client
 │   ├── schemas/                # Zod schemas (storage validation)
 │   ├── ui/                     # ImageUploader, MysticBackground (barrel: index.ts)
 │   └── utils/                  # cn()
@@ -119,8 +120,8 @@ Every piece of the stack was chosen to serve a specific purpose in the user expe
 
 ### Backend & Infrastructure (Robustness)
 
-- **[Supabase (PostgreSQL)](https://supabase.com/):** Powerful relational database. The `@supabase/supabase-js` client is used directly for all queries — service role key on the server (bypasses RLS, equivalent to a trusted ORM), JWT token on the client (RLS-enforced upload operations).
-- **[Prisma](https://www.prisma.io/) (`devDependency` only):** Serves two compile-time purposes: generating TypeScript types via `prisma generate` (used as `import type`, zero bundle impact) and managing SQL migrations via CLI. Not instantiated at runtime.
+- **[Supabase (PostgreSQL)](https://supabase.com/):** Relational database host. `@supabase/supabase-js` is used **only for Storage** operations (image upload with JWT/RLS). All data queries and mutations go through Prisma.
+- **[Prisma](https://www.prisma.io/):** Runtime ORM for all data queries and mutations via server actions. `schema.prisma` is the single source of truth: TypeScript types (`prisma generate`), SQL migrations (CLI), and runtime queries (Prisma Client).
 - **[Sileo](https://www.npmjs.com/package/sileo):** Lightweight, themeable toast notification system for user feedback.
 - **[Clerk](https://clerk.com/):** Professional-grade authentication with automatic profile synchronization.
 
