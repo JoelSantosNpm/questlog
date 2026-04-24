@@ -2,7 +2,7 @@
 
 import { prisma } from '@/shared/lib/prisma'
 import { auth } from '@clerk/nextjs/server'
-import type { Campaign } from '@prisma/client'
+import type { Campaign, Prisma } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
 
 export type ActionResponse<T = void> = {
@@ -36,7 +36,11 @@ export async function createCampaign(data: CreateCampaignDTO): Promise<ActionRes
       return { success: false, message: 'No se pudo identificar la sesión de Clerk' }
     }
 
-    // Asumimos que el userId de Clerk es el gameMasterId en Prisma
+    // Buscar el usuario por clerkId y conectar por id
+    const user = await prisma.user.findUnique({ where: { clerkId } })
+    if (!user) {
+      return { success: false, message: 'Usuario no sincronizado en la base de datos' }
+    }
     const campaign = await prisma.campaign.create({
       data: {
         id: crypto.randomUUID(),
@@ -45,11 +49,11 @@ export async function createCampaign(data: CreateCampaignDTO): Promise<ActionRes
         imageUrl: data.imageUrl,
         system: data.system || 'D&D 5e',
         location: data.location,
-        isPrivate: data.isPrivate ?? true,
+        isPublic: data.isPrivate ?? true,
         nextSession: data.nextSession,
-        gameMasterId: clerkId,
+        gameMaster: { connect: { id: user.id } },
         updatedAt: new Date().toISOString(),
-      },
+      } satisfies Prisma.CampaignCreateInput,
     })
 
     revalidatePath('/campaigns')

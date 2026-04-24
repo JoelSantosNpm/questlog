@@ -1,6 +1,8 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { SubmitHandler, useForm, useFormContext } from 'react-hook-form'
 import { createCampaign } from '../api/campaign-actions'
+import { CAMPAIGN_KEYS } from '../api/query-keys'
 import { CAMPAIGN_CREATION_STEPS } from '../config/campaign-steps'
 import { CampaignFormValues } from '../model/campaign-types'
 import { useCampaignStore } from '../model/campaignStore'
@@ -13,6 +15,7 @@ export function useInitCampaignForm() {
 
 export function useCampaignActions() {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const { trigger, handleSubmit } = useFormContext<CampaignFormValues>()
 
   const currentStepIndex = useCampaignStore((state) => state.currentStepIndex)
@@ -40,6 +43,9 @@ export function useCampaignActions() {
 
     try {
       const campaign = await notifyCampaignCreation(createPromise())
+
+      // Invalida la query del listado de campañas para refetch automático
+      await queryClient.invalidateQueries({ queryKey: CAMPAIGN_KEYS.list() })
 
       if (campaign) {
         router.push(`/campaigns/${campaign.id}`)
