@@ -3,12 +3,6 @@ import type { CharacterTemplate } from '@prisma/client'
 /** Claves de tipo `number` de T — para la restricción interna. */
 type _NumericKeys<T> = { [K in keyof T]: T[K] extends number ? K : never }[keyof T]
 
-/**
- * Lista explícita de las claves que consideramos "stats" de D&D.
- * `satisfies` garantiza en compilación que cada clave sea un campo `number`
- * de CharacterTemplate. Si un stat cambia de nombre en el schema y se ejecuta
- * `prisma generate`, aparece un error de compilación aquí.
- */
 export const STAT_KEYS = [
   'ac',
   'speed',
