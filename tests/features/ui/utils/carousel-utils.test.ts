@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { getCircularCarousel } from '@/views/portal/lib/carousel-utils'
+import { getCircularCarousel } from '@/views/campaigns/ui/portal/lib/carousel-utils'
 
 describe('carousel-utils', () => {
   type TestItem = { id: number; value: string }

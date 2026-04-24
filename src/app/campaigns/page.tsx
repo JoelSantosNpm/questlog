@@ -1,11 +1,10 @@
-import type { Campaign as PortalCampaign } from '@/shared/api/campaign'
 import { getQueryClient } from '@/shared/api/query-client'
 import { prefetchCampaignList } from '@/views/campaigns'
-import { PortalCarousel } from '@/views/portal'
 import { SignedIn } from '@clerk/nextjs'
 import { auth } from '@clerk/nextjs/server'
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
 import Link from 'next/link'
+import { CampaignPortal } from './CampaignPortal'
 
 export const revalidate = 0 // Forzar regeneración dinámica en cada request
 
@@ -13,12 +12,7 @@ export default async function PortalsPage() {
   const { userId } = await auth()
   const queryClient = getQueryClient()
 
-  const dbCampaigns = await prefetchCampaignList(queryClient, userId ?? undefined)
-
-  const allCampaigns: PortalCampaign[] = [
-    ...dbCampaigns,
-    ...(userId ? [{ id: 'new-campaign', name: 'Nueva Campaña', variant: 'new' as const }] : []),
-  ]
+  await prefetchCampaignList(queryClient, userId ?? undefined)
 
   return (
     <div className='relative flex h-full w-full flex-col items-center justify-center overflow-hidden'>
@@ -33,7 +27,7 @@ export default async function PortalsPage() {
         </SignedIn>
       </div>
       <HydrationBoundary state={dehydrate(queryClient)}>
-        <PortalCarousel campaigns={allCampaigns} />
+        <CampaignPortal />
       </HydrationBoundary>
     </div>
   )
