@@ -1,9 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
-import { act } from 'react'
-import { ListView } from '@/views/encyclopedia/ui/ListView'
 import { useEncyclopediaStore } from '@/views/encyclopedia/model/encyclopediaStore'
 import type { BestiaryItem } from '@/views/encyclopedia/model/types'
+import { ListView } from '@/views/encyclopedia/ui/ListView'
+import { fireEvent, render, screen } from '@testing-library/react'
+import { act } from 'react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
@@ -36,7 +36,7 @@ const makeMonster = (id: string, name: string, description = ''): BestiaryItem =
   perception: 10,
   abilities: null,
   authorId: null,
-  isPublished: true,
+  isPublic: false,
   price: 0,
   version: 1,
   createdAt: new Date(),
@@ -57,7 +57,6 @@ beforeEach(() => {
     useEncyclopediaStore.setState({
       activeSection: 'bestiary',
       selectedItemId: null,
-      itemsBySection: { bestiary: ITEMS, cast: [], museum: [] },
     })
   })
 })
@@ -85,9 +84,16 @@ describe('ListView', () => {
   })
 
   describe('Filtrado por búsqueda', () => {
-    it('filtra items por nombre', () => {
+    it('actualiza el searchQuery del store al escribir en el input', () => {
       render(<ListView items={ITEMS} />)
       fireEvent.change(screen.getByPlaceholderText('Buscar...'), { target: { value: 'lobo' } })
+      expect(useEncyclopediaStore.getState().searchQuery).toBe('lobo')
+    })
+
+    it('muestra solo los items pre-filtrados que recibe por props', () => {
+      // El filtrado lo hace el padre (useCurrentItems); ListView renderiza lo que recibe
+      const filtered = ITEMS.filter((i) => i.name.toLowerCase().includes('lobo'))
+      render(<ListView items={filtered} />)
       expect(screen.getByText('Lobo')).toBeInTheDocument()
       expect(screen.queryByText('Araña Gigante')).not.toBeInTheDocument()
       expect(screen.queryByText('Dragón Rojo')).not.toBeInTheDocument()
@@ -100,8 +106,8 @@ describe('ListView', () => {
     })
 
     it('muestra el mensaje vacío si no hay resultados', () => {
-      render(<ListView items={ITEMS} />)
-      fireEvent.change(screen.getByPlaceholderText('Buscar...'), { target: { value: 'xyzxyz' } })
+      // El padre pasa [] cuando ningún item coincide con la búsqueda
+      render(<ListView items={[]} />)
       expect(screen.getByText('No se han encontrado registros.')).toBeInTheDocument()
     })
 

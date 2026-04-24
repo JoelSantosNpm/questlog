@@ -23,7 +23,7 @@ describe('Storage Feature - FileValidationSchema', () => {
   })
 
   it('debe rechazar tipos de archivo no permitidos', () => {
-    const invalidFile = createMockFile(1 * 1024 * 1024, 'application/pdf')
+    const invalidFile = createMockFile(100 * 1024, 'application/pdf') // 100kB: bajo el límite de tamaño
     const result = FileValidationSchema.safeParse(invalidFile)
     expect(result.success).toBe(false)
     if (!result.success) {
