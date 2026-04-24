@@ -101,19 +101,18 @@ test('AC 3.3 – flujo completo: crear campaña y verificar que aparece en el ca
   // 8. Volver al Portal de Piedra y verificar que la nueva campaña aparece en el carrusel
   await page.goto('/campaigns', { waitUntil: 'networkidle' })
   
-  // Esperar un momento a que Framer Motion termine las animaciones de entrada
-  await page.waitForTimeout(3000)
-
   // Verificamos que el enlace con el aria-label correcto esté presente
-  // Usamos un selector más flexible que busque el texto parcial del nombre de la campaña
   const portalLink = page.locator(`a[aria-label*="${campaignName}"]`)
   
+  // expect.toBeAttached tiene reintentos internos incorporados (5s por defecto, extendemos a 10s)
   try {
     await expect(portalLink).toBeAttached({ timeout: 10000 })
   } catch (e) {
     console.log('DEBUG E2E: No encontrado al primer intento en el carrusel. Recargando...')
     await page.reload({ waitUntil: 'networkidle' })
-    await page.waitForTimeout(4000)
     await expect(portalLink).toBeAttached({ timeout: 15000 })
   }
+
+  // Verificamos que sea visible (Framer Motion habrá terminado la animación de entrada)
+  await expect(portalLink).toBeVisible({ timeout: 10000 })
 })
