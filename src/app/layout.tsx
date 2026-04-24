@@ -86,7 +86,7 @@ export default async function RootLayout({
           </header>
 
           {/* Main Content */}
-          <main className='w-full flex-1'>
+          <main className='flex w-full flex-1 flex-col'>
             <QueryProvider>
               <FramerMotionProvider>{children}</FramerMotionProvider>
             </QueryProvider>

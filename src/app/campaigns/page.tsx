@@ -15,7 +15,7 @@ export default async function PortalsPage() {
   await prefetchCampaignList(queryClient, userId ?? undefined)
 
   return (
-    <div className='relative flex h-full w-full flex-col items-center justify-center overflow-hidden'>
+    <div className='relative flex flex-1 w-full flex-col items-center overflow-hidden'>
       <div className='absolute left-4 top-4 sm:left-6 sm:top-6 z-50'>
         <SignedIn>
           <Link

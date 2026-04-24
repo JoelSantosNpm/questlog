@@ -58,10 +58,10 @@ export const PortalCarousel = ({ campaigns }: PortalCarouselProps) => {
   return (
     <section
       ref={containerRef}
-      className='relative flex w-full flex-col items-center gap-8 overflow-x-hidden py-10 outline-none'
+      className='relative flex w-full flex-1 flex-col items-center justify-center gap-4 overflow-hidden py-4 outline-none sm:gap-8 sm:py-6'
       style={{ isolation: 'isolate' }}
       onKeyDown={handleKeyDown}
-      tabIndex={0} // que el contenedor sea focusable
+      tabIndex={0}
       aria-label='Selector de Campañas'
       role='region'
       aria-roledescription='carousel'
@@ -79,9 +79,9 @@ export const PortalCarousel = ({ campaigns }: PortalCarouselProps) => {
       {/* Overlay para oscurecer el fondo */}
       <div className='pointer-events-none absolute inset-0 -z-5 bg-black/70' aria-hidden />
 
-      {/* 3D Scene Container */}
+      {/* 3D Scene Container - Responsive height */}
       <div
-        className='relative flex h-120 w-full items-center justify-center'
+        className='relative flex w-full min-h-[300px] h-[50vh] max-h-[600px] items-center justify-center'
         style={{ perspective: '1000px' }}
         role='list'
       >
