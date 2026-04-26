@@ -5,8 +5,6 @@ interface PortalCardProps {
   href: string
   image: string
   alt: string
-  title: string
-  description: string
   cta: string
   textColor?: string
 }
@@ -15,8 +13,6 @@ export function PortalCard({
   href,
   image,
   alt,
-  title,
-  description,
   cta,
   textColor = 'text-neutral-200',
 }: PortalCardProps) {

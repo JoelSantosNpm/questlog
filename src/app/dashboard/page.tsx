@@ -19,8 +19,6 @@ export default async function DashboardPage() {
           href='/campaigns'
           image='/Campañas.webp'
           alt='Campañas'
-          title='Salón de los Portales'
-          description='Accede a tus campañas activas, entra en diferentes mundos y gestiona tus sesiones narrativas.'
           cta='Ver Campañas'
         />
       </div>

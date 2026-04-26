@@ -107,7 +107,7 @@ test('AC 3.3 – flujo completo: crear campaña y verificar que aparece en el ca
   // expect.toBeAttached tiene reintentos internos incorporados (5s por defecto, extendemos a 10s)
   try {
     await expect(portalLink).toBeAttached({ timeout: 10000 })
-  } catch (e) {
+  } catch (_) {
     console.log('DEBUG E2E: No encontrado al primer intento en el carrusel. Recargando...')
     await page.reload({ waitUntil: 'networkidle' })
     await expect(portalLink).toBeAttached({ timeout: 15000 })
