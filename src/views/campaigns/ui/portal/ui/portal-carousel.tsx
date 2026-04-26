@@ -104,7 +104,7 @@ export const PortalCarousel = ({ campaigns }: PortalCarouselProps) => {
           <button
             onClick={handlePrev}
             disabled={!canGoPrev}
-            className='group rounded-full border border-stone-700 bg-stone-900/80 p-4 text-amber-500 backdrop-blur-sm transition-all hover:bg-amber-500 hover:text-stone-900 disabled:opacity-30 disabled:hover:bg-stone-900/80 disabled:hover:text-amber-500'
+            className='group rounded-full border border-stone-700 bg-stone-900/80 p-4 text-amber-500 backdrop-blur-sm transition-all hover:bg-amber-500 hover:text-black disabled:opacity-30 disabled:hover:bg-stone-900/80 disabled:hover:text-amber-500'
             aria-label='Previous campaign'
           >
             <ChevronLeft size={32} />
@@ -113,7 +113,7 @@ export const PortalCarousel = ({ campaigns }: PortalCarouselProps) => {
           <button
             onClick={handleNext}
             disabled={!canGoNext}
-            className='group rounded-full border border-stone-700 bg-stone-900/80 p-4 text-amber-500 backdrop-blur-sm transition-all hover:bg-amber-500 hover:text-stone-900 disabled:opacity-30 disabled:hover:bg-stone-900/80 disabled:hover:text-amber-500'
+            className='group rounded-full border border-stone-700 bg-stone-900/80 p-4 text-amber-500 backdrop-blur-sm transition-all hover:bg-amber-500 hover:text-black disabled:opacity-30 disabled:hover:bg-stone-900/80 disabled:hover:text-amber-500'
             aria-label='Next campaign'
           >
             <ChevronRight size={32} />
