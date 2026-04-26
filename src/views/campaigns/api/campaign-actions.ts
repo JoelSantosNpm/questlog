@@ -5,20 +5,21 @@ import { auth } from '@clerk/nextjs/server'
 import type { Campaign, Prisma } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
 
-export type ActionResponse<T = void> = {
+export interface ActionResponse<T = void> {
   success: boolean
   message: string
   data?: T
 }
 
-export interface CreateCampaignDTO {
-  name: string
-  description?: string
-  imageUrl?: string
-  system?: string
-  location?: string
-  isPrivate?: boolean
-  nextSession?: string
+/**
+ * DTO para creación de campañas.
+ * Basado en el modelo de Prisma para asegurar coherencia total.
+ */
+export type CreateCampaignDTO = Pick<
+  Campaign,
+  'name' | 'description' | 'imageUrl' | 'system' | 'location' | 'isPublic'
+> & {
+  nextSession?: string // La fecha llega como string desde el cliente
 }
 
 export interface UpdateCampaignDTO extends Partial<CreateCampaignDTO> {
@@ -49,7 +50,7 @@ export async function createCampaign(data: CreateCampaignDTO): Promise<ActionRes
         imageUrl: data.imageUrl,
         system: data.system || 'D&D 5e',
         location: data.location,
-        isPublic: data.isPrivate ?? true,
+        isPublic: data.isPublic ?? false,
         nextSession: data.nextSession,
         gameMaster: { connect: { id: user.id } },
         updatedAt: new Date().toISOString(),
@@ -85,7 +86,7 @@ export async function updateCampaign(data: UpdateCampaignDTO): Promise<ActionRes
         imageUrl: data.imageUrl,
         system: data.system,
         location: data.location,
-        isPrivate: data.isPrivate,
+        isPublic: data.isPublic,
         nextSession: data.nextSession,
         updatedAt: new Date().toISOString(),
       },

@@ -26,7 +26,7 @@ const BASE = {
   imageUrl: null,
   portraitImageUrl: null,
   authorId: null,
-  isPublished: true,
+  isPublic: true,
   price: 0,
   version: 1,
   createdAt: new Date(),
@@ -57,7 +57,6 @@ const MONSTER: BestiaryItem = {
 const NPC: CastItem = {
   ...BASE,
   name: 'Taberna',
-  type: 'Humano',
   race: 'Humano',
   characterClass: 'Posadero',
   maxHp: 12,

@@ -25,7 +25,7 @@ const MONSTER: BestiaryItem = {
   imageUrl: null,
   portraitImageUrl: null,
   authorId: null,
-  isPublished: true,
+  isPublic: true,
   price: 0,
   version: 1,
   createdAt: new Date(),
