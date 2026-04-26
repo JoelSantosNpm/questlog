@@ -1,0 +1,110 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# CI Pipeline — Questlog
+#
+# Dispara EXCLUSIVAMENTE en Pull Requests cuyo destino sea la rama `develop`.
+# Un único job secuencial: si cualquier step falla, el workflow se detiene
+# inmediatamente y la PR queda marcada como fallida (comportamiento nativo
+# de GitHub Actions; no se necesita configuración adicional).
+# ─────────────────────────────────────────────────────────────────────────────
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - develop
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  ci:
+    name: CI Pipeline
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── 1. SETUP ─────────────────────────────────────────────────────────────
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      # ... (caché de .next/cache igual)
+      - name: Restore .next/cache
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.{ts,tsx,js,jsx,mjs,css}') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+            ${{ runner.os }}-nextjs-
+
+      # ── 2. DEPS ───────────────────────────────────────────────────────────────
+
+      - name: Install dependencies
+        run: npm ci
+
+      # ── 3. BASE DE DATOS / ORM ────────────────────────────────────────────────
+
+      - name: Generate Prisma types
+        env:
+          DATABASE_URL_REMOTE: ${{ secrets.DATABASE_URL_REMOTE }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+        run: npx prisma generate
+
+      # ── 4. SALUD DE REACT ─────────────────────────────────────────────────────
+
+      - name: React Doctor
+        run: npx react-doctor
+
+      # ── 5. CALIDAD DE CÓDIGO ──────────────────────────────────────────────────
+
+      - name: TypeScript — noEmit check
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npm run lint
+
+      # ── 6. TESTING ────────────────────────────────────────────────────────────
+
+      - name: Unit & Integration Tests (Vitest)
+        env:
+          NODE_ENV: test
+        run: npm run test:run -- --reporter=dot --silent
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: E2E Tests (Playwright)
+        env:
+          NODE_ENV: test
+          CI: 'true'
+          # Clerk
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+          E2E_CLERK_USER_EMAIL: ${{ secrets.E2E_CLERK_USER_EMAIL }}
+          # Base de Datos (Sincronizado con src/shared/lib/prisma.ts)
+          DATABASE_URL_REMOTE: ${{ secrets.DATABASE_URL_REMOTE }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+          # Supabase
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: npm run test:e2e
+
+      # ── 7. BUILD ──────────────────────────────────────────────────────────────
+
+      - name: Build
+        env:
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+          # Database URLs desde secretos (Coincidiendo con el Secret Name)
+          DATABASE_URL_REMOTE: ${{ secrets.DATABASE_URL_REMOTE }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+          # Supabase — placeholders para build
+          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
+        run: npm run build

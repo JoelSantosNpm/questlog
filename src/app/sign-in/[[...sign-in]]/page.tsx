@@ -1,5 +1,5 @@
 import { SignIn } from '@clerk/nextjs'
-import { darkTheme } from '@/config/clerk-theme'
+import { darkTheme } from '@/shared/config/clerk-theme'
 
 export default function Page() {
   return (

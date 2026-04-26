@@ -1,15 +1,16 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { FormProvider, useForm } from 'react-hook-form'
 import type { Campaign } from '@prisma/client'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import type React from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { QueryClientWrapper } from '../../test-utils/query-client-wrapper'
 
+import * as campaignActions from '@/views/campaigns/api/campaign-actions'
 import {
   CampaignCreationForm,
   useCampaignStore,
   type CampaignFormValues,
-} from '@/components/campaigns/creation'
-import * as campaignActions from '@/actions/campaign-actions'
+} from '@/views/campaigns/ui/creation'
 
 // ─── Mocks ───────────────────────────────────────────────────────────────────
 
@@ -17,12 +18,12 @@ vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn() }),
 }))
 
-vi.mock('@/actions/campaign-actions', () => ({
+vi.mock('@/views/campaigns/api/campaign-actions', () => ({
   createCampaign: vi.fn(),
 }))
 
 // notifyCampaignCreation actúa como pass-through: devuelve la misma promise
-vi.mock('@/lib/notifications', () => ({
+vi.mock('@/views/campaigns/lib/notifications', () => ({
   notifyCampaignCreation: (promise: Promise<unknown>) => promise,
 }))
 
@@ -47,7 +48,11 @@ function FormWrapper({
   defaultValues?: Partial<CampaignFormValues>
 }) {
   const methods = useForm<CampaignFormValues>({ mode: 'onChange', defaultValues })
-  return <FormProvider {...methods}>{children}</FormProvider>
+  return (
+    <QueryClientWrapper>
+      <FormProvider {...methods}>{children}</FormProvider>
+    </QueryClientWrapper>
+  )
 }
 
 // ─── Tests ────────────────────────────────────────────────────────────────────

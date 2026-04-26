@@ -1,5 +1,12 @@
 // ---------------------------------------------------------
 // GENERATOR & DATASOURCE PARA SUPABASE
+//
+// IMPORTANTE: Prisma Client NO se usa en runtime.
+// Este schema cumple dos únicas funciones:
+//   1. Generar tipos TypeScript (via `prisma generate`) usados solo
+//      como `import type` en el código — cero impacto en bundle.
+//   2. Gestionar migraciones SQL (via `prisma migrate` / CLI).
+// Todas las queries en producción se realizan con @supabase/supabase-js.
 // ---------------------------------------------------------
 generator client {
   provider = "prisma-client-js"
@@ -68,7 +75,7 @@ model Campaign {
   system           String  @default("D&D 5e")
   location         String?
   nextSession      DateTime?
-  isPrivate        Boolean @default(true)
+  isPublic        Boolean @default(false)
   parentCampaignId String?
 
   gameMasterId String
@@ -92,6 +99,12 @@ model CharacterTemplate {
   name        String
   description String?
   imageUrl    String?
+  portraitImageUrl String?
+
+  race           String @default("Desconocido")
+  characterClass String @default("Desconocido")
+  maxHp          Int    @default(8)
+  abilities      Json?
 
   // Stats Atómicos
   strength     Int @default(10)
@@ -108,7 +121,7 @@ model CharacterTemplate {
   authorId String?
   author   User?   @relation("CreatedCharacterTemplates", fields: [authorId], references: [id], onDelete: SetNull)
 
-  isPublished Boolean @default(false)
+  isPublic Boolean @default(false)
   version     Int     @default(1)
   price       Float   @default(0.0)
 
@@ -137,6 +150,9 @@ model Character {
 
   templateId String?
   template   CharacterTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+
+  imageUrl         String?
+  portraitImageUrl String?
 
   level     Int    @default(1)
   currentHp Int
@@ -263,10 +279,14 @@ model SessionNote {
 // 8. PLANTILLA DE MONSTRUO (Bestiario)
 // ---------------------------------------------------------
 model MonsterTemplate {
-  id       String  @id @default(cuid())
-  name     String
-  type     String 
-  imageUrl String?
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  type        String
+  race           String @default("Desconocido")
+  characterClass String @default("Desconocido")
+  imageUrl         String?
+  portraitImageUrl String?
 
   challenge Float @default(1.0)
   maxHp     Int
@@ -288,7 +308,7 @@ model MonsterTemplate {
   authorId String?
   author   User?   @relation("CreatedMonsters", fields: [authorId], references: [id], onDelete: SetNull)
 
-  isPublished Boolean @default(false)
+  isPublic Boolean @default(false)
   price       Float   @default(0.0)
   version     Int     @default(1)
 
@@ -311,6 +331,8 @@ model ActiveMonster {
   maxHp      Int 
   initiative Int?
   status     String[] 
+  imageUrl         String?
+  portraitImageUrl String?
 
   // Stats Atómicos (Override opcional)
   strength     Int @default(10)

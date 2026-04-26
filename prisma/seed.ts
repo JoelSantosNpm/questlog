@@ -103,20 +103,40 @@ async function main() {
     .single()
   if (swordError) throw swordError
 
-  await supabase
-    .from('ItemTemplate')
+  await supabase.from('ItemTemplate').insert({
+    id: id(),
+    name: 'Armadura de Placas +1',
+    description: 'Una armadura reluciente que ofrece gran protección.',
+    rarity: 'RARE',
+    category: 'Armor',
+    value: 5000,
+    weight: 65.0,
+    ac: 19,
+    creatorId: gm.id,
+    updatedAt: new Date().toISOString(),
+  })
+
+  console.log('--- Creando Plantilla de Personaje ---')
+  const { data: paladinTemplate, error: paladinError } = await supabase
+    .from('CharacterTemplate')
     .insert({
       id: id(),
-      name: 'Armadura de Placas +1',
-      description: 'Una armadura reluciente que ofrece gran protección.',
-      rarity: 'RARE',
-      category: 'Armor',
-      value: 5000,
-      weight: 65.0,
-      ac: 19,
-      creatorId: gm.id,
+      name: 'Paladín de la Luz',
+      description: 'Un guerrero sagrado dedicado a la justicia.',
+      strength: 18,
+      dexterity: 12,
+      constitution: 16,
+      intelligence: 10,
+      wisdom: 12,
+      charisma: 14,
+      ac: 18,
+      speed: 30,
+      authorId: gm.id,
       updatedAt: new Date().toISOString(),
     })
+    .select('id')
+    .single()
+  if (paladinError) throw paladinError
 
   console.log('--- Creando Personaje ---')
   const { data: character, error: charError } = await supabase
@@ -126,6 +146,7 @@ async function main() {
       name: 'Valerius el Valiente',
       userId: player.id,
       campaignId: campaign.id,
+      templateId: paladinTemplate.id,
       level: 5,
       maxHp: 45,
       currentHp: 42,
@@ -144,18 +165,16 @@ async function main() {
   if (charError) throw charError
 
   console.log('--- Entregando Ítem al Personaje ---')
-  await supabase
-    .from('Item')
-    .insert({
-      id: id(),
-      name: 'Espada de Valerius',
-      templateId: swordTemplate.id,
-      characterId: character.id,
-      campaignId: campaign.id,
-      isEquipped: true,
-      rarity: 'UNCOMMON',
-      updatedAt: new Date().toISOString(),
-    })
+  await supabase.from('Item').insert({
+    id: id(),
+    name: 'Espada de Valerius',
+    templateId: swordTemplate.id,
+    characterId: character.id,
+    campaignId: campaign.id,
+    isEquipped: true,
+    rarity: 'UNCOMMON',
+    updatedAt: new Date().toISOString(),
+  })
 
   console.log('--- Creando Monstruos (Bestiario) ---')
   const { data: wolfTemplate, error: wolfError } = await supabase
@@ -183,31 +202,27 @@ async function main() {
   if (wolfError) throw wolfError
 
   console.log('--- Spawneando Monstruos en la Campaña ---')
-  await supabase
-    .from('ActiveMonster')
-    .insert({
-      id: id(),
-      name: 'Lobo Alfa',
-      templateId: wolfTemplate.id,
-      campaignId: campaign.id,
-      maxHp: 22,
-      currentHp: 22,
-      strength: 14,
-      ac: 14,
-      updatedAt: new Date().toISOString(),
-    })
+  await supabase.from('ActiveMonster').insert({
+    id: id(),
+    name: 'Lobo Alfa',
+    templateId: wolfTemplate.id,
+    campaignId: campaign.id,
+    maxHp: 22,
+    currentHp: 22,
+    strength: 14,
+    ac: 14,
+    updatedAt: new Date().toISOString(),
+  })
 
   console.log('--- Creando Permisos de Acceso ---')
-  await supabase
-    .from('AccessGrant')
-    .insert({
-      id: id(),
-      granteeId: player.id,
-      resourceType: 'CAMPAIGN',
-      resourceId: campaign.id,
-      access: 'VIEW',
-      updatedAt: new Date().toISOString(),
-    })
+  await supabase.from('AccessGrant').insert({
+    id: id(),
+    granteeId: player.id,
+    resourceType: 'CAMPAIGN',
+    resourceId: campaign.id,
+    access: 'VIEW',
+    updatedAt: new Date().toISOString(),
+  })
 
   console.log('✅ Semilla completada con éxito')
 }

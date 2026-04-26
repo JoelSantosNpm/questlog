@@ -13,11 +13,20 @@
 - **El Portal de Piedra:** Carrusel circular 3D con perspectiva para navegar entre campañas, con soporte de teclado y animaciones inmersivas.
 - **Autenticación (Clerk):** Registro e inicio de sesión seguros con sincronización automática de perfiles en la base de datos (_Lazy Sync_).
 - **Creación de Aventuras:** Un _wizard_ animado multipaso que teje tus inputs en narrativa de campaña, impulsado por Zustand + React Hook Form + Framer Motion.
-- **Hub de la Enciclopedia:** Base de conocimiento con tres pestañas (Bestiario, Dramatis Personae, Museo), vista de detalle animada y navegación por sección.
+- **Hub de la Enciclopedia:** Base de conocimiento con tres pestañas (Bestiario, Elenco, Museo), vista de detalle animada y navegación por sección.
+- **Acceso Público a Campañas:** Las páginas de detalle de campañas públicas son accesibles sin iniciar sesión. Las campañas privadas devuelven un 404 a los visitantes no autorizados.
 
 ---
 
 ## 🔮 El Tomo Ilustrado
+
+### Formulario de Creación de Aventura
+
+![Formulario de Creación de Aventura](public/screenshots/campaign-creation.png)
+
+> Un _wizard_ narrativo multipaso que convierte tus inputs en lore de campaña
+
+---
 
 ### El Portal de Piedra — Selección de Campaña
 
@@ -25,11 +34,64 @@
 
 > Navega tus campañas a través de un carrusel de portales de piedra en 3D
 
-### Formulario de Creación de Aventura
+### Encyilopedia
 
-![Formulario de Creación de Aventura](public/screenshots/campaign-creation.png)
+![Enciclopedia](public/screenshots/encyclopedia.png)
 
-> Un _wizard_ narrativo multipaso que convierte tus inputs en lore de campaña
+> Un lugar donde descubrir las plantilles de monstruos, personajes o items de otros usuarios. O ver las tuyas.
+
+---
+
+## 🧱 Arquitectura: Feature-Sliced Design (FSD)
+
+La carpeta `src/` sigue **FSD v2.1** con tres capas canónicas:
+
+```
+src/
+├── app/                        # Rutas y páginas (App Router)
+│   ├── campaigns/              # Páginas de campaña
+│   │   ├── page.tsx            # Carrusel del Portal (selección de campaña)
+│   │   ├── creation/           # Formulario de creación de campaña
+│   │   └── [id]/               # Detalle de campaña
+│   ├── colosseum/              # Rastreador de combate (El Coliseo)
+│   ├── dashboard/              # Dashboard principal
+│   ├── encyclopedia/           # Hub de la Enciclopedia
+│   ├── sign-in/ & sign-up/     # Páginas de autenticación
+│   ├── auth/auth-sync.tsx      # Sincronización perezosa: Clerk → DB (Prisma upsert)
+│   └── layout.tsx              # Layout raíz
+├── views/                      # Feature slices (FSD)
+│   ├── campaigns/
+│   │   ├── api/                # campaign-queries.ts, campaign-hooks.ts, campaign-mutations.ts, prefetch.ts
+│   │   ├── config/             # campaign-steps.ts
+│   │   ├── lib/                # useCampaignForm.ts, notifications.ts
+│   │   ├── model/              # campaign.ts, campaignStore.ts
+│   │   ├── ui/creation/        # CampaignCreationForm, Provider, StepControls
+│   │   └── index.ts            # Public API
+│   ├── encyclopedia/
+│   │   ├── api/                # encyclopedia-queries.ts, encyclopedia-hooks.ts, prefetch.ts
+│   │   ├── config/             # stats.ts
+│   │   ├── lib/                # image-fallbacks.ts
+│   │   ├── model/              # types.ts, encyclopediaStore.ts
+│   │   ├── ui/                 # SideTabs, ListView, DetailView, EncyclopediaImage,
+│   │   │                       #   ItemHeader, PortraitFrame, CombatStats, ItemProperties…
+│   │   └── index.ts            # Public API
+│   └── portal/
+│       ├── lib/                # carousel-utils.ts, use-carousel.ts
+│       ├── ui/                 # Portal, PortalCard, PortalCarousel
+│       └── index.ts            # Public API
+├── shared/
+│   ├── api/                    # StorageService, Campaign interface
+│   ├── config/                 # Tema de Clerk, constantes de rutas
+│   ├── lib/                    # Cliente Prisma, cliente Supabase Storage
+│   ├── schemas/                # Schemas de Zod (validación de storage)
+│   ├── ui/                     # ImageUploader, MysticBackground (barrel: index.ts)
+│   └── utils/                  # cn()
+prisma/
+├── schema.prisma               # Esquema de la base de datos (fuente de verdad estructural)
+├── seed.ts                     # Script de seeding de la base de datos
+└── migrations/                 # Historial de migraciones SQL
+src/middleware.ts               # Middleware de protección de rutas (Clerk, requerido por Next.js)
+```
 
 ---
 
@@ -66,7 +128,9 @@ Cada pieza del stack ha sido elegida para cumplir un propósito específico en l
 
 ### Backend e Infraestructura (Robustez)
 
-- **[Supabase (PostgreSQL)](https://supabase.com/):** Base de datos relacional potente para manejar las complejas redes de misiones, personajes e ítems. El cliente `@supabase/supabase-js` se usa directamente para todas las consultas del servidor, sin necesidad de una capa ORM adicional.
+- **[Supabase (PostgreSQL)](https://supabase.com/):** Host de base de datos relacional. `@supabase/supabase-js` se usa únicamente para operaciones de **Storage** (subida de imágenes con JWT/RLS). Todas las queries y mutations de datos van a través de Prisma.
+- **[Prisma](https://www.prisma.io/):** ORM de runtime para todas las queries y mutations de datos via server actions. `schema.prisma` es la única fuente de verdad: tipos TypeScript (`prisma generate`), migraciones SQL (CLI) y queries en runtime (Prisma Client).
+- **[Sileo](https://www.npmjs.com/package/sileo):** Sistema de notificaciones _toast_ ligero y tematizable para feedback al usuario.
 - **[Clerk](https://clerk.com/):** Autenticación de nivel profesional con sincronización automática de perfiles.
 
 ---
@@ -128,16 +192,6 @@ Mantenemos una suite de pruebas en dos capas para asegurar que la "mesa de juego
 | **Unitario e Integración** | Vitest 4 + Testing Library | Utils puras, Zustand store, componentes React con server actions mockeadas      | `npm run test:run` |
 | **End-to-End**             | Playwright (Chromium)      | Flujos reales en navegador: carrusel del Portal + wizard de creación de campaña | `npm run test:e2e` |
 
-### Comandos de Test
-
-```bash
-npm run test          # Vitest en modo watch (desarrollo)
-npm run test:run      # Vitest pasada única (CI)
-npm run test:coverage # Vitest con informe de cobertura v8
-npm run test:e2e      # Playwright E2E (headless)
-npm run test:e2e:ui   # Playwright E2E con interfaz interactiva
-```
-
 ### Ejecutar los tests E2E
 
 Los tests E2E necesitan la app corriendo y una variable de entorno adicional:
@@ -155,63 +209,22 @@ Las reglas de borrado (_Cascade vs SetNull_) están definidas a nivel de base de
 
 ---
 
-## 📂 Estructura del Proyecto
+## 📜 Scripts y comandos
 
-```
-src/
-├── app/                        # Rutas y páginas (App Router)
-│   ├── campaigns/              # Páginas de campaña
-│   │   ├── page.tsx            # Carrusel del Portal (selección de campaña)
-│   │   ├── creation/           # Formulario de creación de campaña
-│   │   └── [id]/               # Detalle de campaña
-│   ├── colosseum/              # Rastreador de combate (El Coliseo)
-│   ├── dashboard/              # Dashboard principal
-│   ├── sign-in/ & sign-up/     # Páginas de autenticación
-│   └── layout.tsx              # Layout raíz (incluye AuthSync)
-├── actions/
-│   └── campaign-actions.ts     # Server Actions (crear campaña, etc.)
-├── components/
-│   ├── auth/
-│   │   └── auth-sync.tsx       # Sincronización perezosa: Clerk → Supabase
-│   ├── campaigns/creation/     # Formulario multipaso de creación de campaña
-│   │   ├── CampaignCreationProvider.tsx  # Raíz de contexto RHF + Zustand
-│   │   ├── CampaignCreationForm.tsx      # Formulario narrativo animado
-│   │   ├── StepControls.tsx             # Botones de paso Siguiente/Saltar/Enviar
-│   │   ├── hooks/useCampaignForm.ts      # Lógica de formulario y pasos
-│   │   └── store/campaignStore.ts        # Estado de pasos en Zustand
-│   ├── portal/                 # Componentes del carrusel 3D
-│   └── shared/ui/              # Componentes UI reutilizables
-├── config/
-│   ├── campaign-steps.ts       # Definiciones de pasos para la creación de campaña
-│   ├── clerk-theme.ts          # Tema personalizado Grimdark para Clerk
-│   └── routes/auth.ts          # Constantes de rutas públicas/protegidas
-├── data/
-│   ├── campaign-queries.ts     # Consultas de lectura Supabase (campañas)
-│   └── encyclopedia-queries.ts # Consultas de lectura Supabase (bestiario, ítems, personajes)
-├── lib/
-│   ├── supabase/               # Factory del cliente Supabase (server + client)
-│   └── notifications.ts        # Ayudantes para notificaciones toast
-├── hooks/ui/                   # Hooks genéricos de UI (useCarousel)
-├── providers/                  # Proveedores a nivel de app (AuthProvider)
-└── types/                      # Tipos TypeScript compartidos
-prisma/
-├── schema.prisma               # Esquema de la base de datos (fuente de verdad estructural)
-├── seed.ts                     # Script de seeding de la base de datos
-└── migrations/                 # Historial de migraciones SQL
-src/proxy.ts                    # Middleware de protección de rutas
-```
-
-## 📜 Scripts
-
-| Comando                        | Descripción                        |
-| ------------------------------ | ---------------------------------- |
-| `npm run dev`                  | Inicia el servidor de desarrollo   |
-| `npm run build`                | Construye para producción          |
-| `npm run start`                | Inicia el servidor de producción   |
-| `npm run lint`                 | Ejecuta ESLint                     |
-| `npm test`                     | Ejecuta los tests unitarios        |
-| `npm run db:seed`              | Puebla la base de datos (Seed)     |
-| `npx -y react-doctor@latest .` | Audita la salud del proyecto React |
+| Comando                        | Descripción                             |
+| ------------------------------ | --------------------------------------- |
+| `npm run dev`                  | Inicia el servidor de desarrollo        |
+| `npm run build`                | Construye para producción               |
+| `npm run start`                | Inicia el servidor de producción        |
+| `npm run lint`                 | Ejecuta ESLint                          |
+| `npm run test`                 | Vitest en modo watch                    |
+| `npm run test:ui`              | Vitest con interfaz interactiva         |
+| `npm run test:run`             | Vitest pasada única (CI)                |
+| `npm run test:coverage`        | Vitest con informe de cobertura v8      |
+| `npm run test:e2e`             | Playwright E2E (headless)               |
+| `npm run test:e2e:ui`          | Playwright E2E con interfaz interactiva |
+| `npm run db:seed`              | Puebla la base de datos (Seed)          |
+| `npx -y react-doctor@latest .` | Audita la salud del proyecto React      |
 
 ## 🔒 Proyecto Privado
 
