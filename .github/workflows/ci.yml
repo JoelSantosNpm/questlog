@@ -13,6 +13,9 @@ on:
     branches:
       - develop
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   ci:
     name: CI Pipeline
@@ -24,15 +27,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Configura Node 20 y activa la caché integrada de npm
-      # (restaura node_modules desde ~/.npm usando package-lock.json como clave)
       - name: Setup Node.js 24
         uses: actions/setup-node@v4
         with:
           node-version: '24'
           cache: 'npm'
 
-      # Caché de la carpeta .next/cache para acelerar builds incrementales
+      # ... (caché de .next/cache igual)
       - name: Restore .next/cache
         uses: actions/cache@v4
         with:
@@ -44,15 +45,15 @@ jobs:
 
       # ── 2. DEPS ───────────────────────────────────────────────────────────────
 
-      # Instalación limpia y reproducible desde package-lock.json
       - name: Install dependencies
         run: npm ci
 
       # ── 3. BASE DE DATOS / ORM ────────────────────────────────────────────────
 
-      # Genera los tipos TypeScript de Prisma sin necesitar conexión a la DB
-      # (el schema no referencia $DATABASE_URL; generate solo lee el .prisma)
       - name: Generate Prisma types
+        env:
+          DATABASE_URL_REMOTE: ${{ secrets.DATABASE_URL_REMOTE }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
         run: npx prisma generate
 
       # ── 4. SALUD DE REACT ─────────────────────────────────────────────────────
@@ -69,19 +70,12 @@ jobs:
         run: npm run lint
 
       # ── 6. TESTING ────────────────────────────────────────────────────────────
-      #
-      # IMPORTANTE: Si cualquiera de los siguientes steps devuelve exit-code ≠ 0,
-      # GitHub Actions detiene el job en ese punto y marca la PR como fallida.
-      # Ningún step posterior (incluido el Build) se ejecutará.
-      # NODE_ENV=test activa guards de logging en librerías compatibles.
-      # --silent suprime los console.log/warn de los propios test files.
 
       - name: Unit & Integration Tests (Vitest)
         env:
           NODE_ENV: test
         run: npm run test:run -- --reporter=dot --silent
 
-      # Instalación de binarios de Chromium necesarios para Playwright
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
 
@@ -89,33 +83,28 @@ jobs:
         env:
           NODE_ENV: test
           CI: 'true'
-          # Clerk — necesario para clerkSetup() en global.setup.ts y auth.setup.ts
+          # Clerk
           NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
           CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
-          CLERK_TESTING_TOKEN: ${{ secrets.CLERK_TESTING_TOKEN }}
-          # Credenciales del usuario de prueba E2E
           E2E_CLERK_USER_EMAIL: ${{ secrets.E2E_CLERK_USER_EMAIL }}
-          E2E_CLERK_USER_PASSWORD: ${{ secrets.E2E_CLERK_USER_PASSWORD }}
-          # Supabase — necesario para el dev-server que Playwright levanta internamente
+          # Base de Datos (Sincronizado con src/shared/lib/prisma.ts)
+          DATABASE_URL_REMOTE: ${{ secrets.DATABASE_URL_REMOTE }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+          # Supabase
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: npm run test:e2e
 
       # ── 7. BUILD ──────────────────────────────────────────────────────────────
-      #
-      # Las variables de Supabase se inyectan con valores placeholder porque
-      # Next.js no realiza llamadas reales a Supabase en tiempo de compilación.
-      # Clerk sí se valida estáticamente, por lo que se usa el secret real.
 
       - name: Build
         env:
           NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
           CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
-          # Supabase — placeholders seguros para la fase de compilación
+          # Database URLs desde secretos (Coincidiendo con el Secret Name)
+          DATABASE_URL_REMOTE: ${{ secrets.DATABASE_URL_REMOTE }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+          # Supabase — placeholders para build
           NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key-build-only
-          SUPABASE_SERVICE_ROLE_KEY: placeholder-service-role-key-build-only
-          DIRECT_URL: postgresql://postgres.yepzfyknrqkkoepwkgts:MLtXWHehI9PouW@aws-1-eu-west-1.pooler.supabase.com:5432/postgres
-          DATABASE_URL_REMOTE: postgresql://postgres.yepzfyknrqkkoepwkgts:MLtXWHehI9PouW@aws-1-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
         run: npm run build
