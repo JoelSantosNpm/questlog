@@ -17,7 +17,7 @@ export const MobileListDrawer = ({ items }: MobileListDrawerProps) => {
     <div className='lg:hidden'>
       <button
         onClick={() => setOpen(true)}
-        className='fixed bottom-20 left-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-amber-500 text-neutral-950 shadow-lg'
+        className='fixed bottom-20 left-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-amber-500 text-amber-950 shadow-lg'
         aria-label='Abrir lista'
       >
         <Menu className='h-5 w-5' />

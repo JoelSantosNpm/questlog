@@ -36,8 +36,8 @@ export const CombatStats = ({ item }: CombatStatsProps) => {
       </div>
 
       <div className=' space-y-1'>
-        {SMALL_STATS.map((row, i) => (
-          <div key={i} className='flex justify-center gap-2 sm:gap-5'>
+        {SMALL_STATS.map((row, rowIndex) => (
+          <div key={`row-${rowIndex}`} className='flex justify-center gap-2 sm:gap-5'>
             {row.map(({ label, title, key }) => (
               <StatBox
                 key={key}
@@ -83,7 +83,10 @@ export const CombatStats = ({ item }: CombatStatsProps) => {
           </h3>
           <div className='space-y-2'>
             {abilitiesList.map((ability, i) => (
-              <div key={i} className='rounded-lg border border-neutral-800 bg-neutral-900/50 p-3'>
+              <div
+                key={ability.name || `ability-${i}`}
+                className='rounded-lg border border-neutral-800 bg-neutral-900/50 p-3'
+              >
                 {ability.name && (
                   <p className='text-xs font-bold text-amber-400/80'>{ability.name}</p>
                 )}
