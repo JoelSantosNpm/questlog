@@ -26,10 +26,10 @@ jobs:
 
       # Configura Node 20 y activa la caché integrada de npm
       # (restaura node_modules desde ~/.npm usando package-lock.json como clave)
-      - name: Setup Node.js 20
+      - name: Setup Node.js 24
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
 
       # Caché de la carpeta .next/cache para acelerar builds incrementales
@@ -116,4 +116,6 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
           NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key-build-only
           SUPABASE_SERVICE_ROLE_KEY: placeholder-service-role-key-build-only
+          DIRECT_URL: postgresql://postgres.yepzfyknrqkkoepwkgts:MLtXWHehI9PouW@aws-1-eu-west-1.pooler.supabase.com:5432/postgres
+          DATABASE_URL_REMOTE: postgresql://postgres.yepzfyknrqkkoepwkgts:MLtXWHehI9PouW@aws-1-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true
         run: npm run build
