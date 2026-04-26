@@ -13,13 +13,13 @@ export interface ActionResponse<T = void> {
 
 /**
  * DTO para creación de campañas.
- * Basado en el modelo de Prisma para asegurar coherencia total.
+ * Construido dinámicamente desde el modelo de Prisma para asegurar coherencia.
  */
-export type CreateCampaignDTO = Pick<
-  Campaign,
-  'name' | 'description' | 'imageUrl' | 'system' | 'location' | 'isPublic'
+export type CreateCampaignDTO = Partial<
+  Pick<Campaign, 'description' | 'imageUrl' | 'system' | 'location' | 'isPublic'>
 > & {
-  nextSession?: string // La fecha llega como string desde el cliente
+  name: string // El nombre es el único campo obligatorio
+  nextSession?: string | null // Override: llega como string (ISO) desde el cliente
 }
 
 export interface UpdateCampaignDTO extends Partial<CreateCampaignDTO> {
