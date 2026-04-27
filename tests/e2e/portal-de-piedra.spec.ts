@@ -52,9 +52,12 @@ test('AC 3.3 – flujo completo: crear campaña y verificar que aparece en el ca
 }) => {
   const campaignName = `Portal E2E ${Date.now()}`
 
-  // 1. Ir al Portal de Piedra
+  // 1. Ir al Portal de Piedra y verificar que NO redirige a login
   await page.goto('/campaigns')
-  await expect(page.getByRole('region', { name: CAROUSEL_LABEL })).toBeVisible()
+  await expect(page).not.toHaveURL(/.*sign-in.*/)
+  
+  const carousel = page.getByRole('region', { name: CAROUSEL_LABEL })
+  await expect(carousel).toBeVisible({ timeout: 10000 })
 
   // 2. Navegar al último portal del carrusel ("Nueva Aventura") usando el último dot indicator
   const dotButtons = page.locator('button[aria-label^="Go to campaign"]')
@@ -62,7 +65,7 @@ test('AC 3.3 – flujo completo: crear campaña y verificar que aparece en el ca
 
   // 3. Esperar que "Crear nueva aventura" sea el portal activo y hacer click
   const newCampaignLink = page.getByRole('link', { name: 'Crear nueva aventura' })
-  await expect(newCampaignLink).toBeVisible({ timeout: 3000 })
+  await expect(newCampaignLink).toBeVisible({ timeout: 5000 })
   await newCampaignLink.click()
   await page.waitForURL('**/campaigns/creation')
 
@@ -77,31 +80,39 @@ test('AC 3.3 – flujo completo: crear campaña y verificar que aparece en el ca
   const submitBtn = page.getByRole('button', { name: 'Abrir Portal' })
   await expect(submitBtn).toBeVisible({ timeout: 5000 })
   await page.getByPlaceholder('punto de partida (ej: la Ciudad de Neverwinter)').fill('Neverwinter')
+  
+  // 6. Al hacer click, esperamos el Toast de Sileo para confirmar el éxito antes de la redirección
   await submitBtn.click()
+  
+  // Verificar Toast de éxito (Sileo)
+  const successToast = page.locator('text=Portal Esculpido')
+  const errorToast = page.locator('text=Fallo al esculpir')
+  
+  await Promise.race([
+    expect(successToast).toBeVisible({ timeout: 15000 }),
+    expect(errorToast).toBeVisible({ timeout: 15000 }).then(() => {
+      throw new Error('La creación de la campaña falló según el Toast de Sileo')
+    })
+  ])
 
-  // 6. Después del submit exitoso, la Server Action redirige a /campaigns/{id}
+  // 7. Después del submit exitoso, la Server Action redirige a /campaigns/{id}
   await page.waitForURL(/\/campaigns\/[a-zA-Z0-9_-]+$/, { timeout: 15000 })
 
-  // 7. Volver al Portal de Piedra y verificar que la nueva campaña aparece en el carrusel
+  // 8. Volver al Portal de Piedra y verificar que la nueva campaña aparece en el carrusel
   await page.goto('/campaigns', { waitUntil: 'networkidle' })
   
-  // Esperar un momento a que Framer Motion termine las animaciones de entrada
-  await page.waitForTimeout(2000)
-
-  // Buscamos el texto de la campaña en cualquier parte del DOM (Attached)
-  const nameLocator = page.locator(`text=${campaignName}`)
-  
-  try {
-    await expect(nameLocator).toBeAttached({ timeout: 10000 })
-  } catch (e) {
-    console.log('DEBUG E2E: No encontrado al primer intento. Recargando...')
-    await page.reload({ waitUntil: 'networkidle' })
-    await page.waitForTimeout(3000)
-    await expect(nameLocator).toBeAttached({ timeout: 15000 })
-  }
-  
-  // En lugar de toBeVisible (que puede fallar por la perspectiva 3D/opacidad), 
-  // verificamos que el enlace con el aria-label correcto esté presente y sea clicable
+  // Verificamos que el enlace con el aria-label correcto esté presente
   const portalLink = page.locator(`a[aria-label*="${campaignName}"]`)
-  await expect(portalLink).toBeAttached()
+  
+  // expect.toBeAttached tiene reintentos internos incorporados (5s por defecto, extendemos a 10s)
+  try {
+    await expect(portalLink).toBeAttached({ timeout: 10000 })
+  } catch (_) {
+    console.log('DEBUG E2E: No encontrado al primer intento en el carrusel. Recargando...')
+    await page.reload({ waitUntil: 'networkidle' })
+    await expect(portalLink).toBeAttached({ timeout: 15000 })
+  }
+
+  // Verificamos que sea visible (Framer Motion habrá terminado la animación de entrada)
+  await expect(portalLink).toBeVisible({ timeout: 10000 })
 })

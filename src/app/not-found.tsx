@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { MysticBackground } from '@/components/shared/ui/MysticBackground'
+import { MysticBackground } from '@/shared/ui/MysticBackground'
 
 export default function NotFound() {
   return (

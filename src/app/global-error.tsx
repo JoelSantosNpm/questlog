@@ -1,7 +1,7 @@
 'use client'
 
 import { MedievalSharp } from 'next/font/google'
-import { MysticBackground } from '@/components/shared/ui/MysticBackground'
+import { MysticBackground } from '@/shared/ui/MysticBackground'
 import { cn } from '@/shared/utils/styles'
 
 const medieval = MedievalSharp({

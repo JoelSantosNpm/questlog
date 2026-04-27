@@ -68,3 +68,40 @@ Questlog does not only check who the owner is. The `AccessGrant` table allows:
 | **Campaign**       | Notes, Quests, Active Monsters, World Items | Characters (Heroes)                             |
 | **Character**      | -                                           | Items they carried (fall to the campaign floor) |
 | **Template**       | -                                           | Instances based on it (become orphaned)         |
+
+---
+
+## ⚙️ Schema Management & Migrations
+
+The schema is defined in `prisma/schema.prisma` as the **single source of truth**. Prisma is **not used at runtime** — its role in this project is:
+
+- **TypeScript types:** `prisma generate` generates types from the schema. Imported with `import type` (zero production bundle impact).
+- **SQL migrations:** the CLI generates and tracks the migration history.
+- **Runtime queries:** `@supabase/supabase-js` with the `service_role` key (no ORM).
+
+### Applying migrations
+
+SQL migrations live in `prisma/migrations/`. To apply them to a new environment:
+
+```bash
+# Option 1: Supabase CLI
+supabase db push
+
+# Option 2: Run the SQL files manually from the Supabase SQL Editor
+# prisma/migrations/*/migration.sql
+```
+
+### Creating a new schema change
+
+1. Modify `prisma/schema.prisma`.
+2. Regenerate TypeScript types: `npx prisma generate`
+3. Generate the migration SQL: `npx prisma migrate diff --from-schema-datasource prisma/schema.prisma --to-schema-datamodel prisma/schema.prisma --script`
+4. Apply the resulting SQL in Supabase.
+
+### Required environment variables
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=          # Public project URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY=     # Anonymous key (browser client)
+SUPABASE_SERVICE_ROLE_KEY=         # Service role key (server only, never expose)
+```

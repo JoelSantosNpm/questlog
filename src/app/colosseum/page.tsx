@@ -17,13 +17,13 @@ export default async function ColosseumPage() {
       </div>
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
         {/* Placeholder cards */}
-        {[1, 2, 3].map((i) => (
+        {['Arena de Práctica', 'Duelo de Honor', 'Gran Torneo'].map((name) => (
           <div
-            key={`desafio-${i}`}
+            key={name}
             className='dungeon-panel p-6 rounded-lg min-h-50 flex flex-col items-center justify-center border border-iron hover:border-torch transition-colors bg-stone/30'
           >
             <span className='text-iron text-4xl mb-2'>⚔️</span>
-            <h3 className='text-lg font-semibold text-foreground'>Desafío {i}</h3>
+            <h3 className='text-lg font-semibold text-foreground'>{name}</h3>
           </div>
         ))}
       </div>
