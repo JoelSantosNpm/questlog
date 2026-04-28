@@ -6,6 +6,14 @@
 
 **QuestLog** es una plataforma diseñada para Dungeon Masters que buscan una gestión de campañas de D&D 5e inmersiva y eficiente. Bajo una estética _Grimdark_, ofrece herramientas para el seguimiento de la narrativa, gestión de inventarios, bestiario y un rastreador de combates en tiempo real.
 
+<div align="center" style="margin: 2em 0;">
+   <a href="https://questlog-xi.vercel.app/" target="_blank" rel="noopener noreferrer">
+      <img src="https://img.shields.io/badge/Demo%20en%20vivo-questlog--xi.vercel.app-4B9CE2?style=for-the-badge&logo=vercel" alt="Demo en vivo" />
+   </a>
+   <br />
+   <strong>🚀 <a href="https://questlog-xi.vercel.app/" target="_blank" rel="noopener noreferrer">Probar QuestLog en producción → https://questlog-xi.vercel.app/</a></strong>
+</div>
+
 ---
 
 ## ⚔️ Zonas abiertas
