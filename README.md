@@ -6,6 +6,14 @@
 
 **QuestLog** is a Grimdark-themed platform for Dungeon Masters seeking immersive and efficient D&D 5e campaign management. It provides tools for tracking narrative progression, inventory, bestiary, and live combat encounters.
 
+<div align="center" style="margin: 2em 0;">
+   <a href="https://questlog-xi.vercel.app/" target="_blank" rel="noopener noreferrer">
+      <img src="https://img.shields.io/badge/Live%20Demo-questlog--xi.vercel.app-4B9CE2?style=for-the-badge&logo=vercel" alt="Live Demo" />
+   </a>
+   <br />
+   <strong>🚀 <a href="https://questlog-xi.vercel.app/" target="_blank" rel="noopener noreferrer">Try QuestLog live → https://questlog-xi.vercel.app/</a></strong>
+</div>
+
 ---
 
 ## ⚔️ Open Zones
