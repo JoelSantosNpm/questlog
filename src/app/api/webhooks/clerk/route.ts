@@ -1,7 +1,7 @@
 import { Webhook } from 'svix'
 import { headers } from 'next/headers'
 import { WebhookEvent } from '@clerk/nextjs/server'
-import { createClient } from '@/shared/lib/supabase/server'
+import { prisma } from '@/shared/lib/prisma'
 
 export async function POST(req: Request) {
   const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET
@@ -42,35 +42,40 @@ export async function POST(req: Request) {
 
   const { id } = evt.data
   const eventType = evt.type
-  const supabase = createClient()
 
   if (eventType === 'user.created' || eventType === 'user.updated') {
     const { email_addresses, first_name, last_name, image_url } = evt.data
     const email = email_addresses[0]?.email_address
     const name = `${first_name || ''} ${last_name || ''}`.trim()
 
-    const { error } = await supabase.from('User').upsert(
-      {
-        id: crypto.randomUUID(),
-        clerkId: id,
-        email: email,
-        name: name,
-        image: image_url,
-        updatedAt: new Date().toISOString(),
-      },
-      { onConflict: 'clerkId' }
-    )
-
-    if (error) {
+    try {
+      await prisma.user.upsert({
+        where: { clerkId: id },
+        update: {
+          email: email,
+          name: name,
+          image: image_url,
+          updatedAt: new Date(),
+        },
+        create: {
+          clerkId: id as string,
+          email: email,
+          name: name,
+          image: image_url,
+        },
+      })
+    } catch (error) {
       console.error('❌ Error syncing user via Webhook:', error)
       return new Response('Error syncing user', { status: 500 })
     }
   }
 
   if (eventType === 'user.deleted') {
-    const { error } = await supabase.from('User').delete().eq('clerkId', id)
-
-    if (error) {
+    try {
+      await prisma.user.delete({
+        where: { clerkId: id },
+      })
+    } catch (error) {
       console.error('❌ Error deleting user via Webhook:', error)
       return new Response('Error deleting user', { status: 500 })
     }
