@@ -1,32 +1,32 @@
-# 🔐 Seguridad y Control de Acceso: RLS en Questlog
+# 🔐 Security & Access Control: RLS in Questlog
 
-**🇪🇸 Español** | [🇺🇸 English](SECURITY.en.md)
+[🇪🇸 Español](SECURITY.md) | **🇺🇸 English**
 
-Esta guía explica cómo Questlog protege los datos a nivel de base de datos usando Row Level Security (RLS) de PostgreSQL/Supabase, y cómo el código del servidor interactúa con esas políticas.
-
----
-
-## 🏗️ El Modelo Mental: Dos Capas de Seguridad
-
-La seguridad en Questlog opera en dos capas que trabajan juntas:
-
-1. **Capa de aplicación (Next.js):** `requireUserId()` y `auth()` de Clerk garantizan que el usuario está autenticado antes de ejecutar cualquier Server Action.
-2. **Capa de base de datos (PostgreSQL):** RLS garantiza que aunque un bug o un usuario malicioso sortee la capa de aplicación, la base de datos solo devuelve o modifica las filas que le pertenecen.
-
-```
-Cliente → Server Action → requireUserId() → withRLS(clerkId) → PostgreSQL + RLS
-```
+This guide explains how Questlog protects data at the database level using PostgreSQL/Supabase Row Level Security (RLS), and how server-side code interacts with those policies.
 
 ---
 
-## 🔑 La Función `current_user_id()`
+## 🏗️ The Mental Model: Two Security Layers
 
-Es la pieza clave. Vive en Supabase y detecta automáticamente de dónde viene el userId del usuario activo:
+Security in Questlog operates in two layers working together:
 
-| Origen               | Cómo llega el userId                               |
+1. **Application layer (Next.js):** `requireUserId()` and Clerk's `auth()` ensure the user is authenticated before any Server Action executes.
+2. **Database layer (PostgreSQL):** RLS ensures that even if a bug or malicious user bypasses the application layer, the database only returns or modifies rows that belong to them.
+
+```
+Client → Server Action → requireUserId() → withRLS(clerkId) → PostgreSQL + RLS
+```
+
+---
+
+## 🔑 The `current_user_id()` Function
+
+This is the key piece. It lives in Supabase and automatically detects where the active user's ID comes from:
+
+| Origin               | How the userId arrives                             |
 | -------------------- | -------------------------------------------------- |
 | Prisma + `withRLS()` | `set_config('app.current_user_id', clerkId, true)` |
-| Supabase SDK (JWT)   | `auth.uid()` del token JWT                         |
+| Supabase SDK (JWT)   | `auth.uid()` from the JWT token                    |
 
 ```sql
 CREATE OR REPLACE FUNCTION current_user_id()
@@ -38,136 +38,136 @@ RETURNS text AS $$
 $$ LANGUAGE sql STABLE SECURITY DEFINER;
 ```
 
-> **Por qué COALESCE y no OR:** `OR` no es un operador de coalescencia en SQL para valores `text`. `COALESCE` devuelve el primer valor no nulo de la lista.
+> **Why COALESCE and not OR:** `OR` is not a coalescing operator in SQL for `text` values. `COALESCE` returns the first non-null value in the list.
 
 ---
 
-## ⚙️ Arquitectura de Clientes Prisma
+## ⚙️ Prisma Client Architecture
 
-El proyecto expone dos clientes distintos desde `src/shared/lib/prisma.ts`:
+The project exposes two distinct clients from `src/shared/lib/prisma.ts`:
 
 ### `prismaAdmin`
 
-- Conecta como `postgres` (superusuario de Supabase)
-- **Bypasea RLS completamente** — Postgres ignora todas las políticas para superusuarios
-- Uso permitido **solo** en:
-  - `src/app/api/webhooks/clerk/route.ts` — sincronización de usuarios vía Clerk webhook
-  - `src/app/auth/auth-sync.tsx` — creación inicial del registro `User`
-  - `src/views/encyclopedia/api/encyclopedia-queries.ts` — lectura de catálogo público (`isPublic: true`)
+- Connects as `postgres` (Supabase superuser)
+- **Bypasses RLS entirely** — Postgres ignores all policies for superusers
+- Allowed **only** in:
+  - `src/app/api/webhooks/clerk/route.ts` — user sync via Clerk webhook
+  - `src/app/auth/auth-sync.tsx` — initial `User` record creation
+  - `src/views/encyclopedia/api/encyclopedia-queries.ts` — public catalog reads (`isPublic: true`)
 
 ### `withRLS(clerkId, fn)`
 
-- Ejecuta `fn` dentro de una `$transaction` que hace dos pasos antes de cualquier query:
-  1. `SET LOCAL ROLE authenticated` — cambia el rol al restringido para que Postgres evalúe RLS
-  2. `set_config('app.current_user_id', clerkId, true)` — establece el userId para `current_user_id()`
-- Uso **obligatorio** en todas las Server Actions y queries de datos de usuario final
+- Runs `fn` inside a `$transaction` that executes two steps before any query:
+  1. `SET LOCAL ROLE authenticated` — switches to the restricted role so Postgres evaluates RLS
+  2. `set_config('app.current_user_id', clerkId, true)` — sets the userId for `current_user_id()`
+- **Required** in all Server Actions and end-user data queries
 
 ```typescript
-// ✅ Correcto
+// ✅ Correct
 const campaign = await withRLS(clerkId, (db) => db.campaign.create({ data }))
 
-// ❌ Incorrecto — bypasea RLS
+// ❌ Incorrect — bypasses RLS
 const campaign = await prismaAdmin.campaign.create({ data })
 ```
 
-> **Por qué SET LOCAL y no SET:** `SET LOCAL` limita el cambio de rol a la transacción actual. Cuando la transacción termina, la conexión vuelve a `postgres` y puede reutilizarse por el pool sin contaminar otras requests.
+> **Why SET LOCAL and not SET:** `SET LOCAL` scopes the role change to the current transaction. When the transaction ends, the connection resets to `postgres` and can be reused by the pool without contaminating other requests.
 
 ---
 
-## 📋 Políticas RLS por Tabla
+## 📋 RLS Policies by Table
 
-El archivo SQL que define todas las políticas es [`supabase/migrations/20260504_rls_policies.sql`](../supabase/migrations/20260504_rls_policies.sql).
+The SQL file defining all policies is [`supabase/migrations/20260504_rls_policies.sql`](../supabase/migrations/20260504_rls_policies.sql).
 
 ### User
 
-| Operación | Política                                               |
-| --------- | ------------------------------------------------------ |
-| SELECT    | Solo el propio usuario (`clerkId = current_user_id()`) |
-| UPDATE    | Solo el propio usuario                                 |
-| INSERT    | ❌ Prohibido — solo `postgres` vía webhook/AuthSync    |
+| Operation | Policy                                                    |
+| --------- | --------------------------------------------------------- |
+| SELECT    | Only the owner themselves (`clerkId = current_user_id()`) |
+| UPDATE    | Only the owner themselves                                 |
+| INSERT    | ❌ Forbidden — only `postgres` via webhook/AuthSync       |
 
 ### Campaign
 
-| Operación | Política                                                                     |
-| --------- | ---------------------------------------------------------------------------- |
-| SELECT    | Campañas públicas (`isPublic = true`) O el usuario es miembro (`Membership`) |
-| INSERT    | `gameMasterId` debe ser el usuario activo                                    |
-| UPDATE    | Solo OWNER o EDITOR (vía `Membership`)                                       |
-| DELETE    | Solo el `gameMaster` original                                                |
+| Operation | Policy                                                                  |
+| --------- | ----------------------------------------------------------------------- |
+| SELECT    | Public campaigns (`isPublic = true`) OR user is a member (`Membership`) |
+| INSERT    | `gameMasterId` must match the active user                               |
+| UPDATE    | Only OWNER or EDITOR (via `Membership`)                                 |
+| DELETE    | Only the original `gameMaster`                                          |
 
 ### Membership
 
-| Operación                  | Política                                                    |
-| -------------------------- | ----------------------------------------------------------- |
-| SELECT                     | Propias membresías + membresías de compañeros de campaña    |
-| ALL (INSERT/UPDATE/DELETE) | Solo el `gameMaster` de la campaña puede gestionar miembros |
+| Operation                  | Policy                                                 |
+| -------------------------- | ------------------------------------------------------ |
+| SELECT                     | Own memberships + fellow campaign members' memberships |
+| ALL (INSERT/UPDATE/DELETE) | Only the campaign's `gameMaster` can manage members    |
 
 ### Character
 
-| Operación | Política                                                 |
-| --------- | -------------------------------------------------------- |
-| SELECT    | Cualquier miembro de la campaña                          |
-| INSERT    | Cualquier miembro de la campaña                          |
-| UPDATE    | El dueño del personaje (`userId`) O un DM (OWNER/EDITOR) |
-| DELETE    | El dueño del personaje (`userId`) O un DM (OWNER/EDITOR) |
+| Operation | Policy                                                |
+| --------- | ----------------------------------------------------- |
+| SELECT    | Any campaign member                                   |
+| INSERT    | Any campaign member                                   |
+| UPDATE    | The character owner (`userId`) OR a DM (OWNER/EDITOR) |
+| DELETE    | The character owner (`userId`) OR a DM (OWNER/EDITOR) |
 
 ### ActiveMonster / Item
 
-| Operación                  | Política                        |
-| -------------------------- | ------------------------------- |
-| SELECT                     | Cualquier miembro de la campaña |
-| ALL (INSERT/UPDATE/DELETE) | Solo OWNER o EDITOR             |
+| Operation                  | Policy               |
+| -------------------------- | -------------------- |
+| SELECT                     | Any campaign member  |
+| ALL (INSERT/UPDATE/DELETE) | Only OWNER or EDITOR |
 
 ### Quest
 
-| Operación                  | Política                                                                          |
-| -------------------------- | --------------------------------------------------------------------------------- |
-| SELECT                     | OWNER/EDITOR ven todas; PLAYER/VIEWER solo las marcadas `visibleToPlayers = true` |
-| ALL (INSERT/UPDATE/DELETE) | Solo OWNER o EDITOR                                                               |
+| Operation                  | Policy                                                                               |
+| -------------------------- | ------------------------------------------------------------------------------------ |
+| SELECT                     | OWNER/EDITOR see all; PLAYER/VIEWER only see those flagged `visibleToPlayers = true` |
+| ALL (INSERT/UPDATE/DELETE) | Only OWNER or EDITOR                                                                 |
 
 ### SessionNote
 
-| Operación                  | Política                                    |
-| -------------------------- | ------------------------------------------- |
-| SELECT                     | Solo OWNER o EDITOR (notas privadas del DM) |
-| ALL (INSERT/UPDATE/DELETE) | Solo OWNER o EDITOR                         |
+| Operation                  | Policy                                  |
+| -------------------------- | --------------------------------------- |
+| SELECT                     | Only OWNER or EDITOR (DM private notes) |
+| ALL (INSERT/UPDATE/DELETE) | Only OWNER or EDITOR                    |
 
 ### Templates (MonsterTemplate / CharacterTemplate / ItemTemplate)
 
-| Operación | Política                                                  |
-| --------- | --------------------------------------------------------- |
-| SELECT    | Plantillas públicas (`isPublic = true`) O el propio autor |
-| INSERT    | Solo el autor (`authorId/creatorId = current_user_id()`)  |
-| UPDATE    | Solo el autor                                             |
-| DELETE    | Solo el autor                                             |
+| Operation | Policy                                                        |
+| --------- | ------------------------------------------------------------- |
+| SELECT    | Public templates (`isPublic = true`) OR the author themselves |
+| INSERT    | Only the author (`authorId/creatorId = current_user_id()`)    |
+| UPDATE    | Only the author                                               |
+| DELETE    | Only the author                                               |
 
 ### AccessGrant
 
-| Operación                  | Política                                               |
-| -------------------------- | ------------------------------------------------------ |
-| SELECT                     | El receptor (`granteeId`) O el otorgador (`granterId`) |
-| ALL (INSERT/UPDATE/DELETE) | Solo el otorgador (`granterId`)                        |
+| Operation                  | Policy                                                   |
+| -------------------------- | -------------------------------------------------------- |
+| SELECT                     | The recipient (`granteeId`) OR the granter (`granterId`) |
+| ALL (INSERT/UPDATE/DELETE) | Only the granter (`granterId`)                           |
 
 ---
 
-## 🚀 Cómo Aplicar las Políticas
+## 🚀 How to Apply the Policies
 
-Las políticas **no se gestionan con `prisma migrate`** — Prisma solo gestiona DDL estructural (tablas, columnas, índices). Las políticas RLS se aplican manualmente:
+Policies **are not managed by `prisma migrate`** — Prisma only handles structural DDL (tables, columns, indexes). RLS policies are applied manually:
 
-1. Abre **Supabase Dashboard → SQL Editor**
-2. Pega el contenido de `supabase/migrations/20260504_rls_policies.sql`
-3. Ejecuta
+1. Open **Supabase Dashboard → SQL Editor**
+2. Paste the contents of `supabase/migrations/20260504_rls_policies.sql`
+3. Execute
 
-> Si añades nuevas tablas en el futuro, recuerda: `ENABLE ROW LEVEL SECURITY` + `GRANT` al rol `authenticated` + políticas correspondientes.
+> If you add new tables in the future, remember: `ENABLE ROW LEVEL SECURITY` + `GRANT` to the `authenticated` role + corresponding policies.
 
 ---
 
-## 🗂️ Archivos Relevantes
+## 🗂️ Relevant Files
 
-| Archivo                                         | Responsabilidad                                               |
-| ----------------------------------------------- | ------------------------------------------------------------- |
-| `src/shared/lib/prisma.ts`                      | `prismaAdmin` y `withRLS()`                                   |
-| `src/shared/lib/auth.ts`                        | `requireUserId()` — obtiene clerkId de la sesión              |
-| `supabase/migrations/20260504_rls_policies.sql` | Políticas RLS completas + `current_user_id()`                 |
-| `src/views/*/api/*-actions.ts`                  | Server Actions — usan `withRLS`                               |
-| `src/views/*/api/*-queries.ts`                  | Queries de lectura — `withRLS` o `prismaAdmin` según contexto |
+| File                                            | Responsibility                                                 |
+| ----------------------------------------------- | -------------------------------------------------------------- |
+| `src/shared/lib/prisma.ts`                      | `prismaAdmin` and `withRLS()`                                  |
+| `src/shared/lib/auth.ts`                        | `requireUserId()` — retrieves clerkId from session             |
+| `supabase/migrations/20260504_rls_policies.sql` | Full RLS policies + `current_user_id()`                        |
+| `src/views/*/api/*-actions.ts`                  | Server Actions — use `withRLS`                                 |
+| `src/views/*/api/*-queries.ts`                  | Read queries — `withRLS` or `prismaAdmin` depending on context |

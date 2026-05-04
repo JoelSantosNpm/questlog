@@ -120,6 +120,23 @@ To maximize reusability, QuestLog separates the definition of an entity from its
 
 > 📖 **For a deep technical explanation on relations and cascade deletion, see the [Data Schema Guide](docs/DATABASE_SCHEMA.en.md).**
 
+### 🔐 Row Level Security (RLS)
+
+All 12 database tables are protected by PostgreSQL RLS policies enforced directly in Supabase. Security operates in two layers:
+
+- **Application layer:** `requireUserId()` + Clerk's `auth()` authenticate the caller before any Server Action runs.
+- **Database layer:** every query is executed under the `authenticated` role via `withRLS(clerkId)` or `withPublicRLS()`, so the database independently verifies row ownership — even if a bug bypasses application-level checks.
+
+Three Prisma client patterns enforce this separation:
+
+| Client             | Role in DB                   | Used for                               |
+| ------------------ | ---------------------------- | -------------------------------------- |
+| `prismaAdmin`      | `postgres` (bypasses RLS)    | Clerk webhook + auth sync only         |
+| `withRLS(clerkId)` | `authenticated` + userId set | All authenticated mutations & queries  |
+| `withPublicRLS()`  | `authenticated`, no userId   | Public catalog reads (`isPublic=true`) |
+
+> 📖 **See the full policy table and architecture details in the [Security & Access Control Guide](docs/SECURITY.md).**
+
 ---
 
 ## 🛠️ Tech Stack: Why these tools?
