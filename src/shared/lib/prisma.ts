@@ -11,21 +11,29 @@ const prismaClientSingleton = () => {
 }
 
 const globalForPrisma = globalThis as unknown as {
-  prisma: ReturnType<typeof prismaClientSingleton> | undefined
+  prismaAdmin: ReturnType<typeof prismaClientSingleton> | undefined
 }
 
-export const prisma = globalForPrisma.prisma ?? prismaClientSingleton()
+/**
+ * ES: Cliente Prisma con rol `postgres` (superusuario). Bypasea RLS completamente.
+ * Usar SOLO en operaciones de sistema sin contexto de usuario:
+ *   - Clerk webhook (sincronización de usuarios)
+ *   - AuthSync (creación inicial del registro User)
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+ */
+export const prismaAdmin = globalForPrisma.prismaAdmin ?? prismaClientSingleton()
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prismaAdmin = prismaAdmin
 
 /**
- * Ejecuta `fn` dentro de una transacción donde `app.current_user_id` está
- * establecido con `set_config(..., true)` (equivalente a SET LOCAL).
- * Esto garantiza que las políticas RLS de Supabase reciben el userId correcto
- * antes de cualquier query, usando siempre la misma conexión.
- *
+ * ES: Ejecuta `fn` dentro de una transacción que:
+ *   1. Cambia el rol a `authenticated` (SET LOCAL ROLE) → Postgres aplica RLS.
+ *   2. Establece `app.current_user_id = userId` (set_config IS LOCAL) → las
+ *      políticas RLS identifican al usuario actual via `current_user_id()`.
+ * Usar en todas las Server Actions y queries de datos de usuario final.
+ 
  * @example
- * const result = await withRLS(userId, (db) =>
+ * const result = await withRLS(clerkId, (db) =>
  *   db.monsterTemplate.create({ data })
  * )
  */
@@ -33,8 +41,24 @@ export async function withRLS<T>(
   userId: string,
   fn: (tx: Prisma.TransactionClient) => Promise<T>
 ): Promise<T> {
-  return prisma.$transaction(async (tx) => {
+  return prismaAdmin.$transaction(async (tx) => {
+    await tx.$executeRaw`SET LOCAL ROLE authenticated`
     await tx.$executeRaw`SELECT set_config('app.current_user_id', ${userId}, true)`
+    return fn(tx)
+  })
+}
+
+/**
+ * @example
+ * const items = await withPublicRLS((db) =>
+ *   db.monsterTemplate.findMany({ orderBy: { name: 'asc' } })
+ * )
+ */
+export async function withPublicRLS<T>(
+  fn: (tx: Prisma.TransactionClient) => Promise<T>
+): Promise<T> {
+  return prismaAdmin.$transaction(async (tx) => {
+    await tx.$executeRaw`SET LOCAL ROLE authenticated`
     return fn(tx)
   })
 }

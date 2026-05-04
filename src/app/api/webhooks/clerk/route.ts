@@ -1,7 +1,7 @@
-import { Webhook } from 'svix'
-import { headers } from 'next/headers'
+import { prismaAdmin } from '@/shared/lib/prisma'
 import { WebhookEvent } from '@clerk/nextjs/server'
-import { prisma } from '@/shared/lib/prisma'
+import { headers } from 'next/headers'
+import { Webhook } from 'svix'
 
 export async function POST(req: Request) {
   const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET
@@ -49,7 +49,7 @@ export async function POST(req: Request) {
     const name = `${first_name || ''} ${last_name || ''}`.trim()
 
     try {
-      await prisma.user.upsert({
+      await prismaAdmin.user.upsert({
         where: { clerkId: id },
         update: {
           email: email,
@@ -72,7 +72,7 @@ export async function POST(req: Request) {
 
   if (eventType === 'user.deleted') {
     try {
-      await prisma.user.delete({
+      await prismaAdmin.user.delete({
         where: { clerkId: id },
       })
     } catch (error) {

@@ -1,5 +1,5 @@
+import { prismaAdmin } from '@/shared/lib/prisma'
 import { auth, currentUser } from '@clerk/nextjs/server'
-import { prisma } from '@/shared/lib/prisma'
 
 export async function AuthSync() {
   const { userId } = await auth()
@@ -18,7 +18,7 @@ export async function AuthSync() {
     const fullName = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim()
 
     // Buscamos si el usuario ya existe por email o clerkId
-    await prisma.user.upsert({
+    await prismaAdmin.user.upsert({
       where: { clerkId: userId },
       update: {
         email: email,
