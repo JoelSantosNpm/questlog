@@ -1,17 +1,16 @@
 'use server'
 
-import { prisma } from '@/shared/lib/prisma'
-import { revalidatePath } from 'next/cache'
+import { requireUserId } from '@/shared/lib/auth'
+import { withRLS } from '@/shared/lib/prisma'
 import { Prisma } from '@prisma/client'
+import { revalidatePath } from 'next/cache'
 
-/**
- * Crea una nueva criatura en el bestiario.
- */
+/* --- MONSTRUOS (BESTIARY) --- */
+
 export async function createMonster(data: Prisma.MonsterTemplateCreateInput) {
   try {
-    const monster = await prisma.monsterTemplate.create({
-      data,
-    })
+    const userId = await requireUserId()
+    const monster = await withRLS(userId, (db) => db.monsterTemplate.create({ data }))
     revalidatePath('/encyclopedia')
     return { success: true, data: monster }
   } catch (error) {
@@ -20,15 +19,12 @@ export async function createMonster(data: Prisma.MonsterTemplateCreateInput) {
   }
 }
 
-/**
- * Actualiza una criatura existente.
- */
 export async function updateMonster(id: string, data: Prisma.MonsterTemplateUpdateInput) {
   try {
-    const monster = await prisma.monsterTemplate.update({
-      where: { id },
-      data,
-    })
+    const userId = await requireUserId()
+    const monster = await withRLS(userId, (db) =>
+      db.monsterTemplate.update({ where: { id }, data })
+    )
     revalidatePath('/encyclopedia')
     return { success: true, data: monster }
   } catch (error) {
@@ -37,14 +33,10 @@ export async function updateMonster(id: string, data: Prisma.MonsterTemplateUpda
   }
 }
 
-/**
- * Elimina una criatura del bestiario.
- */
 export async function deleteMonster(id: string) {
   try {
-    await prisma.monsterTemplate.delete({
-      where: { id },
-    })
+    const userId = await requireUserId()
+    await withRLS(userId, (db) => db.monsterTemplate.delete({ where: { id } }))
     revalidatePath('/encyclopedia')
     return { success: true }
   } catch (error) {
@@ -57,7 +49,8 @@ export async function deleteMonster(id: string) {
 
 export async function createCharacterTemplate(data: Prisma.CharacterTemplateCreateInput) {
   try {
-    const character = await prisma.characterTemplate.create({ data })
+    const userId = await requireUserId()
+    const character = await withRLS(userId, (db) => db.characterTemplate.create({ data }))
     revalidatePath('/encyclopedia')
     return { success: true, data: character }
   } catch (error) {
@@ -66,9 +59,15 @@ export async function createCharacterTemplate(data: Prisma.CharacterTemplateCrea
   }
 }
 
-export async function updateCharacterTemplate(id: string, data: Prisma.CharacterTemplateUpdateInput) {
+export async function updateCharacterTemplate(
+  id: string,
+  data: Prisma.CharacterTemplateUpdateInput
+) {
   try {
-    const character = await prisma.characterTemplate.update({ where: { id }, data })
+    const userId = await requireUserId()
+    const character = await withRLS(userId, (db) =>
+      db.characterTemplate.update({ where: { id }, data })
+    )
     revalidatePath('/encyclopedia')
     return { success: true, data: character }
   } catch (error) {
@@ -79,7 +78,8 @@ export async function updateCharacterTemplate(id: string, data: Prisma.Character
 
 export async function deleteCharacterTemplate(id: string) {
   try {
-    await prisma.characterTemplate.delete({ where: { id } })
+    const userId = await requireUserId()
+    await withRLS(userId, (db) => db.characterTemplate.delete({ where: { id } }))
     revalidatePath('/encyclopedia')
     return { success: true }
   } catch (error) {
@@ -92,7 +92,8 @@ export async function deleteCharacterTemplate(id: string) {
 
 export async function createItemTemplate(data: Prisma.ItemTemplateCreateInput) {
   try {
-    const item = await prisma.itemTemplate.create({ data })
+    const userId = await requireUserId()
+    const item = await withRLS(userId, (db) => db.itemTemplate.create({ data }))
     revalidatePath('/encyclopedia')
     return { success: true, data: item }
   } catch (error) {
@@ -103,7 +104,8 @@ export async function createItemTemplate(data: Prisma.ItemTemplateCreateInput) {
 
 export async function updateItemTemplate(id: string, data: Prisma.ItemTemplateUpdateInput) {
   try {
-    const item = await prisma.itemTemplate.update({ where: { id }, data })
+    const userId = await requireUserId()
+    const item = await withRLS(userId, (db) => db.itemTemplate.update({ where: { id }, data }))
     revalidatePath('/encyclopedia')
     return { success: true, data: item }
   } catch (error) {
@@ -114,7 +116,8 @@ export async function updateItemTemplate(id: string, data: Prisma.ItemTemplateUp
 
 export async function deleteItemTemplate(id: string) {
   try {
-    await prisma.itemTemplate.delete({ where: { id } })
+    const userId = await requireUserId()
+    await withRLS(userId, (db) => db.itemTemplate.delete({ where: { id } }))
     revalidatePath('/encyclopedia')
     return { success: true }
   } catch (error) {

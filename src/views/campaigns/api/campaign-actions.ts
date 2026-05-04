@@ -1,7 +1,7 @@
 'use server'
 
-import { prisma } from '@/shared/lib/prisma'
-import { auth } from '@clerk/nextjs/server'
+import { requireUserId } from '@/shared/lib/auth'
+import { withRLS } from '@/shared/lib/prisma'
 import type { Campaign, Prisma } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
 
@@ -32,29 +32,26 @@ export async function createCampaign(data: CreateCampaignDTO): Promise<ActionRes
       return { success: false, message: 'El nombre de la campaña es obligatorio' }
     }
 
-    const { userId: clerkId } = await auth()
-    if (!clerkId) {
-      return { success: false, message: 'No se pudo identificar la sesión de Clerk' }
-    }
+    const clerkId = await requireUserId()
 
-    // Buscar el usuario por clerkId y conectar por id
-    const user = await prisma.user.findUnique({ where: { clerkId } })
-    if (!user) {
-      return { success: false, message: 'Usuario no sincronizado en la base de datos' }
-    }
-    const campaign = await prisma.campaign.create({
-      data: {
-        id: crypto.randomUUID(),
-        name: data.name,
-        description: data.description,
-        imageUrl: data.imageUrl,
-        system: data.system || 'D&D 5e',
-        location: data.location,
-        isPublic: data.isPublic ?? false,
-        nextSession: data.nextSession,
-        gameMaster: { connect: { id: user.id } },
-        updatedAt: new Date().toISOString(),
-      } satisfies Prisma.CampaignCreateInput,
+    const campaign = await withRLS(clerkId, async (db) => {
+      const user = await db.user.findUnique({ where: { clerkId } })
+      if (!user) throw new Error('Usuario no sincronizado en la base de datos')
+
+      return db.campaign.create({
+        data: {
+          id: crypto.randomUUID(),
+          name: data.name,
+          description: data.description,
+          imageUrl: data.imageUrl,
+          system: data.system || 'D&D 5e',
+          location: data.location,
+          isPublic: data.isPublic ?? false,
+          nextSession: data.nextSession,
+          gameMaster: { connect: { id: user.id } },
+          updatedAt: new Date().toISOString(),
+        } satisfies Prisma.CampaignCreateInput,
+      })
     })
 
     revalidatePath('/campaigns')
@@ -78,19 +75,23 @@ export async function updateCampaign(data: UpdateCampaignDTO): Promise<ActionRes
   try {
     if (!data.id) return { success: false, message: 'El ID es requerido' }
 
-    const updated = await prisma.campaign.update({
-      where: { id: data.id },
-      data: {
-        name: data.name,
-        description: data.description,
-        imageUrl: data.imageUrl,
-        system: data.system,
-        location: data.location,
-        isPublic: data.isPublic,
-        nextSession: data.nextSession,
-        updatedAt: new Date().toISOString(),
-      },
-    })
+    const clerkId = await requireUserId()
+
+    const updated = await withRLS(clerkId, (db) =>
+      db.campaign.update({
+        where: { id: data.id },
+        data: {
+          name: data.name,
+          description: data.description,
+          imageUrl: data.imageUrl,
+          system: data.system,
+          location: data.location,
+          isPublic: data.isPublic,
+          nextSession: data.nextSession,
+          updatedAt: new Date().toISOString(),
+        },
+      })
+    )
 
     revalidatePath('/colosseum')
     revalidatePath(`/campaigns/${data.id}`)
@@ -109,7 +110,9 @@ export async function updateCampaign(data: UpdateCampaignDTO): Promise<ActionRes
 
 export async function deleteCampaign(campaignId: string): Promise<ActionResponse<void>> {
   try {
-    await prisma.campaign.delete({ where: { id: campaignId } })
+    const clerkId = await requireUserId()
+
+    await withRLS(clerkId, (db) => db.campaign.delete({ where: { id: campaignId } }))
 
     revalidatePath('/colosseum')
     revalidatePath('/')
