@@ -1,14 +1,15 @@
 'use client'
 
-import { Search } from 'lucide-react'
-import { 
-  useSelectedItemId, 
-  useSetSelectedItemId, 
-  useSearchQuery, 
-  useSetSearchQuery 
-} from '../model/encyclopediaStore'
 import { cn } from '@/shared/utils/styles'
+import { Search } from 'lucide-react'
+import {
+  useSearchQuery,
+  useSelectedItemId,
+  useSetSearchQuery,
+  useSetSelectedItemId,
+} from '../model/encyclopediaStore'
 import { EncyclopediaItem } from '../model/types'
+import { EncyclopediaFilterBar } from './EncyclopediaFilterBar'
 
 interface ListViewProps {
   items: EncyclopediaItem[]
@@ -23,6 +24,7 @@ export const ListView = ({ items, onSelect }: ListViewProps) => {
 
   return (
     <section className='flex w-full flex-col border-r border-neutral-800/50 bg-neutral-950/40 backdrop-blur-sm'>
+      <EncyclopediaFilterBar />
       <div className='p-4 border-b border-neutral-800/50'>
         <div className='relative'>
           <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500' />

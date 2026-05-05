@@ -13,6 +13,7 @@ export function useBestiary(
   return useQuery({
     queryKey: ENCYCLOPEDIA_KEYS.bestiary(visibility, ownership, clerkId),
     queryFn: () => getBestiaryItems(visibility, ownership, clerkId),
+    enabled: visibility === 'public' || !!clerkId,
     staleTime: 1000 * 60 * 5,
   })
 }
@@ -25,6 +26,7 @@ export function useCharacterTemplates(
   return useQuery({
     queryKey: ENCYCLOPEDIA_KEYS.cast(visibility, ownership, clerkId),
     queryFn: () => getCharacterTemplates(visibility, ownership, clerkId),
+    enabled: visibility === 'public' || !!clerkId,
     staleTime: 1000 * 60 * 5,
   })
 }
@@ -37,6 +39,7 @@ export function useMuseumItems(
   return useQuery({
     queryKey: ENCYCLOPEDIA_KEYS.museum(visibility, ownership, clerkId),
     queryFn: () => getMuseumItems(visibility, ownership, clerkId),
+    enabled: visibility === 'public' || !!clerkId,
     staleTime: 1000 * 60 * 5,
   })
 }
