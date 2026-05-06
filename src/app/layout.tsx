@@ -16,7 +16,7 @@ const medieval = MedievalSharp({
   variable: '--font-medieval',
 })
 
-import { BookOpen } from 'lucide-react'
+import { BookOpen, LayoutDashboard } from 'lucide-react'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
@@ -79,6 +79,14 @@ export default async function RootLayout({
                   </SignInButton>
                 </SignedOut>
                 <SignedIn>
+                  <Link
+                    href='/dashboard'
+                    className='group flex items-center gap-2 text-neutral-400 transition-colors hover:text-amber-500'
+                    title='Panel'
+                  >
+                    <LayoutDashboard className='h-5 w-5 transition-transform group-hover:scale-110' />
+                    <span className='hidden text-sm font-medium sm:block'>Panel</span>
+                  </Link>
                   <UserButton />
                 </SignedIn>
               </div>
