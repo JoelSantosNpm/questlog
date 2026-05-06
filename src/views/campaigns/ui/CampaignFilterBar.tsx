@@ -38,9 +38,19 @@ export function CampaignFilterBar() {
     <div className='flex flex-col gap-2 px-4 py-3'>
       {/* Dimensión 1: Visibilidad */}
       <div className='flex gap-2'>
-        <ToggleButton label='Públicas' isActive={showPublic} onToggle={togglePublic} />
+        <ToggleButton
+          label='Públicas'
+          isActive={showPublic}
+          onToggle={togglePublic}
+          className='flex-1'
+        />
         {isLoggedIn && (
-          <ToggleButton label='Privadas' isActive={showPrivate} onToggle={togglePrivate} />
+          <ToggleButton
+            label='Privadas'
+            isActive={showPrivate}
+            onToggle={togglePrivate}
+            className='flex-1'
+          />
         )}
       </div>
 
@@ -59,12 +69,14 @@ export function CampaignFilterBar() {
               label='Mías'
               isActive={showOwned}
               onToggle={toggleOwned}
+              className='flex-1'
               activeClassName='border-violet-500/40 bg-violet-500/15 text-violet-400'
             />
             <ToggleButton
-              label='Con membresía'
+              label='Membresía'
               isActive={showMember}
               onToggle={toggleMember}
+              className='flex-1'
               activeClassName='border-violet-500/40 bg-violet-500/15 text-violet-400'
             />
           </m.div>
