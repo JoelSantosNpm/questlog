@@ -21,10 +21,10 @@ export function EncyclopediaFilterBar() {
   const isLoggedIn = !!userId
 
   // Resetear filtros privados si el usuario cierra sesión (o nunca estuvo logueado)
-  const resetPrivate = useEncyclopediaStore((s) => s.resetPrivateFilters)
+  // Usamos getState() para evitar stale closures tras hot-reload
   useEffect(() => {
-    if (!isLoggedIn) resetPrivate()
-  }, [isLoggedIn, resetPrivate])
+    if (!isLoggedIn) useEncyclopediaStore.getState().resetPrivateFilters()
+  }, [isLoggedIn])
 
   const showPublic = useShowPublic()
   const showPrivate = useShowPrivate()
