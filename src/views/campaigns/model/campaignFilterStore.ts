@@ -13,8 +13,8 @@ interface CampaignFilterState {
 }
 
 export const useCampaignFilterStore = create<CampaignFilterState>((set) => ({
-  showPublic: true,
-  showPrivate: false,
+  showPublic: false,
+  showPrivate: true,
   showOwned: true,
   showMember: true,
   // "Last one standing": no se puede desactivar el único toggle activo de su grupo
