@@ -3,4 +3,7 @@ export type CampaignFormValues = {
   location?: string
   isPublic?: boolean
 }
-export type CampaignFilter = 'all' | 'public' | 'owned'
+
+export type CampaignVisibility = 'public' | 'private' | 'all'
+
+export type CampaignOwnership = 'owned' | 'member' | 'both'

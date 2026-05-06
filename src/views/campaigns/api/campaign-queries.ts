@@ -1,20 +1,15 @@
 'use server'
 
 import { prismaAdmin, withRLS } from '@/shared/lib/prisma'
-import { CampaignFilter } from '../model/campaign-types'
+import { CampaignOwnership, CampaignVisibility } from '../model/campaign-types'
 
-/**
- * ES: Obtiene campañas según filtro.
- * Sin sesión → solo públicas (prismaAdmin, sin RLS).
- * Con sesión → RLS filtra automáticamente públicas + campañas del usuario.
- *
- * EN: Fetches campaigns by filter.
- * Unauthenticated → public only (prismaAdmin, no RLS).
- * Authenticated → RLS automatically returns public + user's campaigns.
- */
-export async function getCampaigns(filter: CampaignFilter = 'all', clerkId?: string) {
+export async function getCampaigns(
+  visibility: CampaignVisibility = 'public',
+  ownership: CampaignOwnership = 'both',
+  clerkId?: string
+) {
   try {
-    if (!clerkId) {
+    if (!clerkId || visibility === 'public') {
       return await prismaAdmin.campaign.findMany({
         where: { isPublic: true },
         include: { gameMaster: { select: { name: true } } },
@@ -22,18 +17,33 @@ export async function getCampaigns(filter: CampaignFilter = 'all', clerkId?: str
       })
     }
 
-    return await withRLS(clerkId, (db) =>
-      db.campaign.findMany({
-        where:
-          filter === 'owned'
-            ? { gameMaster: { clerkId } } // RLS permite + Prisma restringe a propias
-            : filter === 'public'
-              ? { isPublic: true } // Solo públicas (RLS igualmente las permite)
-              : undefined, // 'all': RLS gestiona público + miembro
+    return await withRLS(clerkId, async (db) => {
+      // Construimos el filtro de privadas según ownership
+      const user = await db.user.findUniqueOrThrow({ where: { clerkId }, select: { id: true } })
+      const userId = user.id
+
+      const ownedWhere = { isPublic: false, gameMaster: { clerkId } }
+      const memberWhere = {
+        isPublic: false,
+        gameMasterId: { not: userId },
+        members: { some: { userId } },
+      }
+
+      const privateWhere =
+        ownership === 'owned'
+          ? ownedWhere
+          : ownership === 'member'
+            ? memberWhere
+            : { OR: [ownedWhere, memberWhere] }
+
+      const where = visibility === 'all' ? { OR: [{ isPublic: true }, privateWhere] } : privateWhere
+
+      return db.campaign.findMany({
+        where,
         include: { gameMaster: { select: { name: true } } },
         orderBy: { createdAt: 'desc' },
       })
-    )
+    })
   } catch (error) {
     console.error('❌ Error fetching campaigns de Prisma:', error)
     return []
@@ -41,7 +51,6 @@ export async function getCampaigns(filter: CampaignFilter = 'all', clerkId?: str
 }
 
 // ES: Obtiene una campaña por ID.
-
 export async function getCampaignById(id: string, clerkId?: string) {
   try {
     if (!clerkId) {

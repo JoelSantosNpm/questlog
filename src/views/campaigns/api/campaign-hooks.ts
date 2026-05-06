@@ -1,18 +1,23 @@
 'use client'
 
+import { useAuth } from '@clerk/nextjs'
 import { useQuery } from '@tanstack/react-query'
-import { CampaignFilter } from '../model/campaign-types'
+import { CampaignOwnership, CampaignVisibility } from '../model/campaign-types'
 import { getCampaignById, getCampaigns } from './campaign-queries'
 import { CAMPAIGN_KEYS } from './query-keys'
 
-import { useAuth } from '@clerk/nextjs'
-
-export function useCampaignList(filter: CampaignFilter = 'all') {
+export function useCampaignList(
+  visibility: CampaignVisibility = 'public',
+  ownership: CampaignOwnership = 'both'
+) {
   const { userId: rawUserId } = useAuth()
-  const userId = rawUserId ?? undefined
+  const clerkId = rawUserId ?? undefined
+  // Sin sesión siempre public, ignorar lo que diga el store
+  const effectiveVisibility = !clerkId ? 'public' : visibility
   return useQuery({
-    queryKey: [...CAMPAIGN_KEYS.list(), filter, userId],
-    queryFn: () => getCampaigns(filter, userId),
+    queryKey: [...CAMPAIGN_KEYS.list(), effectiveVisibility, ownership, clerkId],
+    queryFn: () => getCampaigns(effectiveVisibility, ownership, clerkId),
+    enabled: effectiveVisibility === 'public' || !!clerkId,
     staleTime: 1000 * 60 * 30,
   })
 }
