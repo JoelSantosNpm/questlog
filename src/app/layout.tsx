@@ -2,19 +2,12 @@ import { AuthSync } from '@/app/auth'
 import { AuthProvider } from '@/app/providers/auth-provider'
 import { FramerMotionProvider } from '@/app/providers/framer-motion-provider'
 import { QueryProvider } from '@/app/providers/query-provider'
+import { almendra, inter, medieval } from '@/shared/config/fonts'
 import { cn } from '@/shared/utils/styles'
 import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
 import type { Metadata } from 'next'
-import { Inter, MedievalSharp } from 'next/font/google'
 import { Toaster } from 'sileo'
 import './globals.css'
-
-const inter = Inter({ subsets: ['latin'] })
-const medieval = MedievalSharp({
-  weight: '400',
-  subsets: ['latin'],
-  variable: '--font-medieval',
-})
 
 import { BookOpen, LayoutDashboard } from 'lucide-react'
 import Link from 'next/link'
@@ -35,6 +28,7 @@ export default async function RootLayout({
         className={cn(
           inter.className,
           medieval.variable,
+          almendra.variable,
           'flex min-h-screen flex-col bg-neutral-950 font-sans text-neutral-100 antialiased selection:bg-amber-500/30'
         )}
       >
@@ -50,7 +44,10 @@ export default async function RootLayout({
             <div className='flex h-16 w-full items-center justify-between px-4 sm:px-6 lg:px-8'>
               <div className='flex items-center gap-2'>
                 <Link href='/'>
-                  <h1 className='font-medieval text-2xl tracking-wide text-amber-500/90 drop-shadow-sm transition-colors hover:text-amber-400'>
+                  <h1
+                    className='text-2xl tracking-wide text-amber-500/90 drop-shadow-sm transition-colors hover:text-amber-400'
+                    style={{ fontFamily: 'var(--font-almendra)' }}
+                  >
                     Questlog
                   </h1>
                 </Link>
