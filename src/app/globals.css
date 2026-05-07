@@ -55,16 +55,19 @@ body {
 
 /* ── Letras de cristal: fill transparente + rim luminoso ── */
 .title-glass {
-  /* Fill casi invisible → la imagen de fondo se ve a través */
-  color: rgba(255, 255, 255, 0.05);
+  /* Gradiente naranja→ámbar→amarillo como fill semitransparente */
+  background: linear-gradient(
+    135deg,
+    rgba(234, 88, 12, 0.55) 0%,
+    /* orange-600 */ rgba(245, 158, 11, 0.55) 45%,
+    /* amber-500  */ rgba(251, 191, 36, 0.55) 100% /* amber-400  */
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   font-weight: 700;
 
-  /* Contorno que define la forma de las letras */
-  -webkit-text-stroke: 2px rgba(245, 158, 11, 0.4);
-  paint-order: stroke fill;
-  /* -webkit-text-stroke: 2px rgba(255, 255, 255, 0.15); */
-
   /* Glow: arista de luz + profundidad + halo ámbar */
-  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5)) drop-shadow(0 4px 10px rgba(0, 0, 0, 0.85))
-    drop-shadow(0 0 50px rgba(217, 119, 6, 0.45));
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.35)) drop-shadow(0 4px 10px rgba(0, 0, 0, 0.85))
+    drop-shadow(0 0 50px rgba(217, 119, 6, 0.5));
 }
