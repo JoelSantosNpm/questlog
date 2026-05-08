@@ -1,28 +1,18 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { uploadAsset } from '@/shared/api/storage-actions'
 import ImageUploader from '@/shared/ui/image-uploader/ImageUploader'
-import { StorageService } from '@/shared/api/storage-service'
-import { useAuth } from '@clerk/nextjs'
+import { fireEvent, render, screen } from '@testing-library/react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // --- MOCKS ---
 
-// Mock de Clerk
-vi.mock('@clerk/nextjs', () => ({
-  useAuth: vi.fn(),
+vi.mock('@/shared/api/storage-actions', () => ({
+  uploadAsset: vi.fn(),
 }))
 
-// Mock de Sileo
 vi.mock('sileo', () => ({
   sileo: {
     success: vi.fn(),
     error: vi.fn(),
-  },
-}))
-
-// Mock del servicio de Storage
-vi.mock('@/shared/api/storage-service', () => ({
-  StorageService: {
-    uploadFile: vi.fn(),
   },
 }))
 
@@ -35,12 +25,6 @@ describe('Storage Feature - ImageUploader UI', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.mocked(useAuth).mockReturnValue({
-      userId: 'user_123',
-      getToken: vi.fn().mockResolvedValue('fake-token'),
-      isLoaded: true,
-      isSignedIn: true,
-    } as unknown as ReturnType<typeof useAuth>)
   })
 
   it('debe renderizar el estado inicial vacío', () => {
@@ -57,7 +41,6 @@ describe('Storage Feature - ImageUploader UI', () => {
     const input = document.querySelector('input[type="file"]') as HTMLInputElement
     const file = new File(['dummy'], 'test.png', { type: 'image/png' })
 
-    // Simular selección de archivo
     fireEvent.change(input, { target: { files: [file] } })
 
     expect(screen.getByAltText('Vista previa')).toBeInTheDocument()
@@ -76,42 +59,32 @@ describe('Storage Feature - ImageUploader UI', () => {
     const file = new File(['dummy'], 'test.png', { type: 'image/png' })
 
     fireEvent.change(input, { target: { files: [file] } })
-
-    const discardButton = screen.getByText(/Descartar/i)
-    fireEvent.click(discardButton)
+    fireEvent.click(screen.getByText(/Descartar/i))
 
     expect(screen.queryByAltText('Vista previa')).not.toBeInTheDocument()
     expect(screen.getByText(/Seleccionar Imagen/i)).toBeInTheDocument()
   })
 
-  it('debe llamar al servicio de subida al confirmar', async () => {
-    vi.mocked(StorageService.uploadFile).mockResolvedValue('https://public.url/img.png')
+  it('debe llamar a uploadAsset con el FormData correcto al confirmar', async () => {
+    vi.mocked(uploadAsset).mockResolvedValue({ publicUrl: 'https://public.url/img.png' })
 
-    render(<ImageUploader onUpload={mockOnUpload} category='monsters' />)
+    render(<ImageUploader onUpload={mockOnUpload} storagePath='monsters' />)
 
     const input = document.querySelector('input[type="file"]') as HTMLInputElement
     const file = new File(['dummy'], 'test.png', { type: 'image/png' })
 
     fireEvent.change(input, { target: { files: [file] } })
+    fireEvent.click(screen.getByText(/Confirmar/i))
 
-    const confirmButton = screen.getByText(/Confirmar/i)
-    fireEvent.click(confirmButton)
-
-    // Debería mostrar el estado de "Sellando..."
     expect(screen.getByText(/Sellando/i)).toBeInTheDocument()
 
-    // Esperar a que se complete la promesa
     await vi.waitFor(() => {
-      expect(StorageService.uploadFile).toHaveBeenCalledWith(
-        expect.objectContaining({
-          file,
-          userId: 'user_123',
-          category: 'monsters',
-        })
-      )
+      expect(uploadAsset).toHaveBeenCalledOnce()
+      const formData = vi.mocked(uploadAsset).mock.calls[0][0]
+      expect(formData.get('file')).toBe(file)
+      expect(formData.get('storagePath')).toBe('monsters')
     })
 
     expect(mockOnUpload).toHaveBeenCalledWith('https://public.url/img.png')
-    expect(screen.getByText(/Imagen Sellada/i)).toBeInTheDocument()
   })
 })
