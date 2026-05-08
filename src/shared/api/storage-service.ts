@@ -1,20 +1,12 @@
-import { getSupabaseClient } from '@/shared/lib/supabase/client'
+import { SupabaseClient } from '@supabase/supabase-js'
 
 export const StorageService = {
   /**
-   * Sube un archivo al bucket de Supabase con el token de Clerk.
+   * Sube un archivo al bucket questlog-assets.
+   * El caller es responsable de construir filePath y el cliente autenticado.
    */
-  async uploadFile(params: { file: File; userId: string; category: string; token: string }) {
-    const { file, userId, category, token } = params
-    const supabase = getSupabaseClient(token)
-
-    const fileExt = file.name.split('.').pop()
-    const cleanFileName = file.name
-      .split('.')[0]
-      .replace(/[^a-z0-9]/gi, '_')
-      .toLowerCase()
-
-    const filePath = `${userId}/${category}/${Date.now()}-${cleanFileName}.${fileExt}`
+  async uploadFile(params: { supabase: SupabaseClient; filePath: string; file: File }) {
+    const { supabase, filePath, file } = params
 
     const { error: uploadError } = await supabase.storage
       .from('questlog-assets')
