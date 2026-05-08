@@ -88,12 +88,14 @@ El archivo SQL que define todas las políticas es [`supabase/migrations/20260504
 
 ### Campaign
 
-| Operación | Política                                                                     |
-| --------- | ---------------------------------------------------------------------------- |
-| SELECT    | Campañas públicas (`isPublic = true`) O el usuario es miembro (`Membership`) |
-| INSERT    | `gameMasterId` debe ser el usuario activo                                    |
-| UPDATE    | Solo OWNER o EDITOR (vía `Membership`)                                       |
-| DELETE    | Solo el `gameMaster` original                                                |
+| Operación | Política                                                                                   |
+| --------- | ------------------------------------------------------------------------------------------ |
+| SELECT    | Campañas públicas (`isPublic = true`) O el GM es el usuario activo O el usuario es miembro |
+| INSERT    | `gameMasterId` debe ser el usuario activo                                                  |
+| UPDATE    | El GM de la campaña O un miembro con rol OWNER/EDITOR                                      |
+| DELETE    | Solo el `gameMaster` original                                                              |
+
+> **Nota sobre recursión:** `Campaign_Select` y `Campaign_Update` originalmente causaban recursión infinita porque leían `Membership` (que a su vez leía `Campaign`). Se resuelve con dos funciones `SECURITY DEFINER` que leen directamente sin RLS: `is_campaign_member()` y `can_edit_campaign()`. Ver [`supabase/migrations/20260505_fix_rls_recursion.sql`](../supabase/migrations/20260505_fix_rls_recursion.sql) y [`supabase/migrations/20260508_fix_campaign_update_recursion.sql`](../supabase/migrations/20260508_fix_campaign_update_recursion.sql).
 
 ### Membership
 
@@ -150,13 +152,52 @@ El archivo SQL que define todas las políticas es [`supabase/migrations/20260504
 
 ---
 
+## �️ Storage RLS (questlog-assets)
+
+El bucket `questlog-assets` almacena imágenes y archivos de usuario con la estructura:
+
+```
+questlog-assets/
+  {userId}/
+    campaigns/{campaignId}/{archivo}
+    profile/{archivo}
+    templates/{tipo}/{templateId}/{archivo}
+```
+
+| Operación | Política                                                                         |
+| --------- | -------------------------------------------------------------------------------- |
+| SELECT    | Carpeta propia (`{userId}/...`) O carpeta de campaña donde el usuario es miembro |
+| INSERT    | Solo a la propia carpeta raíz (`{userId}/...`)                                   |
+| DELETE    | Carpeta propia O miembro con rol OWNER/EDITOR de la campaña referenciada         |
+
+El bucket `system` es de lectura pública; escritura solo vía `service_role`.
+
+### Prevención de archivos huérfanos
+
+Supabase no permite crear triggers en `storage.objects` desde el SQL Editor (`permission denied for schema storage`). La validación se hace en la **capa de aplicación**: antes de llamar a `supabase.storage.upload()`, la Server Action verifica que la entidad referenciada exista en BD:
+
+```typescript
+// ✅ Patrón correcto en una Server Action de subida
+const campaign = await prismaAdmin.campaign.findUnique({ where: { id: campaignId } })
+if (!campaign) throw new Error(`Campaña no encontrada: ${campaignId}`)
+
+await supabase.storage.from('questlog-assets').upload(path, file)
+```
+
+Ver [`supabase/migrations/20260508_storage_rls_and_orphan_guard.sql`](../supabase/migrations/20260508_storage_rls_and_orphan_guard.sql).
+
+---
+
 ## 🚀 Cómo Aplicar las Políticas
 
-Las políticas **no se gestionan con `prisma migrate`** — Prisma solo gestiona DDL estructural (tablas, columnas, índices). Las políticas RLS se aplican manualmente:
+Las políticas **no se gestionan con `prisma migrate`** — Prisma solo gestiona DDL estructural (tablas, columnas, índices). Las políticas RLS se aplican manualmente en el SQL Editor de Supabase en este orden:
 
-1. Abre **Supabase Dashboard → SQL Editor**
-2. Pega el contenido de `supabase/migrations/20260504_rls_policies.sql`
-3. Ejecuta
+| #   | Archivo                                                          | Contenido                                                                      |
+| --- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| 1   | `supabase/migrations/20260504_rls_policies.sql`                  | Políticas base + `current_user_id()` + GRANTs                                  |
+| 2   | `supabase/migrations/20260505_fix_rls_recursion.sql`             | Fix recursión `Campaign_Select` / `Membership_Select` + `is_campaign_member()` |
+| 3   | `supabase/migrations/20260508_fix_campaign_update_recursion.sql` | Fix recursión `Campaign_Update` + `can_edit_campaign()` / `is_campaign_gm()`   |
+| 4   | `supabase/migrations/20260508_storage_rls_and_orphan_guard.sql`  | Políticas RLS de Storage                                                       |
 
 > Si añades nuevas tablas en el futuro, recuerda: `ENABLE ROW LEVEL SECURITY` + `GRANT` al rol `authenticated` + políticas correspondientes.
 
@@ -164,10 +205,14 @@ Las políticas **no se gestionan con `prisma migrate`** — Prisma solo gestiona
 
 ## 🗂️ Archivos Relevantes
 
-| Archivo                                         | Responsabilidad                                               |
-| ----------------------------------------------- | ------------------------------------------------------------- |
-| `src/shared/lib/prisma.ts`                      | `prismaAdmin` y `withRLS()`                                   |
-| `src/shared/lib/auth.ts`                        | `requireUserId()` — obtiene clerkId de la sesión              |
-| `supabase/migrations/20260504_rls_policies.sql` | Políticas RLS completas + `current_user_id()`                 |
-| `src/views/*/api/*-actions.ts`                  | Server Actions — usan `withRLS`                               |
-| `src/views/*/api/*-queries.ts`                  | Queries de lectura — `withRLS` o `prismaAdmin` según contexto |
+| Archivo                                                          | Responsabilidad                                                            |
+| ---------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `src/shared/lib/prisma.ts`                                       | `prismaAdmin` y `withRLS()`                                                |
+| `src/shared/lib/auth.ts`                                         | `requireUserId()` — obtiene clerkId de la sesión                           |
+| `supabase/migrations/20260504_rls_policies.sql`                  | Políticas RLS base + `current_user_id()` + GRANTs                          |
+| `supabase/migrations/20260505_fix_rls_recursion.sql`             | Fix recursión + `is_campaign_member()`                                     |
+| `supabase/migrations/20260508_fix_campaign_update_recursion.sql` | Fix recursión Campaign_Update + `can_edit_campaign()` / `is_campaign_gm()` |
+| `supabase/migrations/20260508_storage_rls_and_orphan_guard.sql`  | Políticas RLS de Storage                                                   |
+| `supabase/rls_tests.sql`                                         | Tests de RLS — ejecutar en SQL Editor, resultados en pestaña Results       |
+| `src/views/*/api/*-actions.ts`                                   | Server Actions — usan `withRLS`                                            |
+| `src/views/*/api/*-queries.ts`                                   | Queries de lectura — `withRLS` o `prismaAdmin` según contexto              |
