@@ -5,16 +5,29 @@ import { cn } from '@/shared/utils/styles'
 import { useImageUploader } from './hooks/useImageUploader'
 import { UploaderActions, UploaderEmptyState, UploaderLabel, UploaderPreview } from './parts'
 
+type StoragePath =
+  | 'assets'
+  | 'profile'
+  | 'characters'
+  | 'monsters'
+  | 'items'
+  | `campaigns/${string}`
+  | `characters/${string}`
+  | `monsters/${string}`
+  | `items/${string}`
+
 interface ImageUploaderProps {
   onUpload: (url: string) => void
-  category?: 'campaigns' | 'monsters' | 'characters' | 'items' | 'assets'
+  /** Segmento de ruta dentro de la carpeta del usuario.
+   *  La ruta final en Storage será: {clerkId}/{storagePath}/{timestamp}-{file} */
+  storagePath?: StoragePath
   label?: string
   className?: string
 }
 
 export default function ImageUploader({
   onUpload,
-  category = 'assets',
+  storagePath = 'assets',
   label,
   className,
 }: ImageUploaderProps) {
@@ -29,7 +42,7 @@ export default function ImageUploader({
     handleUpload,
     handleReset,
     processFile,
-  } = useImageUploader({ onUpload, category })
+  } = useImageUploader({ onUpload, storagePath })
 
   const { isDragging, handleDrag, handleDrop } = useFileDrop({
     onDropFile: processFile,

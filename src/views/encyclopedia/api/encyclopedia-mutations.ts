@@ -9,7 +9,7 @@ import {
   updateCharacterTemplate,
   updateItemTemplate,
   updateMonster,
-} from './actions'
+} from './encyclopedia-actions'
 import { ENCYCLOPEDIA_KEYS } from './query-keys'
 
 // Bestiary

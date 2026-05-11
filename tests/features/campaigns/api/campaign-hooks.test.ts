@@ -45,7 +45,7 @@ describe('useCampaignList', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
     const [entry] = queryClient.getQueryCache().findAll()
-    expect(entry.queryKey).toEqual([...CAMPAIGN_KEYS.list(), 'all', undefined])
+    expect(entry.queryKey).toEqual([...CAMPAIGN_KEYS.list(), 'public', 'both', undefined])
   })
 
   it('incluye el userId real en la query key cuando el usuario está autenticado', async () => {
@@ -56,7 +56,7 @@ describe('useCampaignList', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
     const [entry] = queryClient.getQueryCache().findAll()
-    expect(entry.queryKey).toEqual([...CAMPAIGN_KEYS.list(), 'all', 'user_abc'])
+    expect(entry.queryKey).toEqual([...CAMPAIGN_KEYS.list(), 'public', 'both', 'user_abc'])
   })
 
   it('llama a getCampaigns con undefined (no null) cuando no hay sesión', async () => {
@@ -66,7 +66,7 @@ describe('useCampaignList', () => {
     const { result } = renderHook(() => useCampaignList(), { wrapper })
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
-    expect(getCampaigns).toHaveBeenCalledWith('all', undefined)
+    expect(getCampaigns).toHaveBeenCalledWith('public', 'both', undefined)
   })
 
   it('llama a getCampaigns con el userId cuando hay sesión', async () => {
@@ -76,7 +76,7 @@ describe('useCampaignList', () => {
     const { result } = renderHook(() => useCampaignList(), { wrapper })
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
-    expect(getCampaigns).toHaveBeenCalledWith('all', 'user_abc')
+    expect(getCampaigns).toHaveBeenCalledWith('public', 'both', 'user_abc')
   })
 
   it('respeta el filter personalizado pasado como argumento', async () => {
@@ -87,8 +87,8 @@ describe('useCampaignList', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
     const [entry] = queryClient.getQueryCache().findAll()
-    expect(entry.queryKey).toEqual([...CAMPAIGN_KEYS.list(), 'public', 'user_abc'])
-    expect(getCampaigns).toHaveBeenCalledWith('public', 'user_abc')
+    expect(entry.queryKey).toEqual([...CAMPAIGN_KEYS.list(), 'public', 'both', 'user_abc'])
+    expect(getCampaigns).toHaveBeenCalledWith('public', 'both', 'user_abc')
   })
 })
 

@@ -16,7 +16,10 @@ export default function LandingPage() {
         />
         <div className='absolute inset-0 bg-linear-to-b from-black/50 via-black/30 to-neutral-950' />
         <div className='absolute inset-0 flex flex-col items-center justify-center'>
-          <h1 className='font-medieval text-5xl font-bold tracking-wider text-amber-500 drop-shadow-[0_2px_12px_rgba(0,0,0,1)] md:text-7xl'>
+          <h1
+            className='title-glass text-5xl tracking-[0.15em] md:text-8xl'
+            style={{ fontFamily: 'var(--font-almendra)' }}
+          >
             Questlog
           </h1>
         </div>

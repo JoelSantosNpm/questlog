@@ -1,9 +1,7 @@
 import { getQueryClient } from '@/shared/api/query-client'
 import { CampaignPortal, prefetchCampaignList } from '@/views/campaigns'
-import { SignedIn } from '@clerk/nextjs'
 import { auth } from '@clerk/nextjs/server'
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
-import Link from 'next/link'
 
 export const revalidate = 0 // Forzar regeneración dinámica en cada request
 
@@ -14,17 +12,7 @@ export default async function PortalsPage() {
   await prefetchCampaignList(queryClient, userId ?? undefined)
 
   return (
-    <div className='relative flex flex-1 w-full flex-col items-center overflow-hidden'>
-      <div className='absolute left-4 top-4 sm:left-6 sm:top-6 z-50'>
-        <SignedIn>
-          <Link
-            href='/dashboard'
-            className='rounded-md border border-stone-700 bg-stone-900/80 px-4 py-2 text-sm text-neutral-300 backdrop-blur-md transition-colors hover:bg-stone-800 hover:text-white'
-          >
-            &larr; Volver al Panel
-          </Link>
-        </SignedIn>
-      </div>
+    <div className='relative flex flex-1 w-full overflow-hidden'>
       <HydrationBoundary state={dehydrate(queryClient)}>
         <CampaignPortal />
       </HydrationBoundary>
