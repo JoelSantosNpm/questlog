@@ -206,8 +206,8 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
     3. ✅ `next.config.ts` actualizado con `remotePatterns` para el hostname de Supabase.
     4. ✅ Componente `ImageUploader` atomizado y funcional (validación 2MB, preview, upload).
     5. ✅ Estética de "Lienzo de dibujo" implementada con esquinas decorativas dinámicas.
-  - _Cobertura de Tests:_ ✅ Esquema (unit), Hook (lógica de estado), Componente (UI) y Server Action (integración). `StorageService` eliminado tras refactorización a Server Action.
-  - _AC 1:_ ✅ Puedo subir una imagen desde `ImageUploader` — selección, validación (600kB / tipo MIME) y envío vía `uploadAsset` Server Action funcionan correctamente.
+  - _Cobertura de Tests:_ ✅ Esquema (unit), Servicio (integración), Hook (lógica de estado) y Componente (UI). Estructura organizada por features en `/tests`.
+  - _AC 1:_ ✅ Puedo subir una imagen desde `ImageUploader` — selección, validación (2MB / tipo MIME) y envío vía `StorageService.uploadFile` funcionan correctamente.
   - _AC 2:_ ✅ El componente devuelve una URL pública (`onUpload: (url: string) => void`) que puede guardarse en `Campaign.imageUrl`. `createCampaign` y `updateCampaign` aceptan `imageUrl` en su DTO.
 
 - [x] **M3-01: Reestructuración de Datos (Atómicos vs JSON)** [COMPLETADO]
