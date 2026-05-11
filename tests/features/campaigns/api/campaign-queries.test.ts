@@ -2,73 +2,85 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
-vi.mock('@/shared/lib/prisma', () => ({
-  prisma: {
-    campaign: {
-      findMany: vi.fn(),
-      findFirst: vi.fn(),
-    },
-  },
+const {
+  mockAdminFindMany,
+  mockAdminFindFirst,
+  mockTxFindMany,
+  mockTxFindFirst,
+  mockTxFindUniqueOrThrow,
+  mockWithRLS,
+} = vi.hoisted(() => ({
+  mockAdminFindMany: vi.fn(),
+  mockAdminFindFirst: vi.fn(),
+  mockTxFindMany: vi.fn(),
+  mockTxFindFirst: vi.fn(),
+  mockTxFindUniqueOrThrow: vi.fn(),
+  mockWithRLS: vi.fn(),
 }))
 
-import { prisma } from '@/shared/lib/prisma'
-import { getCampaignById, getCampaigns } from '@/views/campaigns/api/campaign-queries'
+vi.mock('@/shared/lib/prisma', () => ({
+  prismaAdmin: {
+    campaign: {
+      findMany: mockAdminFindMany,
+      findFirst: mockAdminFindFirst,
+    },
+  },
+  withRLS: mockWithRLS,
+}))
 
-const mockCampaign = vi.mocked(prisma.campaign)
+import { getCampaignById, getCampaigns } from '@/views/campaigns/api/campaign-queries'
 
 // ─── getCampaigns ─────────────────────────────────────────────────────────────
 
 describe('getCampaigns', () => {
-  beforeEach(() => vi.clearAllMocks())
-
-  it('sin clerkId solo incluye la condición isPublic:true en el OR', async () => {
-    mockCampaign.findMany.mockResolvedValueOnce([])
-
-    await getCampaigns('all')
-
-    const { where } = mockCampaign.findMany.mock.calls[0][0] as { where: { OR: unknown[] } }
-    expect(where.OR).toContainEqual({ isPublic: true })
-    // No debe añadir condición de gameMaster
-    const hasGameMaster = where.OR.some(
-      (c) => typeof c === 'object' && c !== null && 'gameMaster' in c
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockAdminFindMany.mockResolvedValue([])
+    mockTxFindMany.mockResolvedValue([])
+    mockTxFindUniqueOrThrow.mockResolvedValue({ id: 'db-user-id' })
+    mockWithRLS.mockImplementation((_userId: string, fn: (tx: unknown) => unknown) =>
+      fn({
+        campaign: { findMany: mockTxFindMany, findFirst: mockTxFindFirst },
+        user: { findUniqueOrThrow: mockTxFindUniqueOrThrow },
+      })
     )
-    expect(hasGameMaster).toBe(false)
   })
 
-  it('con clerkId y filter=all añade la condición del dueño al OR', async () => {
-    mockCampaign.findMany.mockResolvedValueOnce([])
+  it('sin clerkId usa prismaAdmin con isPublic:true', async () => {
+    await getCampaigns()
 
-    await getCampaigns('all', 'user_123')
-
-    const { where } = mockCampaign.findMany.mock.calls[0][0] as { where: { OR: unknown[] } }
-    expect(where.OR).toContainEqual({ isPublic: true })
-    expect(where.OR).toContainEqual({ gameMaster: { clerkId: 'user_123' } })
-  })
-
-  it('con filter=public nunca añade condición del dueño aunque haya clerkId', async () => {
-    mockCampaign.findMany.mockResolvedValueOnce([])
-
-    await getCampaigns('public', 'user_123')
-
-    const { where } = mockCampaign.findMany.mock.calls[0][0] as { where: { OR: unknown[] } }
-    expect(where.OR).toContainEqual({ isPublic: true })
-    const hasGameMaster = where.OR.some(
-      (c) => typeof c === 'object' && c !== null && 'gameMaster' in c
+    expect(mockAdminFindMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { isPublic: true } })
     )
-    expect(hasGameMaster).toBe(false)
   })
 
-  it('con filter=owned el OR solo contiene la condición del dueño', async () => {
-    mockCampaign.findMany.mockResolvedValueOnce([])
+  it('con clerkId y visibility=public usa prismaAdmin (no activa RLS)', async () => {
+    await getCampaigns('public', 'both', 'user_123')
 
-    await getCampaigns('owned', 'user_123')
+    expect(mockAdminFindMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { isPublic: true } })
+    )
+  })
 
-    const { where } = mockCampaign.findMany.mock.calls[0][0] as { where: { OR: unknown[] } }
-    expect(where.OR).toEqual([{ gameMaster: { clerkId: 'user_123' } }])
+  it('con clerkId y visibility=all, ownership=owned construye OR con públicas y solo-propias', async () => {
+    await getCampaigns('all', 'owned', 'user_123')
+
+    expect(mockTxFindMany).toHaveBeenCalled()
+    const { where } = mockTxFindMany.mock.calls[0][0] as { where: { OR: unknown[] } }
+    expect(where.OR).toContainEqual({ isPublic: true })
+    expect(where.OR).toContainEqual({ isPublic: false, gameMaster: { clerkId: 'user_123' } })
+  })
+
+  it('con clerkId y visibility=private, ownership=owned no incluye públicas', async () => {
+    await getCampaigns('private', 'owned', 'user_123')
+
+    expect(mockTxFindMany).toHaveBeenCalled()
+    const { where } = mockTxFindMany.mock.calls[0][0] as Record<string, unknown>
+    expect(where).toEqual({ isPublic: false, gameMaster: { clerkId: 'user_123' } })
   })
 
   it('devuelve [] si Prisma lanza un error', async () => {
-    mockCampaign.findMany.mockRejectedValueOnce(new Error('DB error'))
+    mockAdminFindMany.mockRejectedValueOnce(new Error('DB error'))
 
     const result = await getCampaigns()
 
@@ -77,7 +89,7 @@ describe('getCampaigns', () => {
 
   it('devuelve los datos que devuelve Prisma', async () => {
     const fakeRow = { id: 'c-1', name: 'Campaña Pública', isPublic: true }
-    mockCampaign.findMany.mockResolvedValueOnce([fakeRow] as never)
+    mockAdminFindMany.mockResolvedValueOnce([fakeRow])
 
     const result = await getCampaigns('public')
 
@@ -88,44 +100,44 @@ describe('getCampaigns', () => {
 // ─── getCampaignById ──────────────────────────────────────────────────────────
 
 describe('getCampaignById', () => {
-  beforeEach(() => vi.clearAllMocks())
-
-  it('sin clerkId el OR solo incluye isPublic:true (seguridad: no expone privadas)', async () => {
-    mockCampaign.findFirst.mockResolvedValueOnce(null)
-
-    await getCampaignById('camp-1')
-
-    const { where } = mockCampaign.findFirst.mock.calls[0][0] as {
-      where: { id: string; OR: unknown[] }
-    }
-    expect(where.OR).toEqual([{ isPublic: true }])
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockAdminFindFirst.mockResolvedValue(null)
+    mockTxFindFirst.mockResolvedValue(null)
+    mockWithRLS.mockImplementation((_userId: string, fn: (tx: unknown) => unknown) =>
+      fn({
+        campaign: { findMany: mockTxFindMany, findFirst: mockTxFindFirst },
+        user: { findUniqueOrThrow: mockTxFindUniqueOrThrow },
+      })
+    )
   })
 
-  it('con clerkId válido añade la condición del dueño al OR', async () => {
-    mockCampaign.findFirst.mockResolvedValueOnce(null)
+  it('sin clerkId usa prismaAdmin filtrando por id e isPublic:true', async () => {
+    await getCampaignById('camp-1')
 
+    expect(mockAdminFindFirst).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: 'camp-1', isPublic: true } })
+    )
+  })
+
+  it('con clerkId usa withRLS y solo filtra por id (RLS gestiona visibilidad)', async () => {
     await getCampaignById('camp-1', 'user_abc')
 
-    const { where } = mockCampaign.findFirst.mock.calls[0][0] as {
-      where: { id: string; OR: unknown[] }
-    }
-    expect(where.OR).toContainEqual({ isPublic: true })
-    expect(where.OR).toContainEqual({ gameMaster: { clerkId: 'user_abc' } })
+    expect(mockTxFindFirst).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: 'camp-1' } })
+    )
   })
 
   it('siempre filtra por el id correcto', async () => {
-    mockCampaign.findFirst.mockResolvedValueOnce(null)
+    await getCampaignById('camp-xyz')
 
-    await getCampaignById('camp-xyz', 'user_abc')
-
-    const { where } = mockCampaign.findFirst.mock.calls[0][0] as {
-      where: { id: string; OR: unknown[] }
-    }
-    expect(where.id).toBe('camp-xyz')
+    expect(mockAdminFindFirst).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ id: 'camp-xyz' }) })
+    )
   })
 
   it('devuelve null si Prisma lanza un error', async () => {
-    mockCampaign.findFirst.mockRejectedValueOnce(new Error('DB error'))
+    mockAdminFindFirst.mockRejectedValueOnce(new Error('DB error'))
 
     const result = await getCampaignById('camp-1')
 
@@ -134,7 +146,7 @@ describe('getCampaignById', () => {
 
   it('devuelve la campaña si Prisma la encuentra', async () => {
     const fakeCampaign = { id: 'camp-1', name: 'Campaña', isPublic: true }
-    mockCampaign.findFirst.mockResolvedValueOnce(fakeCampaign as never)
+    mockAdminFindFirst.mockResolvedValueOnce(fakeCampaign)
 
     const result = await getCampaignById('camp-1')
 
