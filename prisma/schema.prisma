@@ -33,12 +33,18 @@ enum ResourceType {
   MONSTER_TEMPLATE
   ITEM_TEMPLATE
   CHARACTER_TEMPLATE
-  CAMPAIGN
 }
 
 enum AccessType {
   VIEW
   EDIT
+}
+
+enum CampaignRole {
+  OWNER    // El DM principal
+  EDITOR   // DMs invitados o ayudantes
+  PLAYER   // Jugadores
+  VIEWER   // Observadores
 }
 
 // ---------------------------------------------------------
@@ -58,8 +64,10 @@ model User {
   createdMonsters  MonsterTemplate[]   @relation("CreatedMonsters")
   createdItems     ItemTemplate[]      @relation("CreatedItems")
   
-  accessGrants     AccessGrant[]       @relation("UserAccess")
-
+  memberships         Membership[]
+  accessReceived      AccessGrant[] @relation("UserReceivedAccess")
+  accessGiven         AccessGrant[] @relation("UserGaveAccess")
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -68,11 +76,11 @@ model User {
 // 2. CAMPAÑA (La Mesa con el Portal de Piedra)
 // ---------------------------------------------------------
 model Campaign {
-  id               String  @id @default(cuid())
-  name             String
-  description      String?
-  imageUrl         String?
-  system           String  @default("D&D 5e")
+  id                String       @id @default(cuid())
+  name              String
+  description       String?
+  imageUrl          String?
+  system            String       @default("D&D 5e")
   location         String?
   nextSession      DateTime?
   isPublic        Boolean @default(false)
@@ -80,6 +88,9 @@ model Campaign {
 
   gameMasterId String
   gameMaster   User   @relation(fields: [gameMasterId], references: [id], onDelete: Cascade)
+
+  //Relaciones
+  members           Membership[] 
 
   characters     Character[]
   notes          SessionNote[]
@@ -145,8 +156,8 @@ model Character {
   userId String?
   user   User?   @relation("PlayerCharacters", fields: [userId], references: [id], onDelete: Cascade)
 
-  campaignId String?
-  campaign   Campaign? @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  campaignId String
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: SetNull)
 
   templateId String?
   template   CharacterTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
@@ -377,12 +388,18 @@ model Quest {
 }
 
 // ---------------------------------------------------------
-// 11. PERMISOS (Access Control)
+// 11. ACCESS GRANT (Acceso a templates)
 // ---------------------------------------------------------
 model AccessGrant {
   id           String       @id @default(cuid())
+  
+  // Quién recibe el permiso
   granteeId    String
-  grantee      User         @relation("UserAccess", fields: [granteeId], references: [id], onDelete: Cascade)
+  grantee      User         @relation("UserReceivedAccess", fields: [granteeId], references: [id], onDelete: Cascade)
+  
+  // Quién otorga el permiso (Opcional pero muy recomendado)
+  granterId    String
+  granter      User         @relation("UserGaveAccess", fields: [granterId], references: [id], onDelete: Cascade)
   
   resourceType ResourceType
   resourceId   String
@@ -392,5 +409,27 @@ model AccessGrant {
   updatedAt DateTime @updatedAt
 
   @@index([granteeId])
+  @@index([granterId])
   @@index([resourceId])
+}
+
+// ---------------------------------------------------------
+// 12. MEMBRESIAS (de campañas)
+// ---------------------------------------------------------
+model Membership {
+  id         String       @id @default(cuid())
+  role       CampaignRole @default(PLAYER)
+  
+  userId     String
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  campaignId String
+  campaign   Campaign     @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  @@unique([userId, campaignId]) // Un usuario no puede tener dos roles en la misma campaña
+  @@index([userId])
+  @@index([campaignId])
 }

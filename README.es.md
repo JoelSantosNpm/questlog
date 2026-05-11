@@ -120,6 +120,23 @@ Para maximizar la reutilización, QuestLog separa la definición de un ser de su
 
 > 📖 **Para una explicación técnica profunda sobre relaciones y borrado en cascada, consulta la [Guía del Esquema de Datos](docs/DATABASE_SCHEMA.md).**
 
+### 🔐 Row Level Security (RLS)
+
+Las 12 tablas de la base de datos están protegidas por políticas RLS de PostgreSQL aplicadas directamente en Supabase. La seguridad opera en dos capas:
+
+- **Capa de aplicación:** `requireUserId()` + `auth()` de Clerk autentican al invocador antes de ejecutar cualquier Server Action.
+- **Capa de base de datos:** cada consulta se ejecuta bajo el rol `authenticated` via `withRLS(clerkId)` o `withPublicRLS()`, por lo que la base de datos verifica la propiedad de cada fila de forma independiente — aunque un bug sortee la capa de aplicación.
+
+Tres patrones de cliente Prisma refuerzan esta separación:
+
+| Cliente            | Rol en BD                   | Se usa en                                      |
+| ------------------ | --------------------------- | ---------------------------------------------- |
+| `prismaAdmin`      | `postgres` (ignora RLS)     | Solo webhook de Clerk y sincronización de auth |
+| `withRLS(clerkId)` | `authenticated` + userId    | Todas las mutations y queries autenticadas     |
+| `withPublicRLS()`  | `authenticated`, sin userId | Lecturas de catálogo público (`isPublic=true`) |
+
+> 📖 **Consulta la tabla completa de políticas y la arquitectura en la [Guía de Seguridad y Control de Acceso](docs/SECURITY.es.md).**
+
 ---
 
 ## 🛠️ Stack Tecnológico: ¿Por qué estas herramientas?

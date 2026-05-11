@@ -7,6 +7,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
+vi.mock('@clerk/nextjs', () => ({
+  useAuth: vi.fn(() => ({ userId: null })),
+}))
+
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn() }),
 }))
@@ -151,7 +155,7 @@ describe('ListView', () => {
   describe('Lista vacía', () => {
     it('no muestra items si el array está vacío', () => {
       render(<ListView items={[]} />)
-      expect(screen.queryByRole('button')).not.toBeInTheDocument()
+      expect(screen.getByText('No se han encontrado registros.')).toBeInTheDocument()
     })
   })
 })

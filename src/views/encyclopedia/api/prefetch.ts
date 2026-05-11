@@ -2,23 +2,19 @@ import type { QueryClient } from '@tanstack/react-query'
 import { getBestiaryItems, getCharacterTemplates, getMuseumItems } from './encyclopedia-queries'
 import { ENCYCLOPEDIA_KEYS } from './query-keys'
 
-/**
- * Precarga en paralelo los datos de las tres secciones de la enciclopedia
- * (bestiario, reparto, museo) en el QueryClient del servidor.
- */
 export async function prefetchEncyclopediaData(queryClient: QueryClient): Promise<void> {
   await Promise.all([
     queryClient.prefetchQuery({
-      queryKey: ENCYCLOPEDIA_KEYS.bestiary(),
-      queryFn: getBestiaryItems,
+      queryKey: ENCYCLOPEDIA_KEYS.bestiary('public', 'both'),
+      queryFn: () => getBestiaryItems('public', 'both'),
     }),
     queryClient.prefetchQuery({
-      queryKey: ENCYCLOPEDIA_KEYS.cast(),
-      queryFn: getCharacterTemplates,
+      queryKey: ENCYCLOPEDIA_KEYS.cast('public', 'both'),
+      queryFn: () => getCharacterTemplates('public', 'both'),
     }),
     queryClient.prefetchQuery({
-      queryKey: ENCYCLOPEDIA_KEYS.museum(),
-      queryFn: getMuseumItems,
+      queryKey: ENCYCLOPEDIA_KEYS.museum('public', 'both'),
+      queryFn: () => getMuseumItems('public', 'both'),
     }),
   ])
 }
