@@ -1,7 +1,38 @@
 import { prismaAdmin } from '@/shared/lib/prisma'
+import { createClient } from '@/shared/lib/supabase/server'
 import { WebhookEvent } from '@clerk/nextjs/server'
 import { headers } from 'next/headers'
 import { Webhook } from 'svix'
+
+/**
+ * Borra recursivamente todos los archivos de una carpeta en questlog-assets.
+ * Supabase Storage no tiene operación "delete folder" — hay que listar y borrar.
+ */
+async function deleteStorageFolder(supabase: ReturnType<typeof createClient>, prefix: string) {
+  const { data: items, error } = await supabase.storage.from('questlog-assets').list(prefix)
+  if (error || !items?.length) return
+
+  const filePaths: string[] = []
+  const folderPrefixes: string[] = []
+
+  for (const item of items) {
+    if (item.id) {
+      // Es un archivo
+      filePaths.push(`${prefix}/${item.name}`)
+    } else {
+      // Es una subcarpeta (id === null en Supabase Storage)
+      folderPrefixes.push(`${prefix}/${item.name}`)
+    }
+  }
+
+  if (filePaths.length) {
+    await supabase.storage.from('questlog-assets').remove(filePaths)
+  }
+
+  for (const folder of folderPrefixes) {
+    await deleteStorageFolder(supabase, folder)
+  }
+}
 
 export async function POST(req: Request) {
   const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET
@@ -72,6 +103,8 @@ export async function POST(req: Request) {
 
   if (eventType === 'user.deleted') {
     try {
+      const supabase = createClient()
+      await deleteStorageFolder(supabase, id as string)
       await prismaAdmin.user.delete({
         where: { clerkId: id },
       })
