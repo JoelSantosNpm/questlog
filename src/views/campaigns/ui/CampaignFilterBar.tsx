@@ -17,13 +17,16 @@ import {
 } from '../model/campaignFilterStore'
 
 export function CampaignFilterBar() {
-  const { userId } = useAuth()
+  const { userId, isLoaded } = useAuth()
   const isLoggedIn = !!userId
 
-  // Se usa getState() para evitar stale closures tras hot-reload
+  // Se usa getState() para evitar stale closures tras hot-reload.
+  // Esperamos a que Clerk confirme el estado antes de resetear filtros,
+  // para no borrar los filtros privados durante la hidratación inicial.
   useEffect(() => {
+    if (!isLoaded) return
     if (!isLoggedIn) useCampaignFilterStore.getState().resetPrivateFilters()
-  }, [isLoggedIn])
+  }, [isLoaded, isLoggedIn])
 
   const showPublic = useShowCampaignPublic()
   const showPrivate = useShowCampaignPrivate()

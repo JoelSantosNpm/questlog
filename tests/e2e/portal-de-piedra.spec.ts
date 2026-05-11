@@ -61,29 +61,26 @@ test('AC 3.3 – flujo completo: crear campaña y verificar que aparece en el ca
   const carousel = page.getByRole('region', { name: CAROUSEL_LABEL })
   await expect(carousel).toBeVisible({ timeout: 10000 })
 
-  // 2. Navegar al último portal del carrusel ("Nueva Aventura") usando el último dot indicator
-  const dotButtons = page.locator('button[aria-label^="Go to campaign"]')
-  await dotButtons.last().click()
-
-  // 3. Esperar que "Crear nueva aventura" sea el portal activo y hacer click
-  const newCampaignLink = page.getByRole('link', { name: 'Crear nueva aventura' })
-  await expect(newCampaignLink).toBeVisible({ timeout: 5000 })
-  await newCampaignLink.click()
+  // 2. Navegar directamente a la página de creación.
+  //    El carrusel renderiza el mismo portal varias veces (bucle virtual para el efecto 3D),
+  //    por lo que localizar el link por aria-label produce múltiples coincidencias.
+  //    La navegación vía carrusel está cubierta por AC 3.2; aquí solo importa el flujo de creación.
+  await page.goto('/campaigns/creation')
   await page.waitForURL('**/campaigns/creation')
 
-  // 4. Paso 1 del wizard: nombre de campaña (campo obligatorio)
+  // 3. Paso 1 del wizard: nombre de campaña (campo obligatorio)
   const nameInput = page.getByPlaceholder('el nombre de tu gesta')
   await expect(nameInput).toBeVisible()
   await nameInput.fill(campaignName)
   await page.getByRole('button', { name: 'Continuar' }).click()
 
-  // 5. Paso 2 del wizard: localización (opcional)
+  // 4. Paso 2 del wizard: localización (opcional)
   //    La transición tarda ~2600ms; esperamos el botón "Abrir Portal"
   const submitBtn = page.getByRole('button', { name: 'Abrir Portal' })
   await expect(submitBtn).toBeVisible({ timeout: 5000 })
   await page.getByPlaceholder('punto de partida (ej: la Ciudad de Neverwinter)').fill('Neverwinter')
 
-  // 6. Al hacer click, esperamos el Toast de Sileo para confirmar el éxito antes de la redirección
+  // 5. Al hacer click, esperamos el Toast de Sileo para confirmar el éxito antes de la redirección
   await submitBtn.click()
 
   // Verificar Toast de éxito (Sileo)
@@ -99,10 +96,10 @@ test('AC 3.3 – flujo completo: crear campaña y verificar que aparece en el ca
       }),
   ])
 
-  // 7. Después del submit exitoso, la Server Action redirige a /campaigns/{id}
+  // 6. Después del submit exitoso, la Server Action redirige a /campaigns/{id}
   await page.waitForURL(/\/campaigns\/[a-zA-Z0-9_-]+$/, { timeout: 15000 })
 
-  // 8. Volver al Portal de Piedra y verificar que la nueva campaña aparece en el carrusel
+  // 7. Volver al Portal de Piedra y verificar que la nueva campaña aparece en el carrusel
   await page.goto('/campaigns', { waitUntil: 'networkidle' })
 
   // Verificamos que el enlace con el aria-label correcto esté presente
