@@ -31,6 +31,7 @@ export default async function RootLayout({
           almendra.variable,
           'flex min-h-screen flex-col bg-neutral-950 font-sans text-neutral-100 antialiased selection:bg-amber-500/30'
         )}
+        style={{ '--header-h': '4rem', '--footer-h': '5rem' } as React.CSSProperties}
       >
         <AuthProvider>
           {/* Sincronización de Usuario (Lazy Sync) */}
@@ -40,8 +41,8 @@ export default async function RootLayout({
           <div className='fixed inset-0 -z-10 bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-neutral-900 via-neutral-950 to-black opacity-80' />
 
           {/* Header Sticky */}
-          <header className='sticky top-0 z-50 w-full border-b border-neutral-800/50 bg-neutral-950/80 backdrop-blur-md'>
-            <div className='flex h-16 w-full items-center justify-between px-4 sm:px-6 lg:px-8'>
+          <header className='sticky top-0 z-50 w-full h-(--header-h) border-b border-neutral-800/50 bg-neutral-950/80 backdrop-blur-md'>
+            <div className='flex h-full w-full items-center justify-between px-4 sm:px-6 lg:px-8'>
               <div className='flex items-center gap-2'>
                 <Link href='/'>
                   <h1
@@ -98,7 +99,7 @@ export default async function RootLayout({
           </main>
 
           {/* Footer */}
-          <footer className='border-t border-neutral-800/30 bg-neutral-950/50 py-6 text-center text-xs text-neutral-500'>
+          <footer className='border-t border-neutral-800/30 bg-neutral-950/50 h-(--footer-h) flex flex-col items-center justify-center text-center text-xs text-neutral-500'>
             <p>&copy; {new Date().getFullYear()} Questlog System. v0.1.0-alpha</p>
             <p className='mt-1 font-medieval text-neutral-600'>
               Forjando leyendas en la oscuridad.

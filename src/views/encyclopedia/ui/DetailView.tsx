@@ -25,7 +25,7 @@ export const DetailView = () => {
   const [imageMissing, setImageMissing] = useState(false)
 
   return (
-    <main className='relative flex-1 overflow-hidden bg-[radial-gradient(circle_at_top_right,var(--tw-gradient-stops))] from-neutral-900/20 via-transparent to-transparent'>
+    <main className='relative flex-1 overflow-y-auto lg:overflow-hidden scrollbar-encyclopedia bg-[radial-gradient(circle_at_top_right,var(--tw-gradient-stops))] from-neutral-900/20 via-transparent to-transparent'>
       <AnimatePresence mode='wait'>
         {item ? (
           <m.div
@@ -34,9 +34,9 @@ export const DetailView = () => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.3 }}
-            className='flex flex-col lg:flex-row'
+            className='flex flex-col lg:flex-row lg:h-full'
           >
-            <div className='relative h-[50vw] min-h-64 shrink-0 overflow-hidden lg:min-w-[60%] lg:h-auto lg:flex-1'>
+            <div className='relative h-[50vw] min-h-64 shrink-0 overflow-hidden lg:min-w-[60%] lg:h-full lg:flex-1'>
               <Image
                 src='/bg_biblioteca.png'
                 alt='imagen del interior de una biblioteca con un pedestal en el centro'
@@ -56,7 +56,7 @@ export const DetailView = () => {
               />
             </div>
 
-            <div className='w-full border-t border-neutral-800/50 bg-neutral-900/30 p-4 backdrop-blur-md lg:max-w-lg lg:border-t-0 lg:border-l lg:p-6'>
+            <div className='w-full border-t border-neutral-800/50 bg-neutral-900/30 p-4 backdrop-blur-md scrollbar-encyclopedia lg:max-w-lg lg:border-t-0 lg:border-l lg:p-6 lg:overflow-y-auto'>
               <ItemHeader item={item} activeSection={activeSection} imageMissing={imageMissing} />
               <div className='space-y-8'>
                 <div>
