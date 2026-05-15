@@ -10,6 +10,10 @@
   --iron-rim: #3d3d3d;
   --torch-glow: #d97706;
   --blood: #7f1d1d;
+
+  /* Alturas de layout — definidas en los propios elementos del layout.tsx */
+  --header-h: 0px;
+  --footer-h: 0px;
 }
 
 @theme inline {
@@ -51,6 +55,29 @@ body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* ── Scrollbar temática de la enciclopedia ── */
+@utility scrollbar-encyclopedia {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(217, 119, 6, 0.3) transparent;
+}
+
+.scrollbar-encyclopedia::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollbar-encyclopedia::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-encyclopedia::-webkit-scrollbar-thumb {
+  background-color: rgba(217, 119, 6, 0.3);
+  border-radius: 9999px;
+}
+
+.scrollbar-encyclopedia::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(217, 119, 6, 0.6);
 }
 
 /* ── Letras de cristal: fill transparente + rim luminoso ── */

@@ -11,7 +11,7 @@ export function EncyclopediaContainer() {
   return (
     <>
       {/* Sidebar: visible en md+ */}
-      <div className='hidden lg:flex lg:w-[20vw] lg:shrink-0'>
+      <div className='hidden lg:flex lg:w-[20vw] lg:shrink-0 lg:h-full'>
         <ListView items={currentItems} />
       </div>
 

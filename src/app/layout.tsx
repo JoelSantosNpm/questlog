@@ -31,6 +31,7 @@ export default async function RootLayout({
           almendra.variable,
           'flex min-h-screen flex-col bg-neutral-950 font-sans text-neutral-100 antialiased selection:bg-amber-500/30'
         )}
+        style={{ '--header-h': '4rem', '--footer-h': '5rem' } as React.CSSProperties}
       >
         <AuthProvider>
           {/* Sincronización de Usuario (Lazy Sync) */}
@@ -41,7 +42,7 @@ export default async function RootLayout({
 
           {/* Header Sticky */}
           <header className='sticky top-0 z-50 w-full border-b border-neutral-800/50 bg-neutral-950/80 backdrop-blur-md'>
-            <div className='flex h-16 w-full items-center justify-between px-4 sm:px-6 lg:px-8'>
+            <div className='flex h-(--header-h) w-full items-center justify-between px-4 sm:px-6 lg:px-8'>
               <div className='flex items-center gap-2'>
                 <Link href='/'>
                   <h1
