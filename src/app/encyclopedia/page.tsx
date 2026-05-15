@@ -10,9 +10,9 @@ export default async function EncyclopediaPage() {
   await prefetchEncyclopediaData(queryClient)
 
   return (
-    <div className='relative flex w-full font-sans'>
+    <div className='relative flex w-full h-[calc(100vh-var(--header-h)-var(--footer-h))] font-sans overflow-hidden'>
       <div className='absolute inset-0 bg-black/60' />
-      <div className='relative flex w-full'>
+      <div className='relative flex w-full h-full'>
         <HydrationBoundary state={dehydrate(queryClient)}>
           <SideTabs />
           <EncyclopediaContainer />

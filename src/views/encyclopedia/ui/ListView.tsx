@@ -23,7 +23,7 @@ export const ListView = ({ items, onSelect }: ListViewProps) => {
   const setSearchQuery = useSetSearchQuery()
 
   return (
-    <section className='flex w-full flex-col border-r border-neutral-800/50 bg-neutral-950/40 backdrop-blur-sm'>
+    <section className='flex h-full w-full flex-col border-r border-neutral-800/50 bg-neutral-950/40 backdrop-blur-sm'>
       <EncyclopediaFilterBar />
       <div className='p-4 border-b border-neutral-800/50'>
         <div className='relative'>
@@ -37,7 +37,7 @@ export const ListView = ({ items, onSelect }: ListViewProps) => {
           />
         </div>
       </div>
-      <div className='flex-1 overflow-y-auto p-2'>
+      <div className='flex-1 overflow-y-auto p-2 scrollbar-encyclopedia'>
         <div className='space-y-1'>
           {items.map((item) => (
             <button
