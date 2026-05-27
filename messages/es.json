@@ -1,0 +1,251 @@
+{
+  "Layout": {
+    "title": "Questlog | Dungeon Master Toolkit",
+    "metaDescription": "Gestiona tus campañas de D&D con el poder de la piedra y el acero.",
+    "nav": {
+      "encyclopedia": "Enciclopedia",
+      "campaigns": "Campañas",
+      "dashboard": "Panel",
+      "signIn": "Iniciar sesión"
+    },
+    "footer": {
+      "copyright": "© {year} Questlog System. v0.1.0-alpha",
+      "tagline": "Forjando leyendas en la oscuridad."
+    }
+  },
+  "Home": {
+    "heroTitle": "Questlog",
+    "heroDescription": "La plataforma definitiva para que los Dungeon Masters gestionen sus campañas de D&D con el poder de la pluma y el acero.",
+    "bodyText": "Crea tu mundo, maneja personajes, monstruos y objetos. Sumérgete en tu propia experiencia de fantasía oscura única para organizar tus aventuras.",
+    "exploreEncyclopedia": "Explorar Enciclopedia",
+    "viewCampaigns": "Ver Campañas",
+    "imageAlts": {
+      "adventurers": "Grupo de aventureros en una taberna",
+      "encyclopedia": "Enciclopedia",
+      "campaigns": "Campañas"
+    }
+  },
+  "NotFound": {
+    "code": "404",
+    "title": "Has perdido el camino",
+    "description": "La ruta que has intentado seguir no figura en nuestros pergaminos.",
+    "backButton": "Regresar al Dashboard"
+  },
+  "GlobalError": {
+    "heading": "¡Has caído en una trampa!",
+    "typeLabel": "Error Crítico de Invocación",
+    "fallbackMessage": "Una fuerza oscura ha interrumpido tu crónica.",
+    "digestLabel": "Sello del error: {digest}",
+    "resetButton": "Conjurar de nuevo (Reset)"
+  },
+  "Dashboard": {
+    "heading": "Panel de Aventurero",
+    "description": "Bienvenido. Desde aquí puedes acceder a los diferentes salones de gestión de tus campañas y aventuras.",
+    "viewCampaigns": "Ver Campañas",
+    "imageAlts": {
+      "campaigns": "Campañas"
+    }
+  },
+  "Encyclopedia": {
+    "sideTabs": {
+      "bestiary": "Bestiario",
+      "characters": "Personajes",
+      "museum": "Museo"
+    },
+    "filterBar": {
+      "visibility": {
+        "public": "Público",
+        "private": "Privado"
+      },
+      "ownership": {
+        "mine": "Míos",
+        "shared": "Compartidos"
+      }
+    },
+    "listView": {
+      "searchPlaceholder": "Buscar...",
+      "emptyState": "No se han encontrado registros."
+    },
+    "detailView": {
+      "descriptionLabel": "Descripción",
+      "noDescription": "Sin descripción.",
+      "emptySelection": "Selecciona un elemento para ver sus detalles."
+    },
+    "mobileDrawer": {
+      "openLabel": "Abrir lista",
+      "closeLabel": "Cerrar lista"
+    },
+    "itemHeader": {
+      "breadcrumbs": {
+        "bestiary": "Bestiario",
+        "cast": "Elenco",
+        "museum": "Museo"
+      },
+      "avatarUnavailable": "URL de avatar no disponible"
+    },
+    "combatStats": {
+      "statsHeading": "Estadísticas",
+      "abilitiesHeading": "Habilidades",
+      "properties": {
+        "hitPoints": "Puntos de Golpe",
+        "hitPointsAbbr": "PG",
+        "type": "Tipo",
+        "challenge": "Desafío",
+        "challengeValue": "CR {value}",
+        "race": "Raza",
+        "class": "Clase"
+      },
+      "stats": {
+        "AC": { "abbr": "CA", "title": "Clase de Armadura" },
+        "SPD": { "abbr": "VEL", "title": "Velocidad" },
+        "STR": { "abbr": "FUE", "title": "Fuerza" },
+        "DEX": { "abbr": "DES", "title": "Destreza" },
+        "CON": { "abbr": "CON", "title": "Constitución" },
+        "INT": { "abbr": "INT", "title": "Inteligencia" },
+        "WIS": { "abbr": "SAB", "title": "Sabiduría" },
+        "CHA": { "abbr": "CAR", "title": "Carisma" },
+        "INI": { "abbr": "INI", "title": "Bonificador de Iniciativa" },
+        "PER": { "abbr": "PER", "title": "Percepción Pasiva" }
+      }
+    },
+    "itemProperties": {
+      "propertiesHeading": "Propiedades",
+      "modifiersHeading": "Modificadores",
+      "labels": {
+        "category": "Categoría",
+        "rarity": "Rareza",
+        "value": "Valor",
+        "weight": "Peso"
+      },
+      "units": {
+        "gold": "{value} po",
+        "weight": "{value} lb"
+      },
+      "rarities": {
+        "trash": "Basura",
+        "common": "Común",
+        "uncommon": "Infrecuente",
+        "rare": "Rara",
+        "epic": "Épica",
+        "legendary": "Legendaria",
+        "artifact": "Artefacto"
+      }
+    }
+  },
+  "Campaigns": {
+    "portal": {
+      "heading": "¿En qué aventura deseas embarcarte?",
+      "newCampaignName": "Nueva Campaña",
+      "badge": "Campaña",
+      "enterLabel": "ENTRAR",
+      "newAdventureLabel": "NUEVA AVENTURA",
+      "enterAriaLabel": "Entrar a campaña {name}",
+      "newAriaLabel": "Crear nueva aventura"
+    },
+    "carousel": {
+      "ariaLabel": "Selector de Campañas",
+      "prevButton": "Previous campaign",
+      "nextButton": "Next campaign",
+      "dotAriaLabel": "Go to campaign {index}"
+    },
+    "filterBar": {
+      "visibility": {
+        "public": "Públicas",
+        "private": "Privadas"
+      },
+      "ownership": {
+        "mine": "Mías",
+        "membership": "Membresía"
+      }
+    },
+    "creation": {
+      "heading": "Invocar Portal",
+      "subtitle": "Escribe los pormenores de tu nueva crónica para forjar el mundo en el que vivirán tus héroes.",
+      "steps": {
+        "step1": {
+          "narrative": "Toda gran leyenda tiene un inicio, y este es el de aquella que perdurará en los anales como la aventura de",
+          "placeholder": "el nombre de tu gesta"
+        },
+        "step2": {
+          "narrative": "Los héroes se reúnen en un lugar conocido como",
+          "placeholder": "punto de partida (ej: la Ciudad de Neverwinter)"
+        }
+      },
+      "validation": {
+        "requiredField": "Este campo es vital para tu crónica."
+      },
+      "controls": {
+        "skip": "Saltar este paso",
+        "continue": "Continuar",
+        "submit": "Abrir Portal"
+      }
+    },
+    "detail": {
+      "heading": "Campaña: {name}",
+      "idLabel": "ID:",
+      "backLink": "← Volver a Portales",
+      "sections": {
+        "characters": {
+          "heading": "Personajes",
+          "description": "Aquí podrás crear héroes, modificar atributos, gestionar su inventario y habilidades o eliminarlos de la campaña."
+        },
+        "monsters": {
+          "heading": "Monstruos",
+          "description": "El rincón del bestiario. Genera nuevos enemigos, ajusta sus estadísticas vitales y borra a aquellos que han sido derrotados."
+        },
+        "inventory": {
+          "heading": "Objetos e Inventario",
+          "description": "Crea reliquias legendarias, modifica la magia de ciertos items o destruye artefactos del lore de tu historia."
+        }
+      },
+      "comingSoon": {
+        "main": "La interfaz de administración principal se visualizará aquí en las próximas versiones.",
+        "detail": "Próximamente: Paneles interactivos, drag-and-drop y más herramientas para el Dungeon Master."
+      }
+    },
+    "notifications": {
+      "loading": {
+        "title": "Canalizando magia...",
+        "description": "Invocando el portal hacia tu nuevo mundo."
+      },
+      "success": {
+        "title": "Portal Esculpido",
+        "description": "Las runas han sido escritas y el portal está abierto."
+      },
+      "error": {
+        "title": "Fallo al esculpir",
+        "description": "Magia inestable. Inténtalo de nuevo más tarde."
+      }
+    }
+  },
+  "Colosseum": {
+    "heading": "Bienvenido a la Arena",
+    "backLink": "← Volver al Panel",
+    "cards": {
+      "practice": "Arena de Práctica",
+      "duel": "Duelo de Honor",
+      "tournament": "Gran Torneo"
+    },
+    "sidebar": {
+      "heading": "Coliseo",
+      "subtitle": "Arena de Combate",
+      "nav": {
+        "overview": "Vista General",
+        "gladiators": "Gladiadores",
+        "tournaments": "Torneos"
+      }
+    }
+  },
+  "Common": {
+    "buttons": {
+      "save": "Guardar",
+      "delete": "Eliminar",
+      "cancel": "Cancelar",
+      "create": "+ Crear"
+    },
+    "imageUploader": {
+      "selectImage": "Seleccionar Imagen",
+      "dragActive": "Invocar Ilustración"
+    }
+  }
+}

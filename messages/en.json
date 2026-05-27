@@ -1,0 +1,251 @@
+{
+  "Layout": {
+    "title": "Questlog | Dungeon Master Toolkit",
+    "metaDescription": "Manage your D&D campaigns with the power of stone and steel.",
+    "nav": {
+      "encyclopedia": "Encyclopedia",
+      "campaigns": "Campaigns",
+      "dashboard": "Dashboard",
+      "signIn": "Sign in"
+    },
+    "footer": {
+      "copyright": "© {year} Questlog System. v0.1.0-alpha",
+      "tagline": "Forging legends in the darkness."
+    }
+  },
+  "Home": {
+    "heroTitle": "Questlog",
+    "heroDescription": "The ultimate platform for Dungeon Masters to manage their D&D campaigns with the power of the quill and steel.",
+    "bodyText": "Build your world, manage characters, monsters, and items. Immerse yourself in your own unique dark-fantasy experience to organize your adventures.",
+    "exploreEncyclopedia": "Explore Encyclopedia",
+    "viewCampaigns": "View Campaigns",
+    "imageAlts": {
+      "adventurers": "Group of adventurers in a tavern",
+      "encyclopedia": "Encyclopedia",
+      "campaigns": "Campaigns"
+    }
+  },
+  "NotFound": {
+    "code": "404",
+    "title": "You have lost your way",
+    "description": "The path you tried to follow is not recorded in our scrolls.",
+    "backButton": "Return to Dashboard"
+  },
+  "GlobalError": {
+    "heading": "You've fallen into a trap!",
+    "typeLabel": "Critical Invocation Error",
+    "fallbackMessage": "A dark force has interrupted your chronicle.",
+    "digestLabel": "Error seal: {digest}",
+    "resetButton": "Cast again (Reset)"
+  },
+  "Dashboard": {
+    "heading": "Adventurer's Panel",
+    "description": "Welcome. From here you can access the different halls to manage your campaigns and adventures.",
+    "viewCampaigns": "View Campaigns",
+    "imageAlts": {
+      "campaigns": "Campaigns"
+    }
+  },
+  "Encyclopedia": {
+    "sideTabs": {
+      "bestiary": "Bestiary",
+      "characters": "Characters",
+      "museum": "Museum"
+    },
+    "filterBar": {
+      "visibility": {
+        "public": "Public",
+        "private": "Private"
+      },
+      "ownership": {
+        "mine": "Mine",
+        "shared": "Shared"
+      }
+    },
+    "listView": {
+      "searchPlaceholder": "Search...",
+      "emptyState": "No records found."
+    },
+    "detailView": {
+      "descriptionLabel": "Description",
+      "noDescription": "No description.",
+      "emptySelection": "Select an item to view its details."
+    },
+    "mobileDrawer": {
+      "openLabel": "Open list",
+      "closeLabel": "Close list"
+    },
+    "itemHeader": {
+      "breadcrumbs": {
+        "bestiary": "Bestiary",
+        "cast": "Cast",
+        "museum": "Museum"
+      },
+      "avatarUnavailable": "Avatar URL unavailable"
+    },
+    "combatStats": {
+      "statsHeading": "Statistics",
+      "abilitiesHeading": "Abilities",
+      "properties": {
+        "hitPoints": "Hit Points",
+        "hitPointsAbbr": "HP",
+        "type": "Type",
+        "challenge": "Challenge",
+        "challengeValue": "CR {value}",
+        "race": "Race",
+        "class": "Class"
+      },
+      "stats": {
+        "AC": { "abbr": "AC", "title": "Armor Class" },
+        "SPD": { "abbr": "SPD", "title": "Speed" },
+        "STR": { "abbr": "STR", "title": "Strength" },
+        "DEX": { "abbr": "DEX", "title": "Dexterity" },
+        "CON": { "abbr": "CON", "title": "Constitution" },
+        "INT": { "abbr": "INT", "title": "Intelligence" },
+        "WIS": { "abbr": "WIS", "title": "Wisdom" },
+        "CHA": { "abbr": "CHA", "title": "Charisma" },
+        "INI": { "abbr": "INI", "title": "Initiative Bonus" },
+        "PER": { "abbr": "PER", "title": "Passive Perception" }
+      }
+    },
+    "itemProperties": {
+      "propertiesHeading": "Properties",
+      "modifiersHeading": "Modifiers",
+      "labels": {
+        "category": "Category",
+        "rarity": "Rarity",
+        "value": "Value",
+        "weight": "Weight"
+      },
+      "units": {
+        "gold": "{value} gp",
+        "weight": "{value} lb"
+      },
+      "rarities": {
+        "trash": "Trash",
+        "common": "Common",
+        "uncommon": "Uncommon",
+        "rare": "Rare",
+        "epic": "Epic",
+        "legendary": "Legendary",
+        "artifact": "Artifact"
+      }
+    }
+  },
+  "Campaigns": {
+    "portal": {
+      "heading": "Which adventure do you wish to embark on?",
+      "newCampaignName": "New Campaign",
+      "badge": "Campaign",
+      "enterLabel": "ENTER",
+      "newAdventureLabel": "NEW ADVENTURE",
+      "enterAriaLabel": "Enter campaign {name}",
+      "newAriaLabel": "Create new adventure"
+    },
+    "carousel": {
+      "ariaLabel": "Campaign Selector",
+      "prevButton": "Previous campaign",
+      "nextButton": "Next campaign",
+      "dotAriaLabel": "Go to campaign {index}"
+    },
+    "filterBar": {
+      "visibility": {
+        "public": "Public",
+        "private": "Private"
+      },
+      "ownership": {
+        "mine": "Mine",
+        "membership": "Membership"
+      }
+    },
+    "creation": {
+      "heading": "Invoke Portal",
+      "subtitle": "Write the details of your new chronicle to forge the world in which your heroes will live.",
+      "steps": {
+        "step1": {
+          "narrative": "Every great legend has a beginning, and this is the one that will endure in the annals as the adventure of",
+          "placeholder": "your quest's name"
+        },
+        "step2": {
+          "narrative": "The heroes gather in a place known as",
+          "placeholder": "starting point (e.g.: the City of Neverwinter)"
+        }
+      },
+      "validation": {
+        "requiredField": "This field is vital to your chronicle."
+      },
+      "controls": {
+        "skip": "Skip this step",
+        "continue": "Continue",
+        "submit": "Open Portal"
+      }
+    },
+    "detail": {
+      "heading": "Campaign: {name}",
+      "idLabel": "ID:",
+      "backLink": "← Back to Portals",
+      "sections": {
+        "characters": {
+          "heading": "Characters",
+          "description": "Here you can create heroes, modify attributes, manage their inventory and abilities, or remove them from the campaign."
+        },
+        "monsters": {
+          "heading": "Monsters",
+          "description": "The bestiary corner. Generate new enemies, adjust their vital stats and delete those who have been defeated."
+        },
+        "inventory": {
+          "heading": "Items & Inventory",
+          "description": "Create legendary relics, modify the magic of certain items, or destroy lore artifacts from your story."
+        }
+      },
+      "comingSoon": {
+        "main": "The main administration interface will be displayed here in upcoming versions.",
+        "detail": "Coming soon: Interactive panels, drag-and-drop, and more tools for the Dungeon Master."
+      }
+    },
+    "notifications": {
+      "loading": {
+        "title": "Channeling magic...",
+        "description": "Invoking the portal to your new world."
+      },
+      "success": {
+        "title": "Portal Sculpted",
+        "description": "The runes have been written and the portal is open."
+      },
+      "error": {
+        "title": "Failed to sculpt",
+        "description": "Unstable magic. Please try again later."
+      }
+    }
+  },
+  "Colosseum": {
+    "heading": "Welcome to the Arena",
+    "backLink": "← Back to Dashboard",
+    "cards": {
+      "practice": "Practice Arena",
+      "duel": "Honor Duel",
+      "tournament": "Grand Tournament"
+    },
+    "sidebar": {
+      "heading": "Colosseum",
+      "subtitle": "Combat Arena",
+      "nav": {
+        "overview": "Overview",
+        "gladiators": "Gladiators",
+        "tournaments": "Tournaments"
+      }
+    }
+  },
+  "Common": {
+    "buttons": {
+      "save": "Save",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "create": "+ Create"
+    },
+    "imageUploader": {
+      "selectImage": "Select Image",
+      "dragActive": "Drop Illustration"
+    }
+  }
+}
