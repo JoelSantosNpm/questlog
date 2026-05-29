@@ -45,6 +45,10 @@ body {
   backdrop-filter: blur(4px);
 }
 
+@utility font-medieval {
+  font-family: var(--font-medieval);
+}
+
 /* Accesibilidad: Soporte para movimiento reducido */
 @media (prefers-reduced-motion: reduce) {
   *,
