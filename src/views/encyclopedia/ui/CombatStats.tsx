@@ -28,14 +28,16 @@ export const CombatStats = ({ item }: CombatStatsProps) => {
   return (
     <div className='space-y-6'>
       <div>
-        <h3 className='mb-3 text-xs font-bold uppercase tracking-widest text-neutral-500'>
-          {t('statsHeading')}
-        </h3>
+        <h3 className='mb-3 section-label'>{t('statsHeading')}</h3>
         <div className='flex justify-around'>
           {MAIN_STATS.map(({ label, title, key }) => (
             <StatBox key={key} label={label} title={title} value={signed(item[key] as number)} />
           ))}
-          <StatBox label={t('properties.hitPointsAbbr')} title={t('properties.hitPoints')} value={signed(item.maxHp)} />
+          <StatBox
+            label={t('properties.hitPointsAbbr')}
+            title={t('properties.hitPoints')}
+            value={signed(item.maxHp)}
+          />
         </div>
       </div>
 
@@ -58,39 +60,42 @@ export const CombatStats = ({ item }: CombatStatsProps) => {
       <div className='grid grid-cols-2 gap-3'>
         {monster && (
           <>
-            <div className='rounded-lg border border-neutral-800 bg-neutral-900/50 p-3'>
-              <span className='text-[10px] font-bold uppercase text-neutral-500'>{t('properties.type')}</span>
+            <div className='info-tile'>
+              <span className='text-[10px] font-bold uppercase text-neutral-500'>
+                {t('properties.type')}
+              </span>
               <p className='mt-1 font-medium capitalize text-neutral-200'>{monster.type}</p>
             </div>
             <div className='rounded-lg border border-amber-800/30 bg-amber-950/20 p-3'>
-              <span className='text-[10px] font-bold uppercase text-amber-600/70'>{t('properties.challenge')}</span>
+              <span className='text-[10px] font-bold uppercase text-amber-600/70'>
+                {t('properties.challenge')}
+              </span>
               <p className='mt-1 font-mono font-bold text-amber-400'>
                 {t('properties.challengeValue', { value: formatCR(monster.challenge) })}
               </p>
             </div>
           </>
         )}
-        <div className='rounded-lg border border-neutral-800 bg-neutral-900/50 p-3'>
-          <span className='text-[10px] font-bold uppercase text-neutral-500'>{t('properties.race')}</span>
+        <div className='info-tile'>
+          <span className='text-[10px] font-bold uppercase text-neutral-500'>
+            {t('properties.race')}
+          </span>
           <p className='mt-1 font-medium capitalize text-neutral-200'>{item.race}</p>
         </div>
-        <div className='rounded-lg border border-neutral-800 bg-neutral-900/50 p-3'>
-          <span className='text-[10px] font-bold uppercase text-neutral-500'>{t('properties.class')}</span>
+        <div className='info-tile'>
+          <span className='text-[10px] font-bold uppercase text-neutral-500'>
+            {t('properties.class')}
+          </span>
           <p className='mt-1 font-medium capitalize text-neutral-200'>{item.characterClass}</p>
         </div>
       </div>
 
       {abilitiesList && abilitiesList.length > 0 && (
         <div>
-          <h3 className='mb-3 text-xs font-bold uppercase tracking-widest text-neutral-500'>
-            {t('abilitiesHeading')}
-          </h3>
+          <h3 className='mb-3 section-label'>{t('abilitiesHeading')}</h3>
           <div className='space-y-2'>
             {abilitiesList.map((ability, i) => (
-              <div
-                key={ability.name || `ability-${i}`}
-                className='rounded-lg border border-neutral-800 bg-neutral-900/50 p-3'
-              >
+              <div key={ability.name || `ability-${i}`} className='info-tile'>
                 {ability.name && (
                   <p className='text-xs font-bold text-amber-400/80'>{ability.name}</p>
                 )}

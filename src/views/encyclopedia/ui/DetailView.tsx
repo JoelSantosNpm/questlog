@@ -1,9 +1,9 @@
 'use client'
 
 import { AnimatePresence, m } from 'framer-motion'
+import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import { useState, type ReactNode } from 'react'
-import { useTranslations } from 'next-intl'
 import { useSelectedItem } from '../lib/use-encyclopedia-items'
 import { useActiveSection, type EncyclopediaSection } from '../model/encyclopediaStore'
 import { BestiaryItem, CastItem, EncyclopediaItem, MuseumItem } from '../model/types'
@@ -62,9 +62,7 @@ export const DetailView = () => {
               <ItemHeader item={item} activeSection={activeSection} imageMissing={imageMissing} />
               <div className='space-y-8'>
                 <div>
-                  <h3 className='text-xs font-bold uppercase tracking-widest text-neutral-500'>
-                    {t('descriptionLabel')}
-                  </h3>
+                  <h3 className='section-label'>{t('descriptionLabel')}</h3>
                   <p className='mt-3 leading-relaxed text-neutral-300'>
                     {item.description ?? t('noDescription')}
                   </p>

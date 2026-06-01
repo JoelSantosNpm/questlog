@@ -49,6 +49,21 @@ body {
   font-family: var(--font-medieval);
 }
 
+/* Tarjeta oscura genérica: usada en paneles de propiedad/estadísticas */
+@utility info-tile {
+  @apply rounded-lg border border-neutral-800 bg-neutral-900/50 p-3;
+}
+
+/* Etiqueta de sección: texto pequeño, mayúsculas, tenue */
+@utility section-label {
+  @apply text-xs font-bold uppercase tracking-widest text-neutral-500;
+}
+
+/* Título principal con tipografía medieval y color ámbar */
+@utility title-medieval {
+  @apply font-medieval text-amber-500;
+}
+
 /* Accesibilidad: Soporte para movimiento reducido */
 @media (prefers-reduced-motion: reduce) {
   *,

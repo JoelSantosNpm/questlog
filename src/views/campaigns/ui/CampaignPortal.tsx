@@ -42,7 +42,9 @@ export function CampaignPortal() {
 
   const campaigns: Campaign[] = [
     ...dbCampaigns.map((c) => ({ id: c.id, name: c.name, variant: 'existing' as const })),
-    ...(userId ? [{ id: 'new-campaign', name: t('newCampaignName'), variant: 'new' as const }] : []),
+    ...(userId
+      ? [{ id: 'new-campaign', name: t('newCampaignName'), variant: 'new' as const }]
+      : []),
   ]
 
   return (
@@ -52,10 +54,7 @@ export function CampaignPortal() {
         {/* Spacer espejo — solo ocupa espacio en lg+ para centrar el título */}
         <div className='hidden lg:flex lg:flex-1' />
 
-        <h1
-          className='text-center text-2xl sm:text-3xl md:text-4xl text-amber-200/80 drop-shadow-[0_2px_12px_rgba(217,119,6,0.4)] tracking-wide'
-          style={{ fontFamily: 'var(--font-medieval)' }}
-        >
+        <h1 className='font-medieval text-center text-2xl sm:text-3xl md:text-4xl text-amber-200/80 drop-shadow-[0_2px_12px_rgba(217,119,6,0.4)] tracking-wide'>
           {t('heading')}
         </h1>
 
