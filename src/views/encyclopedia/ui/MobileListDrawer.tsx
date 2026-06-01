@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { m, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { EncyclopediaItem } from '../model/types'
 import { ListView } from './ListView'
 
@@ -12,13 +13,14 @@ interface MobileListDrawerProps {
 
 export const MobileListDrawer = ({ items }: MobileListDrawerProps) => {
   const [open, setOpen] = useState(false)
+  const t = useTranslations('Encyclopedia.mobileDrawer')
 
   return (
     <div className='lg:hidden'>
       <button
         onClick={() => setOpen(true)}
         className='fixed bottom-20 left-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-amber-500 text-amber-950 shadow-lg'
-        aria-label='Abrir lista'
+        aria-label={t('openLabel')}
       >
         <Menu className='h-5 w-5' />
       </button>
@@ -47,7 +49,7 @@ export const MobileListDrawer = ({ items }: MobileListDrawerProps) => {
               <button
                 onClick={() => setOpen(false)}
                 className='absolute right-3 top-3 z-10 rounded-full p-1 text-neutral-400 hover:text-neutral-100'
-                aria-label='Cerrar lista'
+                aria-label={t('closeLabel')}
               >
                 <X className='h-5 w-5' />
               </button>

@@ -2,6 +2,7 @@
 
 import type { Campaign } from '@/shared/api/campaign'
 import { useAuth } from '@clerk/nextjs'
+import { useTranslations } from 'next-intl'
 import { useCampaignList } from '../api/campaign-hooks'
 import type { CampaignOwnership, CampaignVisibility } from '../model/campaign-types'
 import {
@@ -27,6 +28,7 @@ function deriveOwnership(showOwned: boolean, showMember: boolean): CampaignOwner
 
 export function CampaignPortal() {
   const { userId } = useAuth()
+  const t = useTranslations('Campaigns.portal')
 
   const showPublic = useShowCampaignPublic()
   const showPrivate = useShowCampaignPrivate()
@@ -40,7 +42,7 @@ export function CampaignPortal() {
 
   const campaigns: Campaign[] = [
     ...dbCampaigns.map((c) => ({ id: c.id, name: c.name, variant: 'existing' as const })),
-    ...(userId ? [{ id: 'new-campaign', name: 'Nueva Campaña', variant: 'new' as const }] : []),
+    ...(userId ? [{ id: 'new-campaign', name: t('newCampaignName'), variant: 'new' as const }] : []),
   ]
 
   return (
@@ -54,7 +56,7 @@ export function CampaignPortal() {
           className='text-center text-2xl sm:text-3xl md:text-4xl text-amber-200/80 drop-shadow-[0_2px_12px_rgba(217,119,6,0.4)] tracking-wide'
           style={{ fontFamily: 'var(--font-medieval)' }}
         >
-          ¿En qué aventura deseas embarcarte?
+          {t('heading')}
         </h1>
 
         {/* Filtro: centrado en móvil, alineado a la derecha en lg+ */}

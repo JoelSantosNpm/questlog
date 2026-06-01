@@ -1,3 +1,6 @@
+'use client'
+
+import { useTranslations } from 'next-intl'
 import { MAIN_STATS, SMALL_STATS, signed } from '../config/stats'
 import { BestiaryItem, CastItem } from '../model/types'
 import { StatBox } from './StatBox'
@@ -14,6 +17,7 @@ function formatCR(challenge: number): string {
 }
 
 export const CombatStats = ({ item }: CombatStatsProps) => {
+  const t = useTranslations('Encyclopedia.combatStats')
   const monster = item.section === 'bestiary' ? (item as BestiaryItem) : null
   const character = item.section === 'cast' ? (item as CastItem) : null
   const abilities = monster?.abilities ?? character?.abilities
@@ -25,13 +29,13 @@ export const CombatStats = ({ item }: CombatStatsProps) => {
     <div className='space-y-6'>
       <div>
         <h3 className='mb-3 text-xs font-bold uppercase tracking-widest text-neutral-500'>
-          Estadísticas
+          {t('statsHeading')}
         </h3>
         <div className='flex justify-around'>
           {MAIN_STATS.map(({ label, title, key }) => (
             <StatBox key={key} label={label} title={title} value={signed(item[key] as number)} />
           ))}
-          <StatBox label='PG' title='Puntos de Golpe' value={signed(item.maxHp)} />
+          <StatBox label={t('properties.hitPointsAbbr')} title={t('properties.hitPoints')} value={signed(item.maxHp)} />
         </div>
       </div>
 
@@ -55,23 +59,23 @@ export const CombatStats = ({ item }: CombatStatsProps) => {
         {monster && (
           <>
             <div className='rounded-lg border border-neutral-800 bg-neutral-900/50 p-3'>
-              <span className='text-[10px] font-bold uppercase text-neutral-500'>Tipo</span>
+              <span className='text-[10px] font-bold uppercase text-neutral-500'>{t('properties.type')}</span>
               <p className='mt-1 font-medium capitalize text-neutral-200'>{monster.type}</p>
             </div>
             <div className='rounded-lg border border-amber-800/30 bg-amber-950/20 p-3'>
-              <span className='text-[10px] font-bold uppercase text-amber-600/70'>Desafío</span>
+              <span className='text-[10px] font-bold uppercase text-amber-600/70'>{t('properties.challenge')}</span>
               <p className='mt-1 font-mono font-bold text-amber-400'>
-                CR {formatCR(monster.challenge)}
+                {t('properties.challengeValue', { value: formatCR(monster.challenge) })}
               </p>
             </div>
           </>
         )}
         <div className='rounded-lg border border-neutral-800 bg-neutral-900/50 p-3'>
-          <span className='text-[10px] font-bold uppercase text-neutral-500'>Raza</span>
+          <span className='text-[10px] font-bold uppercase text-neutral-500'>{t('properties.race')}</span>
           <p className='mt-1 font-medium capitalize text-neutral-200'>{item.race}</p>
         </div>
         <div className='rounded-lg border border-neutral-800 bg-neutral-900/50 p-3'>
-          <span className='text-[10px] font-bold uppercase text-neutral-500'>Clase</span>
+          <span className='text-[10px] font-bold uppercase text-neutral-500'>{t('properties.class')}</span>
           <p className='mt-1 font-medium capitalize text-neutral-200'>{item.characterClass}</p>
         </div>
       </div>
@@ -79,7 +83,7 @@ export const CombatStats = ({ item }: CombatStatsProps) => {
       {abilitiesList && abilitiesList.length > 0 && (
         <div>
           <h3 className='mb-3 text-xs font-bold uppercase tracking-widest text-neutral-500'>
-            Habilidades
+            {t('abilitiesHeading')}
           </h3>
           <div className='space-y-2'>
             {abilitiesList.map((ability, i) => (

@@ -1,6 +1,7 @@
 'use client'
 
 import { getPortraitFallbacks } from '@/views/encyclopedia/lib/image-fallbacks'
+import { useTranslations } from 'next-intl'
 import { Info, OctagonAlert } from 'lucide-react'
 import { useState } from 'react'
 import { type EncyclopediaSection } from '../model/encyclopediaStore'
@@ -21,6 +22,7 @@ interface ItemHeaderProps {
 }
 
 export const ItemHeader = ({ item, activeSection, imageMissing = false }: ItemHeaderProps) => {
+  const t = useTranslations('Encyclopedia.itemHeader')
   const hasPortrait = activeSection === 'bestiary' || activeSection === 'cast'
   const portraitItem = hasPortrait ? (item as BestiaryItem | CastItem) : null
 
@@ -44,9 +46,9 @@ export const ItemHeader = ({ item, activeSection, imageMissing = false }: ItemHe
     <header className='mb-4'>
       <div className='flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-500/60'>
         <Info className='h-3 w-3' />
-        {SECTION_LABELS[activeSection]}
+        {t(`breadcrumbs.${activeSection}`)}
         {activeSection === 'museum' && imageMissing && (
-          <div title='URL de avatar no disponible' className='cursor-help'>
+          <div title={t('avatarUnavailable')} className='cursor-help'>
             <OctagonAlert className='h-3 w-3 text-amber-500/70' />
           </div>
         )}

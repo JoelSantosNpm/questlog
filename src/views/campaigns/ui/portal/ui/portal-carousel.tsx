@@ -7,6 +7,7 @@ import { AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Image from 'next/image'
 import { useEffect, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import { useCarousel } from '../lib/use-carousel'
 import { PortalCard } from './portal-card'
 
@@ -16,6 +17,7 @@ interface PortalCarouselProps {
 
 export const PortalCarousel = ({ campaigns }: PortalCarouselProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
+  const t = useTranslations('Campaigns.carousel')
 
   // Responsive logic for carousel items - now using useSyncExternalStore
   const isMobile = useMediaQuery('(max-width: 600px)')
@@ -62,7 +64,7 @@ export const PortalCarousel = ({ campaigns }: PortalCarouselProps) => {
       style={{ isolation: 'isolate' }}
       onKeyDown={handleKeyDown}
       tabIndex={0}
-      aria-label='Selector de Campañas'
+      aria-label={t('ariaLabel')}
       role='region'
       aria-roledescription='carousel'
     >
@@ -105,7 +107,7 @@ export const PortalCarousel = ({ campaigns }: PortalCarouselProps) => {
             onClick={handlePrev}
             disabled={!canGoPrev}
             className='group rounded-full border border-stone-700 bg-stone-900/80 p-4 text-amber-500 backdrop-blur-sm transition-all hover:bg-amber-500 hover:text-black disabled:opacity-30 disabled:hover:bg-stone-900/80 disabled:hover:text-amber-500'
-            aria-label='Previous campaign'
+            aria-label={t('prevButton')}
           >
             <ChevronLeft size={32} />
           </button>
@@ -114,7 +116,7 @@ export const PortalCarousel = ({ campaigns }: PortalCarouselProps) => {
             onClick={handleNext}
             disabled={!canGoNext}
             className='group rounded-full border border-stone-700 bg-stone-900/80 p-4 text-amber-500 backdrop-blur-sm transition-all hover:bg-amber-500 hover:text-black disabled:opacity-30 disabled:hover:bg-stone-900/80 disabled:hover:text-amber-500'
-            aria-label='Next campaign'
+            aria-label={t('nextButton')}
           >
             <ChevronRight size={32} />
           </button>
@@ -129,7 +131,7 @@ export const PortalCarousel = ({ campaigns }: PortalCarouselProps) => {
               className={`h-2 rounded-full transition-all duration-300 ${
                 i === currentIndicator ? 'w-8 bg-amber-500' : 'w-2 bg-stone-700 hover:bg-stone-600'
               }`}
-              aria-label={`Go to campaign ${i + 1}`}
+              aria-label={t('dotAriaLabel', { index: i + 1 })}
             />
           ))}
         </div>

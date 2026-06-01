@@ -1,20 +1,22 @@
 'use client'
 
-import { Skull, Users, Landmark } from 'lucide-react'
-import { m } from 'framer-motion'
-import { useActiveSection, useSetActiveSection } from '../model/encyclopediaStore'
 import { cn } from '@/shared/utils/styles'
+import { m } from 'framer-motion'
+import { Landmark, Skull, Users } from 'lucide-react'
+import { useTranslations } from 'next-intl'
+import { useActiveSection, useSetActiveSection } from '../model/encyclopediaStore'
 import type { SectionConfig } from '../model/types'
 
 const SECTIONS: SectionConfig[] = [
-  { id: 'bestiary', label: 'Bestiario', icon: Skull },
-  { id: 'cast', label: 'Personajes', icon: Users },
-  { id: 'museum', label: 'Museo', icon: Landmark },
+  { id: 'bestiary', icon: Skull },
+  { id: 'cast', icon: Users },
+  { id: 'museum', icon: Landmark },
 ]
 
 export const SideTabs = () => {
   const activeSection = useActiveSection()
   const setActiveSection = useSetActiveSection()
+  const t = useTranslations('Encyclopedia.sideTabs')
 
   return (
     <aside className='flex w-16 h-fit flex-col border-r border-neutral-800/50 bg-neutral-900/20'>
@@ -31,7 +33,7 @@ export const SideTabs = () => {
         >
           <div className='flex -rotate-90 items-center gap-3 whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.2em]'>
             <section.icon className='h-4 w-4 rotate-90 mb-1' />
-            {section.label}
+            {t(section.id)}
           </div>
           {activeSection === section.id && (
             <m.div

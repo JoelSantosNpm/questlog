@@ -49,7 +49,7 @@
   "Encyclopedia": {
     "sideTabs": {
       "bestiary": "Bestiary",
-      "characters": "Characters",
+      "cast": "Characters",
       "museum": "Museum"
     },
     "filterBar": {

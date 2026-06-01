@@ -3,6 +3,7 @@
 import { AnimatePresence, m } from 'framer-motion'
 import Image from 'next/image'
 import { useState, type ReactNode } from 'react'
+import { useTranslations } from 'next-intl'
 import { useSelectedItem } from '../lib/use-encyclopedia-items'
 import { useActiveSection, type EncyclopediaSection } from '../model/encyclopediaStore'
 import { BestiaryItem, CastItem, EncyclopediaItem, MuseumItem } from '../model/types'
@@ -23,6 +24,7 @@ export const DetailView = () => {
   const activeSection = useActiveSection()
   const item = useSelectedItem()
   const [imageMissing, setImageMissing] = useState(false)
+  const t = useTranslations('Encyclopedia.detailView')
 
   return (
     <main className='relative flex-1 overflow-y-auto lg:overflow-hidden scrollbar-encyclopedia bg-[radial-gradient(circle_at_top_right,var(--tw-gradient-stops))] from-neutral-900/20 via-transparent to-transparent'>
@@ -61,10 +63,10 @@ export const DetailView = () => {
               <div className='space-y-8'>
                 <div>
                   <h3 className='text-xs font-bold uppercase tracking-widest text-neutral-500'>
-                    Descripción
+                    {t('descriptionLabel')}
                   </h3>
                   <p className='mt-3 leading-relaxed text-neutral-300'>
-                    {item.description ?? 'Sin descripción.'}
+                    {item.description ?? t('noDescription')}
                   </p>
                 </div>
                 {SECTION_CONTENT[activeSection](item)}
@@ -73,7 +75,7 @@ export const DetailView = () => {
           </m.div>
         ) : (
           <div className='flex h-full items-center justify-center text-neutral-500 font-medium'>
-            Selecciona un elemento para ver sus detalles.
+            {t('emptySelection')}
           </div>
         )}
       </AnimatePresence>

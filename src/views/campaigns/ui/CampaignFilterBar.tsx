@@ -4,6 +4,7 @@ import { ToggleButton } from '@/shared/ui'
 import { useAuth } from '@clerk/nextjs'
 import { AnimatePresence, m } from 'framer-motion'
 import { useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import {
   useCampaignFilterStore,
   useShowCampaignMember,
@@ -19,6 +20,7 @@ import {
 export function CampaignFilterBar() {
   const { userId, isLoaded } = useAuth()
   const isLoggedIn = !!userId
+  const t = useTranslations('Campaigns.filterBar')
 
   // Se usa getState() para evitar stale closures tras hot-reload.
   // Esperamos a que Clerk confirme el estado antes de resetear filtros,
@@ -42,14 +44,14 @@ export function CampaignFilterBar() {
       {/* Dimensión 1: Visibilidad */}
       <div className='flex gap-2'>
         <ToggleButton
-          label='Públicas'
+          label={t('visibility.public')}
           isActive={showPublic}
           onToggle={togglePublic}
           className='flex-1'
         />
         {isLoggedIn && (
           <ToggleButton
-            label='Privadas'
+            label={t('visibility.private')}
             isActive={showPrivate}
             onToggle={togglePrivate}
             className='flex-1'
@@ -69,14 +71,14 @@ export function CampaignFilterBar() {
             className='flex gap-2 overflow-hidden'
           >
             <ToggleButton
-              label='Mías'
+              label={t('ownership.mine')}
               isActive={showOwned}
               onToggle={toggleOwned}
               className='flex-1'
               activeClassName='border-violet-500/40 bg-violet-500/15 text-violet-400'
             />
             <ToggleButton
-              label='Membresía'
+              label={t('ownership.membership')}
               isActive={showMember}
               onToggle={toggleMember}
               className='flex-1'
