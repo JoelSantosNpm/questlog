@@ -61,7 +61,7 @@ export default async function RootLayout({
                   className='group flex items-center gap-2 text-neutral-400 transition-colors hover:text-amber-500'
                   title={t('nav.encyclopedia')}
                 >
-                  <BookOpen className='h-5 w-5 transition-transform group-hover:scale-110' />
+                  <BookOpen className='size-5 transition-transform group-hover:scale-110' />
                   <span className='hidden text-sm font-medium sm:block'>
                     {t('nav.encyclopedia')}
                   </span>
@@ -89,7 +89,7 @@ export default async function RootLayout({
                     className='group flex items-center gap-2 text-neutral-400 transition-colors hover:text-amber-500'
                     title={t('nav.dashboard')}
                   >
-                    <LayoutDashboard className='h-5 w-5 transition-transform group-hover:scale-110' />
+                    <LayoutDashboard className='size-5 transition-transform group-hover:scale-110' />
                     <span className='hidden text-sm font-medium sm:block'>
                       {t('nav.dashboard')}
                     </span>

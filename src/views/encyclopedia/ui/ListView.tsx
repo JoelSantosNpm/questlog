@@ -29,7 +29,7 @@ export const ListView = ({ items, onSelect }: ListViewProps) => {
       <EncyclopediaFilterBar />
       <div className='p-4 border-b border-neutral-800/50'>
         <div className='relative'>
-          <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500' />
+          <Search className='absolute left-3 top-1/2 size-4 -translate-y-1/2 text-neutral-500' />
           <input
             type='text'
             placeholder={t('searchPlaceholder')}

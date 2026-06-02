@@ -1,7 +1,7 @@
 'use client'
 
-import Image from 'next/image'
 import { OctagonAlert } from 'lucide-react'
+import Image from 'next/image'
 
 interface FrameColors {
   /** Gradiente CSS para los anillos exterior e interior */
@@ -58,7 +58,7 @@ export const PortraitFrame = ({
       {showBadge && (
         <div
           title='URL de retrato no disponible'
-          className='absolute -top-1 -right-1 z-10 flex h-5 w-5 items-center justify-center cursor-help'
+          className='absolute -top-1 -right-1 z-10 flex size-5 items-center justify-center cursor-help'
         >
           <OctagonAlert className='h-5  text-amber-500/70' />
         </div>

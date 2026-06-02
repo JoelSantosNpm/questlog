@@ -4,7 +4,7 @@ import { cn } from '@/shared/utils/styles'
 import { getEntityFallbacks } from '@/views/encyclopedia/lib/image-fallbacks'
 import { OctagonAlert } from 'lucide-react'
 import Image from 'next/image'
-import { memo, useEffect, useMemo, useState } from 'react'
+import { useLayoutEffect, useState } from 'react'
 import { type EncyclopediaSection } from '../model/encyclopediaStore'
 import { EncyclopediaItem } from '../model/types'
 
@@ -23,7 +23,7 @@ interface EncyclopediaImageProps {
   onMissingChange?: (missing: boolean) => void
 }
 
-export const EncyclopediaImage = memo(function EncyclopediaImage({
+export function EncyclopediaImage({
   item,
   section,
   noBackground = false,
@@ -33,16 +33,13 @@ export const EncyclopediaImage = memo(function EncyclopediaImage({
   const portraitImageUrl =
     'portraitImageUrl' in item ? (item.portraitImageUrl as string | null) : null
 
-  const fallbacks = useMemo(
-    () => getEntityFallbacks(section, item.imageUrl, portraitImageUrl),
-    [section, item.imageUrl, portraitImageUrl]
-  )
+  const fallbacks = getEntityFallbacks(section, item.imageUrl, portraitImageUrl)
 
   const [fallbackIndex, setFallbackIndex] = useState(0)
   const src = fallbacks[fallbackIndex]
   const missingImageUrl = fallbackIndex > 0 || fallbacks.length === 1
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     onMissingChange?.(missingImageUrl)
   }, [missingImageUrl, onMissingChange])
 
@@ -72,7 +69,7 @@ export const EncyclopediaImage = memo(function EncyclopediaImage({
       {missingImageUrl && (
         <div
           title='URL de avatar no disponible'
-          className='absolute top-2 right-2 z-10 flex h-5 w-5 items-center justify-center cursor-help'
+          className='absolute top-2 right-2 z-10 flex size-5 items-center justify-center cursor-help'
         >
           <OctagonAlert className='h-5 text-amber-500/70' />
         </div>
@@ -110,4 +107,4 @@ export const EncyclopediaImage = memo(function EncyclopediaImage({
       </div>
     </div>
   )
-})
+}

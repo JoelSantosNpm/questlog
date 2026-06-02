@@ -1,8 +1,8 @@
 'use client'
 
 import { getPortraitFallbacks } from '@/views/encyclopedia/lib/image-fallbacks'
-import { useTranslations } from 'next-intl'
 import { Info, OctagonAlert } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { type EncyclopediaSection } from '../model/encyclopediaStore'
 import { BestiaryItem, CastItem, EncyclopediaItem } from '../model/types'
@@ -45,11 +45,11 @@ export const ItemHeader = ({ item, activeSection, imageMissing = false }: ItemHe
   return (
     <header className='mb-4'>
       <div className='flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-500/60'>
-        <Info className='h-3 w-3' />
+        <Info className='size-3' />
         {t(`breadcrumbs.${activeSection}`)}
         {activeSection === 'museum' && imageMissing && (
           <div title={t('avatarUnavailable')} className='cursor-help'>
-            <OctagonAlert className='h-3 w-3 text-amber-500/70' />
+            <OctagonAlert className='size-3 text-amber-500/70' />
           </div>
         )}
         {activeSection === 'bestiary' && (item as BestiaryItem).type && (

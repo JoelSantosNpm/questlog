@@ -1,9 +1,9 @@
 'use client'
 
 import { cn } from '@/shared/utils/styles'
-import { useTranslations } from 'next-intl'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { Plus } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -140,7 +140,7 @@ export function Portal(props: PortalProps) {
           ) : (
             <>
               <div className='rounded-full border border-white/20 p-4 transition-colors group-hover:border-emerald-300/50 group-hover:bg-emerald-900/40'>
-                <Plus className='h-8 w-8 text-emerald-100/50 group-hover:text-emerald-300' />
+                <Plus className='size-8 text-emerald-100/50 group-hover:text-emerald-300' />
               </div>
               <span className='mt-2 text-sm font-serif tracking-widest text-white/60 group-hover:text-emerald-200'>
                 {t('newAdventureLabel')}

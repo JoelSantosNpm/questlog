@@ -33,7 +33,7 @@ export const SideTabs = () => {
           )}
         >
           <div className='flex -rotate-90 items-center gap-3 whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.2em]'>
-            <section.icon className='h-4 w-4 rotate-90 mb-1' />
+            <section.icon className='size-4 rotate-90 mb-1' />
             {t(section.id)}
           </div>
           {activeSection === section.id && (

@@ -20,10 +20,10 @@ export const MobileListDrawer = ({ items }: MobileListDrawerProps) => {
       <button
         type='button'
         onClick={() => setOpen(true)}
-        className='fixed bottom-20 left-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-amber-500 text-amber-950 shadow-lg'
+        className='fixed bottom-20 left-4 z-40 flex size-12 items-center justify-center rounded-full bg-amber-500 text-amber-950 shadow-lg'
         aria-label={t('openLabel')}
       >
-        <Menu className='h-5 w-5' />
+        <Menu className='size-5' />
       </button>
 
       <AnimatePresence>
@@ -53,7 +53,7 @@ export const MobileListDrawer = ({ items }: MobileListDrawerProps) => {
                 className='absolute right-3 top-3 z-10 rounded-full p-1 text-neutral-400 hover:text-neutral-100'
                 aria-label={t('closeLabel')}
               >
-                <X className='h-5 w-5' />
+                <X className='size-5' />
               </button>
               <ListView items={items} onSelect={() => setOpen(false)} />
             </m.div>
