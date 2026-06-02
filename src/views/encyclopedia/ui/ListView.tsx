@@ -43,6 +43,7 @@ export const ListView = ({ items, onSelect }: ListViewProps) => {
         <div className='space-y-1'>
           {items.map((item) => (
             <button
+              type='button'
               key={item.id}
               onClick={() => {
                 setSelectedItemId(item.id)

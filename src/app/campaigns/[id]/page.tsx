@@ -1,9 +1,15 @@
+import type { Metadata } from 'next'
 import { getQueryClient } from '@/shared/api/query-client'
 import { prefetchCampaignDetail } from '@/views/campaigns'
 import { auth } from '@clerk/nextjs/server'
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+
+export const metadata: Metadata = {
+  title: 'Questlog | Campaña',
+  description: 'Gestiona los personajes, monstruos e inventario de tu campaña.',
+}
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -47,6 +53,7 @@ export default async function CampaignPage({ params }: PageProps) {
               </p>
               <div className='mt-6 border-t border-stone-800/60 pt-4 flex gap-2 justify-center md:justify-start'>
                 <button
+                  type='button'
                   disabled
                   className='rounded bg-emerald-900/20 px-4 py-2 text-sm font-semibold text-emerald-500/50 cursor-not-allowed border border-emerald-900/40'
                 >
@@ -63,6 +70,7 @@ export default async function CampaignPage({ params }: PageProps) {
               </p>
               <div className='mt-6 border-t border-stone-800/60 pt-4 flex gap-2 justify-center md:justify-start'>
                 <button
+                  type='button'
                   disabled
                   className='rounded bg-red-900/20 px-4 py-2 text-sm font-semibold text-red-500/50 cursor-not-allowed border border-red-900/40'
                 >
@@ -79,6 +87,7 @@ export default async function CampaignPage({ params }: PageProps) {
               </p>
               <div className='mt-6 border-t border-stone-800/60 pt-4 flex gap-2 justify-center md:justify-start'>
                 <button
+                  type='button'
                   disabled
                   className='rounded bg-blue-900/20 px-4 py-2 text-sm font-semibold text-blue-500/50 cursor-not-allowed border border-blue-900/40'
                 >

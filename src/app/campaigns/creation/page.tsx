@@ -1,7 +1,13 @@
+import type { Metadata } from 'next'
 import { MysticBackground } from '@/shared/ui'
 import { CampaignCreationProvider } from '@/views/campaigns'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages, getTranslations } from 'next-intl/server'
+
+export const metadata: Metadata = {
+  title: 'Questlog | Crear Campaña',
+  description: 'Diseña el escenario y los detalles de tu próxima aventura.',
+}
 
 export default async function CreateCampaignPage() {
   const [messages, t] = await Promise.all([

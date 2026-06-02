@@ -1,0 +1,20 @@
+import type { ReactDoctorConfig } from "react-doctor/api";
+
+export default {
+  ignore: {
+    overrides: [
+      {
+        files: [
+          "src/views/campaigns/api/campaign-actions.ts",
+          "src/views/campaigns/api/campaign-queries.ts",
+          "src/views/encyclopedia/api/encyclopedia-actions.ts",
+          "src/views/encyclopedia/api/encyclopedia-queries.ts"
+        ],
+        rules: [
+          "react-doctor/server-auth-actions"
+        ],
+        comments: "Estos archivos usan requireUserId() como wrapper de auth() de Clerk. La regla no reconoce abstracciones propias. Auditado manualmente."
+      }
+    ]
+  }
+} satisfies ReactDoctorConfig;

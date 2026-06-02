@@ -19,6 +19,7 @@ export function ToggleButton({
 }: ToggleButtonProps) {
   return (
     <button
+      type='button'
       onClick={onToggle}
       className={cn(
         'rounded-full border px-3 py-1 text-xs font-medium transition-all duration-200 cursor-pointer select-none',

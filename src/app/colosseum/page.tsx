@@ -1,6 +1,12 @@
+import type { Metadata } from 'next'
 import { auth } from '@clerk/nextjs/server'
 import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
+
+export const metadata: Metadata = {
+  title: 'Questlog | Coliseo',
+  description: 'Desafíos y combates para poner a prueba a tus héroes.',
+}
 
 export default async function ColosseumPage() {
   await auth.protect()

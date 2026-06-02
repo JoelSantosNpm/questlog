@@ -1,6 +1,12 @@
+import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 import Image from 'next/image'
 import Link from 'next/link'
+
+export const metadata: Metadata = {
+  title: 'Questlog | Dungeon Master Toolkit',
+  description: 'Gestiona tus campañas de D&D, bestiarios y lore con el poder de la piedra y el acero.',
+}
 
 export default async function LandingPage() {
   const t = await getTranslations('Home')

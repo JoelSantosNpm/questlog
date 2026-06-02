@@ -1,9 +1,15 @@
+import type { Metadata } from 'next'
 import { getQueryClient } from '@/shared/api/query-client'
 import { CampaignPortal, prefetchCampaignList } from '@/views/campaigns'
 import { auth } from '@clerk/nextjs/server'
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
+
+export const metadata: Metadata = {
+  title: 'Questlog | Mis Campañas',
+  description: 'Gestiona y accede a todas tus campañas de rol.',
+}
 
 export const revalidate = 0 // Forzar regeneración dinámica en cada request
 

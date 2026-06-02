@@ -14,8 +14,13 @@ export default getRequestConfig(async () => {
       ? (localeCookie as Locale)
       : defaultLocale
 
+  const messageLoaders: Record<Locale, () => Promise<{ default: Record<string, unknown> }>> = {
+    es: () => import('../../messages/es.json'),
+    en: () => import('../../messages/en.json'),
+  }
+
   return {
     locale,
-    messages: (await import(`../../messages/${locale}.json`)).default,
+    messages: (await messageLoaders[locale]()).default,
   }
 })

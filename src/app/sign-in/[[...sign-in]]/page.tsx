@@ -1,5 +1,11 @@
+import type { Metadata } from 'next'
 import { SignIn } from '@clerk/nextjs'
 import { darkTheme } from '@/shared/config/clerk-theme'
+
+export const metadata: Metadata = {
+  title: 'Questlog | Iniciar sesión',
+  description: 'Accede a tu cuenta de Questlog.',
+}
 
 export default function Page() {
   return (

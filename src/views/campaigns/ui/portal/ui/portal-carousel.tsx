@@ -104,6 +104,7 @@ export const PortalCarousel = ({ campaigns }: PortalCarouselProps) => {
         {/* Buttons */}
         <div className='flex gap-8'>
           <button
+            type='button'
             onClick={handlePrev}
             disabled={!canGoPrev}
             className='group rounded-full border border-stone-700 bg-stone-900/80 p-4 text-amber-500 backdrop-blur-sm transition-all hover:bg-amber-500 hover:text-black disabled:opacity-30 disabled:hover:bg-stone-900/80 disabled:hover:text-amber-500'
@@ -113,6 +114,7 @@ export const PortalCarousel = ({ campaigns }: PortalCarouselProps) => {
           </button>
 
           <button
+            type='button'
             onClick={handleNext}
             disabled={!canGoNext}
             className='group rounded-full border border-stone-700 bg-stone-900/80 p-4 text-amber-500 backdrop-blur-sm transition-all hover:bg-amber-500 hover:text-black disabled:opacity-30 disabled:hover:bg-stone-900/80 disabled:hover:text-amber-500'
@@ -126,6 +128,7 @@ export const PortalCarousel = ({ campaigns }: PortalCarouselProps) => {
         <div className='flex items-center gap-3'>
           {campaigns.map((campaign, i) => (
             <button
+              type='button'
               key={campaign.id}
               onClick={() => handleDotClick(i)}
               className={`h-2 rounded-full transition-all duration-300 ${

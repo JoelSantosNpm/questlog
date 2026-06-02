@@ -1,8 +1,14 @@
+import type { Metadata } from 'next'
 import { getQueryClient } from '@/shared/api/query-client'
 import { EncyclopediaContainer, prefetchEncyclopediaData, SideTabs } from '@/views/encyclopedia'
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
+
+export const metadata: Metadata = {
+  title: 'Questlog | Enciclopedia',
+  description: 'Explora el bestiario, razas, clases y lore de tus campañas.',
+}
 
 export const dynamic = 'force-dynamic'
 
