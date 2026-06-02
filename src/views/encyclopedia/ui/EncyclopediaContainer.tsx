@@ -19,6 +19,7 @@ export function EncyclopediaContainer() {
       <MobileListDrawer items={currentItems} />
 
       <DetailView />
+      {/* <SwipeTest /> */}
     </>
   )
 }
