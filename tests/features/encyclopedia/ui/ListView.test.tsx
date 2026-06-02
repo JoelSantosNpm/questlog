@@ -15,6 +15,18 @@ vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn() }),
 }))
 
+vi.mock('next-intl', () => ({
+  useTranslations: (ns: string) => (key: string) => {
+    const map: Record<string, Record<string, string>> = {
+      'Encyclopedia.listView': {
+        searchPlaceholder: 'Buscar...',
+        emptyState: 'No se han encontrado registros.',
+      },
+    }
+    return map[ns]?.[key] ?? key
+  },
+}))
+
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
 const makeMonster = (id: string, name: string, description = ''): BestiaryItem => ({
