@@ -88,6 +88,8 @@ export const EncyclopediaImage = memo(function EncyclopediaImage({
             unoptimized={src.includes('/defaults/')}
             onError={handleError}
             className='object-contain transition-all duration-500 group-hover:scale-[1.02]'
+            draggable={false}
+            onDragStart={(e) => e.preventDefault()}
           />
         ) : (
           <Image
@@ -101,6 +103,8 @@ export const EncyclopediaImage = memo(function EncyclopediaImage({
             className={cn(
               'rounded-2xl border border-neutral-800 object-contain shadow-2xl transition-all duration-500 group-hover:scale-[1.02]'
             )}
+            draggable={false}
+            onDragStart={(e) => e.preventDefault()}
           />
         )}
       </div>
