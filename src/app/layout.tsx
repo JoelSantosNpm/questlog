@@ -99,6 +99,7 @@ export default async function RootLayout({
 
           {/* Main Content */}
           <main className='flex w-full flex-1 flex-col'>
+            <Toaster theme='light' position='top-center' />
             <QueryProvider>
               <FramerMotionProvider>{children}</FramerMotionProvider>
             </QueryProvider>
@@ -109,7 +110,6 @@ export default async function RootLayout({
             <p>{t('footer.copyright', { year: new Date().getFullYear() })}</p>
             <p className='mt-1 font-medieval text-neutral-600'>{t('footer.tagline')}</p>
           </footer>
-          <Toaster theme='light' position='top-center' />
         </AuthProvider>
       </body>
     </html>
