@@ -1,8 +1,8 @@
 'use client'
 
 import { cn } from '@/shared/utils/styles'
-import { useTranslations } from 'next-intl'
 import { Search } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import {
   useSearchQuery,
   useSelectedItemId,
@@ -61,9 +61,7 @@ export const ListView = ({ items, onSelect }: ListViewProps) => {
             </button>
           ))}
           {items.length === 0 && (
-            <div className='p-8 text-center text-xs text-neutral-600 italic'>
-              {t('emptyState')}
-            </div>
+            <div className='p-8 text-center text-xs text-neutral-600 italic'>{t('emptyState')}</div>
           )}
         </div>
       </div>

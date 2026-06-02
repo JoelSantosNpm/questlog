@@ -1,6 +1,6 @@
-import type { Metadata } from 'next'
-import { SignUp } from '@clerk/nextjs'
 import { darkTheme } from '@/shared/config/clerk-theme'
+import { SignUp } from '@clerk/nextjs'
+import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Questlog | Crear cuenta',

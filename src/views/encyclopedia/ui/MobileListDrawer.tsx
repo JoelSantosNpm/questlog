@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
-import { m, AnimatePresence } from 'framer-motion'
+import { AnimatePresence, m } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { useState } from 'react'
 import { EncyclopediaItem } from '../model/types'
 import { ListView } from './ListView'
 

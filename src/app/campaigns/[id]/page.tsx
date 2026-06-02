@@ -1,8 +1,8 @@
-import type { Metadata } from 'next'
 import { getQueryClient } from '@/shared/api/query-client'
 import { prefetchCampaignDetail } from '@/views/campaigns'
 import { auth } from '@clerk/nextjs/server'
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 

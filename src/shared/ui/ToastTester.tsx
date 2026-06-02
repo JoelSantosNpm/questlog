@@ -1,6 +1,6 @@
 'use client'
 
-import { testSuccessToast, testErrorToast } from '@/shared/lib/notifications'
+import { testErrorToast, testSuccessToast } from '@/shared/lib/notifications'
 
 export const ToastTester = () => {
   return (

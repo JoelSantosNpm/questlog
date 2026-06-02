@@ -5,7 +5,8 @@ import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Questlog | Dungeon Master Toolkit',
-  description: 'Gestiona tus campañas de D&D, bestiarios y lore con el poder de la piedra y el acero.',
+  description:
+    'Gestiona tus campañas de D&D, bestiarios y lore con el poder de la piedra y el acero.',
 }
 
 export default async function LandingPage() {
@@ -39,9 +40,7 @@ export default async function LandingPage() {
           <p className='text-lg leading-relaxed text-neutral-300 md:text-2xl'>
             {t('heroDescription')}
           </p>
-          <p className='mx-auto max-w-xl text-neutral-500'>
-            {t('bodyText')}
-          </p>
+          <p className='mx-auto max-w-xl text-neutral-500'>{t('bodyText')}</p>
         </div>
 
         <div className='flex flex-col gap-4 sm:flex-row'>
@@ -73,7 +72,9 @@ export default async function LandingPage() {
               className='object-cover object-center transition-transform duration-500 group-hover:scale-105'
             />
             <div className='absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent' />
-            <span className='relative z-10 text-base font-bold text-amber-500'>{t('viewCampaigns')}</span>
+            <span className='relative z-10 text-base font-bold text-amber-500'>
+              {t('viewCampaigns')}
+            </span>
           </Link>
         </div>
       </div>

@@ -1,5 +1,5 @@
-import type { Metadata } from 'next'
 import { auth } from '@clerk/nextjs/server'
+import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 

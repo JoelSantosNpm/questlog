@@ -1,6 +1,6 @@
-import type { Metadata } from 'next'
 import { MysticBackground } from '@/shared/ui'
 import { CampaignCreationProvider } from '@/views/campaigns'
+import type { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages, getTranslations } from 'next-intl/server'
 
