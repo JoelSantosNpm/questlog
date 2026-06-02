@@ -6,7 +6,7 @@ import { CAMPAIGN_KEYS } from '../api/query-keys'
 import { CAMPAIGN_CREATION_STEPS } from '../config/campaign-steps'
 import { CampaignFormValues } from '../model/campaign-types'
 import { useCampaignStore } from '../model/campaignStore'
-import { notifyCampaignCreation } from './notifications'
+import { notifyCampaignCreation } from './notifyCampaignCreation'
 
 export function useInitCampaignForm() {
   const methods = useForm<CampaignFormValues>({ mode: 'onChange' })
