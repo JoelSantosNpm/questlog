@@ -1,16 +1,15 @@
-import { AuthSync } from '@/app/auth'
+import { AuthSync, HeaderAuthActions } from '@/app/auth'
 import { AuthProvider } from '@/app/providers/auth-provider'
 import { FramerMotionProvider } from '@/app/providers/framer-motion-provider'
 import { QueryProvider } from '@/app/providers/query-provider'
 import { almendra, inter, medieval } from '@/shared/config/fonts'
 import { cn } from '@/shared/utils/styles'
-import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
 import type { Metadata } from 'next'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { Toaster } from 'sileo'
 import './globals.css'
 
-import { BookOpen, LayoutDashboard } from 'lucide-react'
+import { BookOpen } from 'lucide-react'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
@@ -73,29 +72,11 @@ export default async function RootLayout({
                 >
                   <span className='hidden text-sm font-medium sm:block'>{t('nav.campaigns')}</span>
                 </Link>
-                <SignedOut>
-                  <SignInButton mode='modal'>
-                    <button
-                      type='button'
-                      className='rounded px-4 py-2 font-bold text-amber-500 hover:bg-neutral-800 transition-colors cursor-pointer'
-                    >
-                      {t('nav.signIn')}
-                    </button>
-                  </SignInButton>
-                </SignedOut>
-                <SignedIn>
-                  <Link
-                    href='/dashboard'
-                    className='group flex items-center gap-2 text-neutral-400 transition-colors hover:text-amber-500'
-                    title={t('nav.dashboard')}
-                  >
-                    <LayoutDashboard className='size-5 transition-transform group-hover:scale-110' />
-                    <span className='hidden text-sm font-medium sm:block'>
-                      {t('nav.dashboard')}
-                    </span>
-                  </Link>
-                  <UserButton />
-                </SignedIn>
+                <HeaderAuthActions
+                  signInLabel={t('nav.signIn')}
+                  dashboardLabel={t('nav.dashboard')}
+                  dashboardTitle={t('nav.dashboard')}
+                />
               </div>
             </div>
           </header>
