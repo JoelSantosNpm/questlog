@@ -76,14 +76,8 @@ jobs:
           NODE_ENV: test
         run: npm run test:run -- --reporter=dot --silent
 
-      # Lo que toca: Instalar componentes sin privilegios elevados (evita el error de ruta)
-      # y usar comandos limpios que no levanten bloqueos interactivos en el CI.
-      - name: Install Playwright OS Deps & Chromium
-      env:
-          DEBIAN_FRONTEND: noninteractive
-        run: |
-          npx playwright install-deps chromium
-          npx playwright install chromium
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
 
       - name: E2E Tests (Playwright)
         env:
