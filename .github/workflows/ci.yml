@@ -71,36 +71,18 @@ jobs:
 
       # ── 6. TESTING ────────────────────────────────────────────────────────────
 
-      # 6.1 Ejecutar Vitest de forma aislada
       - name: Unit & Integration Tests (Vitest)
         env:
           NODE_ENV: test
         run: npm run test:run -- --reporter=dot --silent
 
-      # 6.2 Extraer versión exacta de Playwright para que la caché sea ultra-precisa
-      - name: Get Playwright version
-        id: playwright-version
-        run: echo "version=$(npm ls @playwright/test --json | jq -r '.dependencies["@playwright/test"].version')" >> $GITHUB_OUTPUT
+      # Lo que toca: Instalar componentes sin privilegios elevados (evita el error de ruta)
+      # y usar comandos limpios que no levanten bloqueos interactivos en el CI.
+      - name: Install Playwright OS Deps & Chromium
+        run: |
+          npx playwright install-deps chromium
+          npx playwright install chromium
 
-      # 6.3 Intentar restaurar los navegadores desde la caché de GitHub Actions
-      - name: Cache Playwright browsers
-        uses: actions/cache@v4
-        id: playwright-cache
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
-
-      # 6.4 Descargar Chromium (¡SIN SUDO!) solo si no se ha recuperado de la caché
-      - name: Install Playwright Chromium & OS deps
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps chromium
-
-      # 6.5 Si la caché acertó, solo inyectamos las dependencias del sistema Linux por si acaso
-      - name: Install Playwright OS system dependencies only
-        if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: npx playwright install-deps chromium
-
-      # 6.6 Lanzar los tests de extremo a extremo
       - name: E2E Tests (Playwright)
         env:
           NODE_ENV: test
