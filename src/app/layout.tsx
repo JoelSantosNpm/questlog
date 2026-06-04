@@ -1,15 +1,15 @@
-import { AuthSync } from '@/app/auth'
+import { AuthSync, HeaderAuthActions } from '@/app/auth'
 import { AuthProvider } from '@/app/providers/auth-provider'
 import { FramerMotionProvider } from '@/app/providers/framer-motion-provider'
 import { QueryProvider } from '@/app/providers/query-provider'
 import { almendra, inter, medieval } from '@/shared/config/fonts'
 import { cn } from '@/shared/utils/styles'
-import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
 import type { Metadata } from 'next'
+import { getLocale, getTranslations } from 'next-intl/server'
 import { Toaster } from 'sileo'
 import './globals.css'
 
-import { BookOpen, LayoutDashboard } from 'lucide-react'
+import { BookOpen } from 'lucide-react'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
@@ -22,8 +22,9 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const [locale, t] = await Promise.all([getLocale(), getTranslations('Layout')])
   return (
-    <html lang='es' className='dark h-full'>
+    <html lang={locale} className='dark h-full'>
       <body
         className={cn(
           inter.className,
@@ -57,42 +58,32 @@ export default async function RootLayout({
                 <Link
                   href='/encyclopedia'
                   className='group flex items-center gap-2 text-neutral-400 transition-colors hover:text-amber-500'
-                  title='Encyclopedia'
+                  title={t('nav.encyclopedia')}
                 >
-                  <BookOpen className='h-5 w-5 transition-transform group-hover:scale-110' />
-                  <span className='hidden text-sm font-medium sm:block'>Enciclopedia</span>
+                  <BookOpen className='size-5 transition-transform group-hover:scale-110' />
+                  <span className='hidden text-sm font-medium sm:block'>
+                    {t('nav.encyclopedia')}
+                  </span>
                 </Link>
                 <Link
                   href='/campaigns'
                   className='group flex items-center gap-2 text-neutral-400 transition-colors hover:text-amber-500'
-                  title='Campañas'
+                  title={t('nav.campaigns')}
                 >
-                  <span className='hidden text-sm font-medium sm:block'>Campañas</span>
+                  <span className='hidden text-sm font-medium sm:block'>{t('nav.campaigns')}</span>
                 </Link>
-                <SignedOut>
-                  <SignInButton mode='modal'>
-                    <button className='rounded px-4 py-2 font-bold text-amber-500 hover:bg-neutral-800 transition-colors cursor-pointer'>
-                      Iniciar sesión
-                    </button>
-                  </SignInButton>
-                </SignedOut>
-                <SignedIn>
-                  <Link
-                    href='/dashboard'
-                    className='group flex items-center gap-2 text-neutral-400 transition-colors hover:text-amber-500'
-                    title='Panel'
-                  >
-                    <LayoutDashboard className='h-5 w-5 transition-transform group-hover:scale-110' />
-                    <span className='hidden text-sm font-medium sm:block'>Panel</span>
-                  </Link>
-                  <UserButton />
-                </SignedIn>
+                <HeaderAuthActions
+                  signInLabel={t('nav.signIn')}
+                  dashboardLabel={t('nav.dashboard')}
+                  dashboardTitle={t('nav.dashboard')}
+                />
               </div>
             </div>
           </header>
 
           {/* Main Content */}
           <main className='flex w-full flex-1 flex-col'>
+            <Toaster theme='light' position='top-center' />
             <QueryProvider>
               <FramerMotionProvider>{children}</FramerMotionProvider>
             </QueryProvider>
@@ -100,12 +91,9 @@ export default async function RootLayout({
 
           {/* Footer */}
           <footer className='border-t border-neutral-800/30 bg-neutral-950/50 h-(--footer-h) flex flex-col items-center justify-center text-center text-xs text-neutral-500'>
-            <p>&copy; {new Date().getFullYear()} Questlog System. v0.1.0-alpha</p>
-            <p className='mt-1 font-medieval text-neutral-600'>
-              Forjando leyendas en la oscuridad.
-            </p>
+            <p>{t('footer.copyright', { year: new Date().getFullYear() })}</p>
+            <p className='mt-1 font-medieval text-neutral-600'>{t('footer.tagline')}</p>
           </footer>
-          <Toaster theme='light' position='top-center' />
         </AuthProvider>
       </body>
     </html>

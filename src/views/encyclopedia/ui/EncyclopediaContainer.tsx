@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect } from 'react'
+import { sileo } from 'sileo'
 import { useCurrentItems } from '../lib/use-encyclopedia-items'
 import { DetailView } from './DetailView'
 import { ListView } from './ListView'
@@ -7,6 +9,18 @@ import { MobileListDrawer } from './MobileListDrawer'
 
 export function EncyclopediaContainer() {
   const currentItems = useCurrentItems()
+
+  useEffect(() => {
+    sileo.info({
+      position: 'top-center',
+      title: 'Consejo',
+      description: '← Desliza para ver el siguiente o anterior →',
+      styles: {
+        title: 'text-gray-300/90!',
+        description: 'text-gray-500/90! center',
+      },
+    })
+  }, [])
 
   return (
     <>
@@ -19,6 +33,7 @@ export function EncyclopediaContainer() {
       <MobileListDrawer items={currentItems} />
 
       <DetailView />
+      {/* <SwipeTest /> */}
     </>
   )
 }

@@ -1,4 +1,7 @@
+'use client'
+
 import { cn } from '@/shared/utils/styles'
+import { useTranslations } from 'next-intl'
 import { ALL_STATS, signed } from '../config/stats'
 import { MuseumItem } from '../model/types'
 import { StatBox } from './StatBox'
@@ -28,37 +31,46 @@ const RARITY_LABELS: Record<string, string> = {
 }
 
 export const ItemProperties = ({ item }: ItemPropertiesProps) => {
+  const t = useTranslations('Encyclopedia.itemProperties')
   const activeModifiers = ALL_STATS.filter(({ key }) => (item[key] as number) !== 0)
 
   return (
     <div className='space-y-4'>
-      <h3 className='text-xs font-bold uppercase tracking-widest text-neutral-500'>Propiedades</h3>
+      <h3 className='section-label'>{t('propertiesHeading')}</h3>
       <div className='grid grid-cols-2 gap-3'>
-        <div className='rounded-lg border border-neutral-800 bg-neutral-900/50 p-3'>
-          <span className='text-[10px] font-bold uppercase text-neutral-500'>Categoría</span>
+        <div className='info-tile'>
+          <span className='text-[10px] font-bold uppercase text-neutral-500'>
+            {t('labels.category')}
+          </span>
           <p className='mt-1 font-medium text-neutral-200'>{item.category}</p>
         </div>
-        <div className='rounded-lg border border-neutral-800 bg-neutral-900/50 p-3'>
-          <span className='text-[10px] font-bold uppercase text-neutral-500'>Rareza</span>
+        <div className='info-tile'>
+          <span className='text-[10px] font-bold uppercase text-neutral-500'>
+            {t('labels.rarity')}
+          </span>
           <p className={cn('mt-1 font-medium', RARITY_COLORS[item.rarity] ?? 'text-neutral-200')}>
-            {RARITY_LABELS[item.rarity] ?? item.rarity}
+            {t(`rarities.${item.rarity.toLowerCase()}` as Parameters<typeof t>[0])}
           </p>
         </div>
-        <div className='rounded-lg border border-neutral-800 bg-neutral-900/50 p-3'>
-          <span className='text-[10px] font-bold uppercase text-neutral-500'>Valor</span>
-          <p className='mt-1 font-mono text-amber-500'>{item.value} po</p>
+        <div className='info-tile'>
+          <span className='text-[10px] font-bold uppercase text-neutral-500'>
+            {t('labels.value')}
+          </span>
+          <p className='mt-1 font-mono text-amber-500'>{t('units.gold', { value: item.value })}</p>
         </div>
-        <div className='rounded-lg border border-neutral-800 bg-neutral-900/50 p-3'>
-          <span className='text-[10px] font-bold uppercase text-neutral-500'>Peso</span>
-          <p className='mt-1 font-mono text-neutral-200'>{item.weight} lb</p>
+        <div className='info-tile'>
+          <span className='text-[10px] font-bold uppercase text-neutral-500'>
+            {t('labels.weight')}
+          </span>
+          <p className='mt-1 font-mono text-neutral-200'>
+            {t('units.weight', { value: item.weight })}
+          </p>
         </div>
       </div>
 
       {activeModifiers.length > 0 && (
         <>
-          <h3 className='text-xs font-bold uppercase tracking-widest text-neutral-500'>
-            Modificadores
-          </h3>
+          <h3 className='section-label'>{t('modifiersHeading')}</h3>
           <div className='flex flex-wrap justify-center gap-1'>
             {activeModifiers.map(({ key, label, title }) => {
               const val = item[key] as number

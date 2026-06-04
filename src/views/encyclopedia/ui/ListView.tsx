@@ -2,6 +2,7 @@
 
 import { cn } from '@/shared/utils/styles'
 import { Search } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import {
   useSearchQuery,
   useSelectedItemId,
@@ -21,16 +22,17 @@ export const ListView = ({ items, onSelect }: ListViewProps) => {
   const setSelectedItemId = useSetSelectedItemId()
   const searchQuery = useSearchQuery()
   const setSearchQuery = useSetSearchQuery()
+  const t = useTranslations('Encyclopedia.listView')
 
   return (
     <section className='flex h-full w-full flex-col border-r border-neutral-800/50 bg-neutral-950/40 backdrop-blur-sm'>
       <EncyclopediaFilterBar />
       <div className='p-4 border-b border-neutral-800/50'>
         <div className='relative'>
-          <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500' />
+          <Search className='absolute left-3 top-1/2 size-4 -translate-y-1/2 text-neutral-500' />
           <input
             type='text'
-            placeholder='Buscar...'
+            placeholder={t('searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className='w-full rounded-md border border-neutral-800 bg-neutral-900/50 py-2 pl-10 pr-4 text-sm focus:border-amber-500/50 focus:outline-none focus:ring-1 focus:ring-amber-500/50'
@@ -41,6 +43,7 @@ export const ListView = ({ items, onSelect }: ListViewProps) => {
         <div className='space-y-1'>
           {items.map((item) => (
             <button
+              type='button'
               key={item.id}
               onClick={() => {
                 setSelectedItemId(item.id)
@@ -58,9 +61,7 @@ export const ListView = ({ items, onSelect }: ListViewProps) => {
             </button>
           ))}
           {items.length === 0 && (
-            <div className='p-8 text-center text-xs text-neutral-600 italic'>
-              No se han encontrado registros.
-            </div>
+            <div className='p-8 text-center text-xs text-neutral-600 italic'>{t('emptyState')}</div>
           )}
         </div>
       </div>

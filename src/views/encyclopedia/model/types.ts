@@ -15,6 +15,5 @@ export type EncyclopediaOwnership = 'mine' | 'shared' | 'both'
 
 export interface SectionConfig {
   id: EncyclopediaSection
-  label: string
   icon: LucideIcon
 }

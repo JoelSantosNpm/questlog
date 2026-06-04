@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { MAX_INDEX, getCircularCarousel, type PortalCarouselItem } from './carousel-utils'
 
 export interface CarouselOptions {
@@ -27,9 +27,11 @@ export const useCarousel = <T>(items: T[], options?: CarouselOptions) => {
   const defaultRange = items.length > 3 ? 3 : 2
   const visibleRange = options?.visibleRange ?? defaultRange
 
-  const visibleItems: PortalCarouselItem<T>[] = useMemo(() => {
-    return getCircularCarousel(items, activeIndex, visibleRange)
-  }, [items, activeIndex, visibleRange])
+  const visibleItems: PortalCarouselItem<T>[] = getCircularCarousel(
+    items,
+    activeIndex,
+    visibleRange
+  )
 
   const handleNext = () => setActiveIndex((prev) => prev + 1)
   const handlePrev = () => setActiveIndex((prev) => prev - 1)

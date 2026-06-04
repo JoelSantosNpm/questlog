@@ -1,8 +1,8 @@
 'use client'
 
-import { MedievalSharp } from 'next/font/google'
 import { MysticBackground } from '@/shared/ui/MysticBackground'
 import { cn } from '@/shared/utils/styles'
+import { MedievalSharp } from 'next/font/google'
 
 const medieval = MedievalSharp({
   weight: '400',
@@ -51,6 +51,7 @@ export default function GlobalError({
 
             <div className='pt-6'>
               <button
+                type='button'
                 onClick={() => reset()}
                 className='group relative px-8 py-3 bg-neutral-900 border border-amber-900/50 rounded text-xs font-bold uppercase tracking-[0.3em] text-amber-500 hover:text-white hover:bg-amber-900/20 transition-all duration-500'
               >
