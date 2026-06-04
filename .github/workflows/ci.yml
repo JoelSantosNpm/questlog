@@ -3,8 +3,7 @@
 #
 # Dispara EXCLUSIVAMENTE en Pull Requests cuyo destino sea la rama `develop`.
 # Un único job secuencial: si cualquier step falla, el workflow se detiene
-# inmediatamente y la PR queda marcada como fallida (comportamiento nativo
-# de GitHub Actions; no se necesita configuración adicional).
+# inmediatamente y la PR queda marcada como fallida.
 # ─────────────────────────────────────────────────────────────────────────────
 name: CI
 
@@ -27,26 +26,30 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: Setup Node.js 24
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-          cache: 'npm'
+          cache: 'pnpm'
 
-      # ... (caché de .next/cache igual)
       - name: Restore .next/cache
         uses: actions/cache@v4
         with:
           path: .next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.{ts,tsx,js,jsx,mjs,css}') }}
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.{ts,tsx,js,jsx,mjs,css}') }}
           restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
             ${{ runner.os }}-nextjs-
 
       # ── 2. DEPS ───────────────────────────────────────────────────────────────
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       # ── 3. BASE DE DATOS / ORM ────────────────────────────────────────────────
 
@@ -54,30 +57,34 @@ jobs:
         env:
           DATABASE_URL_REMOTE: ${{ secrets.DATABASE_URL_REMOTE }}
           DIRECT_URL: ${{ secrets.DIRECT_URL }}
-        run: npx prisma generate
+        run: pnpm exec prisma generate
 
       # ── 4. SALUD DE REACT ─────────────────────────────────────────────────────
 
       - name: React Doctor
-        run: npx react-doctor
+        run: pnpm exec react-doctor
 
       # ── 5. CALIDAD DE CÓDIGO ──────────────────────────────────────────────────
 
       - name: TypeScript — noEmit check
-        run: npx tsc --noEmit
+        run: pnpm exec tsc --noEmit
 
       - name: Lint
-        run: npm run lint
+        run: pnpm run lint
 
       # ── 6. TESTING ────────────────────────────────────────────────────────────
 
       - name: Unit & Integration Tests (Vitest)
         env:
           NODE_ENV: test
-        run: npm run test:run -- --reporter=dot --silent
+        run: pnpm run test:run -- --reporter=dot --silent
 
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps chromium
+      # ── Action oficial de Microsoft Playwright ────────
+      - name: Install Playwright Chromium & Dependencies
+        uses: microsoft/playwright-actions@v1
+        with:
+          browsers: chromium
+        timeout-minutes: 5
 
       - name: E2E Tests (Playwright)
         env:
@@ -93,7 +100,7 @@ jobs:
           # Supabase
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-        run: npm run test:e2e
+        run: pnpm run test:e2e
 
       # ── 7. BUILD ──────────────────────────────────────────────────────────────
 
@@ -101,10 +108,10 @@ jobs:
         env:
           NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
           CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
-          # Database URLs desde secretos (Coincidiendo con el Secret Name)
+          # Database URLs desde secretos
           DATABASE_URL_REMOTE: ${{ secrets.DATABASE_URL_REMOTE }}
           DIRECT_URL: ${{ secrets.DIRECT_URL }}
           # Supabase — placeholders para build
           NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
           NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
-        run: npm run build
+        run: pnpm run build
