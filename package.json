@@ -46,7 +46,7 @@
     "@clerk/testing": "^2.0.4",
     "@faker-js/faker": "^10.4.0",
     "@mswjs/data": "^0.16.2",
-    "@playwright/test": "^1.58.2",
+    "@playwright/test": "^1.60.0",
     "@prisma/client": "^7.7.0",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.9.1",
