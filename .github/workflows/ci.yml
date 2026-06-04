@@ -63,7 +63,7 @@ jobs:
       # ── 4. SALUD DE REACT ─────────────────────────────────────────────────────
 
       - name: React Doctor
-        run: pnpm react-doctor
+        run: pnpm dlx react-doctor@latest
 
       # ── 5. CALIDAD DE CÓDIGO ──────────────────────────────────────────────────
 
