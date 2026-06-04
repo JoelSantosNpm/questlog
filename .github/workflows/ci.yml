@@ -76,10 +76,25 @@ jobs:
           NODE_ENV: test
         run: npm run test:run -- --reporter=dot --silent
 
+      - name: Cache Playwright Chromium
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+
       - name: Install Playwright Browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        timeout-minutes: 5
         env:
           DEBIAN_FRONTEND: noninteractive
         run: npx playwright install --with-deps chromium
+
+      - name: Install Playwright OS Dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: npx playwright install-deps chromium
 
       - name: E2E Tests (Playwright)
         env:
