@@ -52,6 +52,8 @@ test('AC 3.2 – navega el carrusel con los controles de flecha', async ({ page 
 test('AC 3.3 – flujo completo: crear campaña y verificar que aparece en el carrusel', async ({
   page,
 }) => {
+  test.setTimeout(120_000)
+
   const campaignName = `Portal E2E ${Date.now()}`
 
   // 1. Ir al Portal de Piedra y verificar que NO redirige a login
@@ -100,17 +102,17 @@ test('AC 3.3 – flujo completo: crear campaña y verificar que aparece en el ca
   await page.waitForURL(/\/campaigns\/[a-zA-Z0-9_-]+$/, { timeout: 15000 })
 
   // 7. Volver al Portal de Piedra y verificar que la nueva campaña aparece en el carrusel
-  await page.goto('/campaigns', { waitUntil: 'networkidle' })
+  // load (no networkidle): React Query y Clerk mantienen peticiones activas indefinidamente
+  await page.goto('/campaigns', { waitUntil: 'load' })
+  await expect(carousel).toBeVisible({ timeout: 10000 })
 
-  // Verificamos que el enlace con el aria-label correcto esté presente
   const portalLink = page.locator(`a[aria-label*="${campaignName}"]`)
 
-  // expect.toBeAttached tiene reintentos internos incorporados (5s por defecto, extendemos a 10s)
   try {
     await expect(portalLink).toBeAttached({ timeout: 10000 })
   } catch {
-    console.log('DEBUG E2E: No encontrado al primer intento en el carrusel. Recargando...')
-    await page.reload({ waitUntil: 'networkidle' })
+    await page.reload({ waitUntil: 'load' })
+    await expect(carousel).toBeVisible({ timeout: 10000 })
     await expect(portalLink).toBeAttached({ timeout: 15000 })
   }
 

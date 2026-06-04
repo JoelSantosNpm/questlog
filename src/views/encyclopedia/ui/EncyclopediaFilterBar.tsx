@@ -4,6 +4,7 @@ import { ToggleButton } from '@/shared/ui'
 import { useAuth } from '@clerk/nextjs'
 import { AnimatePresence, m } from 'framer-motion'
 import { useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import {
   useEncyclopediaStore,
   useShowMine,
@@ -19,6 +20,7 @@ import {
 export function EncyclopediaFilterBar() {
   const { userId, isLoaded } = useAuth()
   const isLoggedIn = !!userId
+  const t = useTranslations('Encyclopedia.filterBar')
 
   // Resetear filtros privados si el usuario cierra sesión (o nunca estuvo logueado).
   // Esperamos a que Clerk confirme el estado para no borrar los filtros durante la hidratación.
@@ -39,9 +41,9 @@ export function EncyclopediaFilterBar() {
     <div className='flex flex-col gap-2 border-b border-neutral-800/50 px-4 py-3'>
       {/* Dimensión 1: Visibilidad */}
       <div className='flex gap-2'>
-        <ToggleButton label='Público' isActive={showPublic} onToggle={togglePublic} />
+        <ToggleButton label={t('visibility.public')} isActive={showPublic} onToggle={togglePublic} />
         {isLoggedIn && (
-          <ToggleButton label='Privado' isActive={showPrivate} onToggle={togglePrivate} />
+          <ToggleButton label={t('visibility.private')} isActive={showPrivate} onToggle={togglePrivate} />
         )}
       </div>
 
@@ -57,13 +59,13 @@ export function EncyclopediaFilterBar() {
             className='flex gap-2 overflow-hidden'
           >
             <ToggleButton
-              label='Míos'
+              label={t('ownership.mine')}
               isActive={showMine}
               onToggle={toggleMine}
               activeClassName='border-violet-500/40 bg-violet-500/15 text-violet-400'
             />
             <ToggleButton
-              label='Compartidos'
+              label={t('ownership.shared')}
               isActive={showShared}
               onToggle={toggleShared}
               activeClassName='border-violet-500/40 bg-violet-500/15 text-violet-400'

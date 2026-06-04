@@ -1,6 +1,6 @@
 'use client'
 
-import { DragEvent, useCallback, useState } from 'react'
+import { DragEvent, useState } from 'react'
 
 interface UseFileDropProps {
   onDropFile: (file: File) => void
@@ -10,19 +10,19 @@ interface UseFileDropProps {
 export function useFileDrop({ onDropFile, disabled }: UseFileDropProps) {
   const [isDragging, setIsDragging] = useState(false)
 
-  const handleDrag = useCallback((e: DragEvent) => {
+  const handleDrag = (e: DragEvent) => {
     if (disabled) return
     e.preventDefault()
     e.stopPropagation()
-    
+
     if (e.type === 'dragenter' || e.type === 'dragover') {
       setIsDragging(true)
     } else if (e.type === 'dragleave') {
       setIsDragging(false)
     }
-  }, [disabled])
+  }
 
-  const handleDrop = useCallback((e: DragEvent) => {
+  const handleDrop = (e: DragEvent) => {
     if (disabled) return
     e.preventDefault()
     e.stopPropagation()
@@ -32,11 +32,11 @@ export function useFileDrop({ onDropFile, disabled }: UseFileDropProps) {
     if (droppedFile) {
       onDropFile(droppedFile)
     }
-  }, [disabled, onDropFile])
+  }
 
   return {
     isDragging,
     handleDrag,
-    handleDrop
+    handleDrop,
   }
 }

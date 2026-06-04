@@ -23,7 +23,7 @@ export function UploaderPreview({ src, isUploading, isSuccess }: UploaderPreview
       />
       {isUploading && (
         <div className='absolute inset-0 bg-neutral-950/60 flex flex-col items-center justify-center space-y-3 backdrop-blur-sm'>
-          <Loader2 className='w-8 h-8 text-amber-500 animate-spin' />
+          <Loader2 className='size-8 text-amber-500 animate-spin' />
           <p className='text-[10px] font-bold text-amber-500 uppercase tracking-[0.3em] animate-pulse'>
             Sellando...
           </p>

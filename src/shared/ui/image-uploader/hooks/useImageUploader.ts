@@ -2,15 +2,7 @@
 
 import { uploadAsset } from '@/shared/api/storage-actions'
 import { FileValidationSchema } from '@/shared/schemas/storage'
-import {
-  ChangeEvent,
-  KeyboardEvent,
-  MouseEvent,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
+import { ChangeEvent, KeyboardEvent, MouseEvent, useEffect, useRef, useState } from 'react'
 import { sileo } from 'sileo'
 
 type StoragePath =
@@ -37,7 +29,7 @@ export function useImageUploader({ onUpload, storagePath }: UseImageUploaderProp
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const clearStates = useCallback(() => {
+  const clearStates = () => {
     setFile(null)
     if (preview) {
       URL.revokeObjectURL(preview)
@@ -48,7 +40,7 @@ export function useImageUploader({ onUpload, storagePath }: UseImageUploaderProp
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
     }
-  }, [preview, onUpload])
+  }
 
   useEffect(() => {
     return () => {
@@ -56,26 +48,23 @@ export function useImageUploader({ onUpload, storagePath }: UseImageUploaderProp
     }
   }, [preview])
 
-  const processFile = useCallback(
-    (selectedFile: File) => {
-      clearStates()
+  const processFile = (selectedFile: File) => {
+    clearStates()
 
-      // VALIDACIÓN CON ZOD
-      const result = FileValidationSchema.safeParse(selectedFile)
+    // VALIDACIÓN CON ZOD
+    const result = FileValidationSchema.safeParse(selectedFile)
 
-      if (!result.success) {
-        sileo.error({
-          title: 'Anomalía en el Archivo',
-          description: result.error.issues[0].message,
-        })
-        return
-      }
+    if (!result.success) {
+      sileo.error({
+        title: 'Anomalía en el Archivo',
+        description: result.error.issues[0].message,
+      })
+      return
+    }
 
-      setFile(selectedFile)
-      setPreview(URL.createObjectURL(selectedFile))
-    },
-    [clearStates]
-  )
+    setFile(selectedFile)
+    setPreview(URL.createObjectURL(selectedFile))
+  }
 
   const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0]

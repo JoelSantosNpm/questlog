@@ -1,29 +1,32 @@
-export default function ColosseumLayout({
+import { getTranslations } from 'next-intl/server'
+
+export default async function ColosseumLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
+  const t = await getTranslations('Colosseum.sidebar')
   return (
     <div className="flex h-screen overflow-hidden bg-background text-foreground">
       <aside className="dungeon-panel w-[300px] flex-shrink-0 overflow-y-auto p-4 border-r border-iron bg-stone/20 backdrop-blur-sm">
         <nav className="flex flex-col gap-4">
           <div className="mb-6">
             <h2 className="text-xl font-bold text-torch uppercase tracking-wider pl-2 border-l-2 border-torch">
-              Coliseo
+              {t('heading')}
             </h2>
-            <p className="text-xs text-iron pl-2 mt-1">Arena de Combate</p>
+            <p className="text-xs text-iron pl-2 mt-1">{t('subtitle')}</p>
           </div>
 
           <div className="space-y-2">
             {/* Aquí irían los enlaces de navegación, simulados por ahora */}
             <div className="p-2 hover:bg-white/5 rounded cursor-pointer transition-colors text-sm text-foreground/80 hover:text-torch">
-              Vista General
+              {t('nav.overview')}
             </div>
             <div className="p-2 hover:bg-white/5 rounded cursor-pointer transition-colors text-sm text-foreground/80 hover:text-torch">
-              Gladiadores
+              {t('nav.gladiators')}
             </div>
             <div className="p-2 hover:bg-white/5 rounded cursor-pointer transition-colors text-sm text-foreground/80 hover:text-torch">
-              Torneos
+              {t('nav.tournaments')}
             </div>
           </div>
         </nav>

@@ -1,6 +1,9 @@
+'use client'
+
 import { cn } from '@/shared/utils/styles'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { Plus } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -52,6 +55,7 @@ function getImageSizes(size: PortalSize) {
 }
 
 export function Portal(props: PortalProps) {
+  const t = useTranslations('Campaigns.portal')
   const {
     variant = 'existing',
     size = 'default',
@@ -79,7 +83,7 @@ export function Portal(props: PortalProps) {
         portalVariants({ size }),
         'transition-none'
       )}
-      aria-label={isExisting ? `Entrar a campaña ${campaignName}` : 'Crear nueva aventura'}
+      aria-label={isExisting ? t('enterAriaLabel', { name: campaignName }) : t('newAriaLabel')}
       style={{ pointerEvents: 'auto' }}
     >
       {/* portal visual */}
@@ -122,24 +126,24 @@ export function Portal(props: PortalProps) {
           {isExisting ? (
             <>
               <span className='text-xs font-medium uppercase tracking-[0.3em] text-amber-500/80'>
-                Campaña
+                {t('badge')}
               </span>
               <span className='text-2xl font-serif text-amber-100 drop-shadow-lg'>
                 {campaignName}
               </span>
               <div className='mt-4 flex translate-y-2 items-center gap-2 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100'>
                 <span className='h-px w-8 bg-amber-500/50' />
-                <span className='text-xs tracking-widest text-amber-400'>ENTRAR</span>
+                <span className='text-xs tracking-widest text-amber-400'>{t('enterLabel')}</span>
                 <span className='h-px w-8 bg-amber-500/50' />
               </div>
             </>
           ) : (
             <>
               <div className='rounded-full border border-white/20 p-4 transition-colors group-hover:border-emerald-300/50 group-hover:bg-emerald-900/40'>
-                <Plus className='h-8 w-8 text-emerald-100/50 group-hover:text-emerald-300' />
+                <Plus className='size-8 text-emerald-100/50 group-hover:text-emerald-300' />
               </div>
               <span className='mt-2 text-sm font-serif tracking-widest text-white/60 group-hover:text-emerald-200'>
-                NUEVA AVENTURA
+                {t('newAdventureLabel')}
               </span>
             </>
           )}
