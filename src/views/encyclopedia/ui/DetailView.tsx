@@ -56,9 +56,9 @@ export const DetailView = () => {
               custom={direction}
               drag='x'
               dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.1}
+              dragElastic={0.3}
               onDragEnd={(e, info) => {
-                const umbral = 100
+                const umbral = 30
                 if (info.offset.x < -umbral) {
                   alternItem(1)
                 } else if (info.offset.x > umbral) {
