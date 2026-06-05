@@ -1,15 +1,17 @@
 'use client'
 
+import { ToggleButton } from '@/shared/ui'
+import ImageUploader from '@/shared/ui/image-uploader/ImageUploader'
 import { MonsterTemplate, Prisma } from '@prisma/client'
-import { Camera } from 'lucide-react'
+import { Camera, RefreshCcw, Upload } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import { type InputHTMLAttributes, type Ref } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { sileo } from 'sileo'
-import ImageUploader from '@/shared/ui/image-uploader/ImageUploader'
-import { ToggleButton } from '@/shared/ui'
+import { useImageUploader } from '@/shared/ui/image-uploader/hooks/useImageUploader'
 import { useCreateMonster } from '../../api/encyclopedia-mutations'
+import { IMAGE_OVERLAY } from '../../lib/image-overlay'
 import { MAIN_STATS, SMALL_STATS, type NumericStatKey } from '../../lib/stats'
 import { useSetIsCreatingNew, useSetSelectedItemId } from '../../model/encyclopediaStore'
 import { PortraitFrame } from '../PortraitFrame'
@@ -17,11 +19,26 @@ import { PortraitFrame } from '../PortraitFrame'
 // Campos escalares del formulario — derivados directamente del tipo Prisma
 type MonsterFormFields = Pick<
   Prisma.MonsterTemplateCreateInput,
-  | 'name' | 'type' | 'race' | 'characterClass' | 'description'
-  | 'imageUrl' | 'portraitImageUrl' | 'isPublic' | 'maxHp'
-  | 'challenge' | 'ac' | 'speed' | 'strength' | 'dexterity'
-  | 'constitution' | 'intelligence' | 'wisdom' | 'charisma'
-  | 'initiativeBonus' | 'perception'
+  | 'name'
+  | 'type'
+  | 'race'
+  | 'characterClass'
+  | 'description'
+  | 'imageUrl'
+  | 'portraitImageUrl'
+  | 'isPublic'
+  | 'maxHp'
+  | 'challenge'
+  | 'ac'
+  | 'speed'
+  | 'strength'
+  | 'dexterity'
+  | 'constitution'
+  | 'intelligence'
+  | 'wisdom'
+  | 'charisma'
+  | 'initiativeBonus'
+  | 'perception'
 >
 
 interface MonsterFormProps {
@@ -56,15 +73,15 @@ function StatInput({
   ...props
 }: { label: string; ref?: Ref<HTMLInputElement> } & InputHTMLAttributes<HTMLInputElement>) {
   return (
-    <label className="flex flex-col gap-1">
-      <span className="truncate text-[10px] font-bold uppercase tracking-widest text-neutral-500">
+    <label className='flex flex-col gap-1'>
+      <span className='truncate text-[10px] font-bold uppercase tracking-widest text-neutral-500'>
         {label}
       </span>
       <input
-        type="number"
+        type='number'
         ref={ref}
         {...props}
-        className="input-encyclopedia w-full text-center font-mono font-bold text-neutral-200"
+        className='input-encyclopedia w-full text-center font-mono font-bold text-neutral-200'
       />
     </label>
   )
@@ -80,7 +97,7 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess }: Monster
     register,
     handleSubmit,
     setValue,
-    watch,
+    control,
     formState: { isSubmitting },
   } = useForm<MonsterFormFields>({
     defaultValues: initialData
@@ -109,8 +126,24 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess }: Monster
       : DEFAULT_VALUES,
   })
 
-  const bgImageUrl = watch('imageUrl') as string | undefined
-  const portraitUrl = watch('portraitImageUrl') as string | undefined
+  const bgImageUrl = useWatch({ control, name: 'imageUrl' }) as string | undefined
+  const portraitUrl = useWatch({ control, name: 'portraitImageUrl' }) as string | undefined
+  const isPublic = (useWatch({ control, name: 'isPublic' }) as boolean) ?? false
+
+  const {
+    fileInputRef: bgFileInputRef,
+    handleFileSelect: bgHandleFileSelect,
+    handleClick: bgHandleClick,
+    handleUpload: bgHandleUpload,
+    handleReset: bgHandleReset,
+    preview: bgPreview,
+    isUploading: bgIsUploading,
+    isSuccess: bgIsSuccess,
+  } = useImageUploader({
+    storagePath: 'monsters',
+    onUpload: (url) => setValue('imageUrl', url || undefined),
+  })
+  const bgPreviewSrc = bgImageUrl ?? bgPreview
 
   const onSubmit = async (data: MonsterFormFields) => {
     try {
@@ -141,81 +174,115 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess }: Monster
     register(key as keyof MonsterFormFields, { valueAsNumber: true })
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col lg:flex-row lg:h-full">
-
+    <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col lg:flex-row lg:h-full'>
       {/* ── Panel izquierdo — previsualización imagen de fondo ── */}
-      <div className="relative h-[50vw] min-h-64 shrink-0 overflow-hidden lg:min-w-[60%] lg:flex-1 lg:h-full">
-
+      <div className='relative h-[50vw] min-h-64 shrink-0 overflow-hidden lg:min-w-[60%] lg:flex-1 lg:h-full'>
         {/* Fondo biblioteca (siempre visible, igual que DetailView) */}
         <Image
-          src="/bg_biblioteca.png"
-          alt=""
+          src='/bg_biblioteca.png'
+          alt=''
           fill
-          sizes="(max-width: 1024px) 100vw, 60vw"
-          className="object-cover object-top"
+          sizes='(max-width: 1024px) 100vw, 60vw'
+          className='object-cover object-top'
           priority
         />
-        <div className="absolute inset-0 bg-black/60" />
+        <div className='absolute inset-0 bg-black/60' />
 
-        {/* Previsualización de la imagen del monstruo (misma posición que EncyclopediaImage) */}
-        {bgImageUrl && (
+        {/* Preview en posición EncyclopediaImage — aparece al seleccionar archivo (ObjectURL) o tras upload (URL pública) */}
+        {bgPreviewSrc && (
           <div
-            className="absolute w-full max-w-sm"
+            className='absolute w-full max-w-sm'
             style={{
-              top: 'calc(72% - 55%)',
-              height: '55%',
+              position: 'absolute',
+              top: `calc(${IMAGE_OVERLAY.bottomFromTop} - ${IMAGE_OVERLAY.height})`,
+              height: IMAGE_OVERLAY.height,
               left: '50%',
               transform: 'translateX(-50%)',
             }}
           >
-            <div className="absolute -inset-4 rounded-full bg-amber-500/10 blur-2xl" />
-            <div className="relative h-full w-full">
+            <div className='absolute -inset-4 rounded-full bg-amber-500/10 blur-2xl' />
+            <div className='relative h-full w-full'>
               <Image
-                src={bgImageUrl}
-                alt="preview"
+                src={bgPreviewSrc}
+                alt='preview'
                 fill
-                className="object-contain transition-all duration-500"
+                className='object-contain transition-all duration-500'
                 unoptimized
               />
             </div>
           </div>
         )}
 
-        {/* Uploader de imagen de fondo — anclado en la zona inferior con degradado */}
-        <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/90 via-black/60 to-transparent p-4 pt-10">
-          <ImageUploader
-            storagePath="monsters"
-            label={t('monsterForm.imageBg')}
-            onUpload={(url) => setValue('imageUrl', url)}
+        {/* Controles de imagen de fondo — zona inferior con degradado */}
+        <div className='absolute inset-x-0 bottom-0 bg-linear-to-t from-black/90 via-black/60 to-transparent p-4 pt-10'>
+          <div className='flex gap-2'>
+            {!bgIsSuccess ? (
+              <>
+                <button
+                  type='button'
+                  onClick={bgHandleClick}
+                  className='flex flex-1 items-center justify-center gap-2 rounded-md border border-neutral-700 bg-neutral-900/70 px-3 py-2 text-xs text-neutral-300 transition-colors hover:border-amber-600/50 hover:text-amber-400'
+                >
+                  <Upload className='size-3.5' />
+                  {t('monsterForm.imageBg')}
+                </button>
+                {bgPreview && (
+                  <button
+                    type='button'
+                    onClick={bgHandleUpload}
+                    disabled={bgIsUploading}
+                    className='flex flex-1 items-center justify-center gap-2 rounded-md bg-amber-700/70 px-3 py-2 text-xs text-amber-200 transition-colors hover:bg-amber-600/70 disabled:opacity-50'
+                  >
+                    <Upload className='size-3.5' />
+                    {bgIsUploading ? '...' : 'Subir'}
+                  </button>
+                )}
+              </>
+            ) : (
+              <button
+                type='button'
+                onClick={bgHandleReset}
+                className='flex flex-1 items-center justify-center gap-2 rounded-md border border-neutral-700 bg-neutral-900/70 px-3 py-2 text-xs text-neutral-300 transition-colors hover:border-red-600/50 hover:text-red-400'
+              >
+                <RefreshCcw className='size-3.5' />
+                Cambiar imagen
+              </button>
+            )}
+          </div>
+          <input
+            type='file'
+            ref={bgFileInputRef}
+            onChange={bgHandleFileSelect}
+            accept='image/*'
+            className='hidden'
           />
         </div>
       </div>
 
       {/* ── Panel derecho — retrato + campos del formulario ── */}
-      <div className="w-full space-y-6 border-t border-neutral-800/50 bg-neutral-900/30 p-4 backdrop-blur-md lg:max-w-lg lg:border-l lg:border-t-0 lg:overflow-y-auto lg:p-6 scrollbar-encyclopedia">
-
+      <div className='w-full space-y-6 border-t border-neutral-800/50 bg-neutral-900/30 p-4 backdrop-blur-md lg:max-w-lg lg:border-l lg:border-t-0 lg:overflow-y-auto lg:p-6 scrollbar-encyclopedia'>
         {/* Retrato + nombre (espejo del ItemHeader) */}
         <header>
-          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
+          <div className='flex flex-col sm:flex-row items-center gap-3 sm:gap-4'>
             {portraitUrl ? (
-              <div className="shrink-0">
-                <PortraitFrame src={portraitUrl} alt="Portrait preview" variant="monster" />
+              <div className='shrink-0'>
+                <PortraitFrame src={portraitUrl} alt='Portrait preview' variant='monster' />
               </div>
             ) : (
-              <div className="size-28 shrink-0 rounded-full border-2 border-dashed border-neutral-700 bg-neutral-900/50 flex items-center justify-center">
-                <Camera className="size-8 text-neutral-600" />
+              <div className='size-28 shrink-0 rounded-full border-2 border-dashed border-neutral-700 bg-neutral-900/50 flex items-center justify-center'>
+                <Camera className='size-8 text-neutral-600' />
               </div>
             )}
             <input
               {...register('name', { required: true })}
               placeholder={t('monsterForm.namePlaceholder')}
-              className="min-w-0 w-full border-b border-neutral-700 bg-transparent pb-1 text-2xl font-bold text-neutral-100 focus:border-amber-500/50 focus:outline-none font-medieval"
+              className='min-w-0 w-full border-b border-neutral-700 bg-transparent pb-1 text-2xl font-bold text-neutral-100 focus:border-amber-500/50 focus:outline-none font-medieval'
             />
           </div>
 
-          <div className="mt-3">
+          <div className='mt-3'>
             <ImageUploader
-              storagePath="monsters"
+              storagePath='monsters'
               label={t('monsterForm.imagePortrait')}
               onUpload={(url) => setValue('portraitImageUrl', url)}
             />
@@ -223,26 +290,26 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess }: Monster
         </header>
 
         {/* Metadatos — 2 columnas */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className='grid grid-cols-2 gap-3'>
           <input
             {...register('type', { required: true })}
             placeholder={t('monsterForm.typePlaceholder')}
-            className="input-encyclopedia"
+            className='input-encyclopedia'
           />
           <input
             {...register('race')}
             placeholder={t('monsterForm.racePlaceholder')}
-            className="input-encyclopedia"
+            className='input-encyclopedia'
           />
           <input
             {...register('characterClass')}
             placeholder={t('monsterForm.classPlaceholder')}
-            className="input-encyclopedia"
+            className='input-encyclopedia'
           />
           <ToggleButton
             label={t('monsterForm.publicLabel')}
-            isActive={(watch('isPublic') as boolean) ?? false}
-            onToggle={() => setValue('isPublic', !watch('isPublic'))}
+            isActive={isPublic}
+            onToggle={() => setValue('isPublic', !isPublic)}
           />
         </div>
 
@@ -251,13 +318,13 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess }: Monster
           {...register('description')}
           placeholder={t('monsterForm.descriptionPlaceholder')}
           rows={3}
-          className="input-encyclopedia w-full resize-none"
+          className='input-encyclopedia w-full resize-none'
         />
 
         {/* Estadísticas de combate: maxHp + challenge + MAIN_STATS (ac, speed) */}
         <section>
-          <h3 className="section-label mb-3">{t('monsterForm.sectionStats')}</h3>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <h3 className='section-label mb-3'>{t('monsterForm.sectionStats')}</h3>
+          <div className='grid grid-cols-2 gap-3 sm:grid-cols-4'>
             <StatInput
               label={t('monsterForm.fieldMaxHp')}
               {...register('maxHp', { required: true, valueAsNumber: true, min: 1 })}
@@ -274,8 +341,8 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess }: Monster
 
         {/* Atributos: SMALL_STATS aplanado (8 campos) */}
         <section>
-          <h3 className="section-label mb-3">{t('monsterForm.sectionAttributes')}</h3>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <h3 className='section-label mb-3'>{t('monsterForm.sectionAttributes')}</h3>
+          <div className='grid grid-cols-2 gap-3 sm:grid-cols-4'>
             {[...SMALL_STATS[0], ...SMALL_STATS[1]].map((stat) => (
               <StatInput key={stat.key} label={stat.title} {...numericField(stat.key)} />
             ))}
@@ -284,13 +351,12 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess }: Monster
 
         {/* Submit */}
         <button
-          type="submit"
+          type='submit'
           disabled={isSubmitting}
-          className="w-full rounded-md bg-amber-600/80 py-2.5 text-sm font-bold text-neutral-100 transition-colors hover:bg-amber-500 disabled:opacity-50"
+          className='w-full rounded-md bg-amber-600/80 py-2.5 text-sm font-bold text-neutral-100 transition-colors hover:bg-amber-500 disabled:opacity-50'
         >
           {mode === 'create' ? t('monsterForm.submitCreate') : t('monsterForm.submitEdit')}
         </button>
-
       </div>
     </form>
   )
