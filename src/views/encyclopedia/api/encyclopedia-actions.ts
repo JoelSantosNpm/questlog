@@ -7,10 +7,14 @@ import { revalidatePath } from 'next/cache'
 
 /* --- MONSTRUOS (BESTIARY) --- */
 
-export async function createMonster(data: Prisma.MonsterTemplateCreateInput) {
+export async function createMonster(data: Prisma.MonsterTemplateUncheckedCreateInput) {
   try {
-    const userId = await requireUserId()
-    const monster = await withRLS(userId, (db) => db.monsterTemplate.create({ data }))
+    const clerkId = await requireUserId()
+    const monster = await withRLS(clerkId, async (db) => {
+      const user = await db.user.findUnique({ where: { clerkId } })
+      if (!user) throw new Error('Usuario no sincronizado en la base de datos')
+      return db.monsterTemplate.create({ data: { ...data, authorId: user.id } })
+    })
     revalidatePath('/encyclopedia')
     return { success: true, data: monster }
   } catch (error) {
