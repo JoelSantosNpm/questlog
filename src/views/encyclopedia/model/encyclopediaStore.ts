@@ -7,9 +7,11 @@ interface EncyclopediaUIState {
   activeSection: EncyclopediaSection
   selectedItemId: string | null
   searchQuery: string
+  isCreatingNew: boolean
   setActiveSection: (section: EncyclopediaSection) => void
   setSelectedItemId: (id: string | null) => void
   setSearchQuery: (query: string) => void
+  setIsCreatingNew: (v: boolean) => void
   // Filtros de visibilidad y propiedad
   showPublic: boolean
   showPrivate: boolean
@@ -26,10 +28,12 @@ export const useEncyclopediaStore = create<EncyclopediaUIState>((set) => ({
   activeSection: 'bestiary',
   selectedItemId: null,
   searchQuery: '',
+  isCreatingNew: false,
   setActiveSection: (section) =>
-    set({ activeSection: section, selectedItemId: null, searchQuery: '' }),
+    set({ activeSection: section, selectedItemId: null, searchQuery: '', isCreatingNew: false }),
   setSelectedItemId: (id) => set({ selectedItemId: id }),
   setSearchQuery: (query) => set({ searchQuery: query }),
+  setIsCreatingNew: (v) => set({ isCreatingNew: v }),
   // Filtros — por defecto: solo públicos, sub-filtros de privados activos para cuando se habiliten
   showPublic: true,
   showPrivate: true,
@@ -65,3 +69,6 @@ export const useTogglePublic = () => useEncyclopediaStore((s) => s.togglePublic)
 export const useTogglePrivate = () => useEncyclopediaStore((s) => s.togglePrivate)
 export const useToggleMine = () => useEncyclopediaStore((s) => s.toggleMine)
 export const useToggleShared = () => useEncyclopediaStore((s) => s.toggleShared)
+
+export const useIsCreatingNew = () => useEncyclopediaStore((s) => s.isCreatingNew)
+export const useSetIsCreatingNew = () => useEncyclopediaStore((s) => s.setIsCreatingNew)
