@@ -10,7 +10,7 @@ import { sileo } from 'sileo'
 import ImageUploader from '@/shared/ui/image-uploader/ImageUploader'
 import { ToggleButton } from '@/shared/ui'
 import { useCreateMonster } from '../../api/encyclopedia-mutations'
-import { MAIN_STATS, SMALL_STATS, type NumericStatKey } from '../../config/stats'
+import { MAIN_STATS, SMALL_STATS, type NumericStatKey } from '../../lib/stats'
 import { useSetIsCreatingNew, useSetSelectedItemId } from '../../model/encyclopediaStore'
 import { PortraitFrame } from '../PortraitFrame'
 
