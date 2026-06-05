@@ -134,7 +134,7 @@
     "monsterForm": {
       "createButton": "New monster",
       "backButton": "Back",
-      "imageBg": "Background image",
+      "imageAvatar": "Main image",
       "imagePortrait": "Portrait / Avatar",
       "namePlaceholder": "Monster name",
       "typePlaceholder": "Type",
