@@ -130,6 +130,28 @@
         "legendary": "Legendary",
         "artifact": "Artifact"
       }
+    },
+    "monsterForm": {
+      "createButton": "New monster",
+      "backButton": "Back",
+      "imageBg": "Background image",
+      "imagePortrait": "Portrait / Avatar",
+      "namePlaceholder": "Monster name",
+      "typePlaceholder": "Type",
+      "racePlaceholder": "Race",
+      "classPlaceholder": "Class",
+      "descriptionPlaceholder": "Description…",
+      "publicLabel": "Public",
+      "sectionStats": "Stats",
+      "sectionAttributes": "Attributes",
+      "fieldMaxHp": "Hit Points",
+      "fieldChallenge": "Challenge",
+      "submitCreate": "Create monster",
+      "submitEdit": "Save changes",
+      "toastSuccessTitle": "Monster created",
+      "toastSuccessDesc": "The monster has been added to the bestiary",
+      "toastErrorTitle": "Error",
+      "toastErrorDesc": "Could not create the monster"
     }
   },
   "Campaigns": {

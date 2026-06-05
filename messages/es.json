@@ -130,6 +130,28 @@
         "legendary": "Legendaria",
         "artifact": "Artefacto"
       }
+    },
+    "monsterForm": {
+      "createButton": "Nuevo monstruo",
+      "backButton": "Volver",
+      "imageBg": "Imagen de fondo",
+      "imagePortrait": "Retrato / Avatar",
+      "namePlaceholder": "Nombre del monstruo",
+      "typePlaceholder": "Tipo",
+      "racePlaceholder": "Raza",
+      "classPlaceholder": "Clase",
+      "descriptionPlaceholder": "Descripción…",
+      "publicLabel": "Público",
+      "sectionStats": "Estadísticas",
+      "sectionAttributes": "Atributos",
+      "fieldMaxHp": "Puntos de Golpe",
+      "fieldChallenge": "Desafío",
+      "submitCreate": "Crear monstruo",
+      "submitEdit": "Guardar cambios",
+      "toastSuccessTitle": "Monstruo creado",
+      "toastSuccessDesc": "El monstruo ha sido añadido al bestiario",
+      "toastErrorTitle": "Error",
+      "toastErrorDesc": "No se pudo crear el monstruo"
     }
   },
   "Campaigns": {
