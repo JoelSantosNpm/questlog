@@ -3,12 +3,16 @@
 import { useEffect } from 'react'
 import { sileo } from 'sileo'
 import { useCurrentItems } from '../lib/use-encyclopedia-items'
+import { useActiveSection, useIsCreatingNew } from '../model/encyclopediaStore'
 import { DetailView } from './DetailView'
 import { ListView } from './ListView'
 import { MobileListDrawer } from './MobileListDrawer'
+import { MonsterCreationView } from './MonsterCreationView'
 
 export function EncyclopediaContainer() {
   const currentItems = useCurrentItems()
+  const isCreatingNew = useIsCreatingNew()
+  const activeSection = useActiveSection()
 
   useEffect(() => {
     sileo.info({
@@ -32,8 +36,7 @@ export function EncyclopediaContainer() {
       {/* Drawer: visible en < md */}
       <MobileListDrawer items={currentItems} />
 
-      <DetailView />
-      {/* <SwipeTest /> */}
+      {isCreatingNew && activeSection === 'bestiary' ? <MonsterCreationView /> : <DetailView />}
     </>
   )
 }
