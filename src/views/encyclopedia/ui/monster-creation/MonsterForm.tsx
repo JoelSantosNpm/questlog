@@ -209,7 +209,7 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess }: Monster
             <input
               {...register('name', { required: true })}
               placeholder={t('monsterForm.namePlaceholder')}
-              className="w-full border-b border-neutral-700 bg-transparent pb-1 text-2xl font-bold text-neutral-100 focus:border-amber-500/50 focus:outline-none font-medieval"
+              className="min-w-0 w-full border-b border-neutral-700 bg-transparent pb-1 text-2xl font-bold text-neutral-100 focus:border-amber-500/50 focus:outline-none font-medieval"
             />
           </div>
 
@@ -275,7 +275,7 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess }: Monster
         {/* Atributos: SMALL_STATS aplanado (8 campos) */}
         <section>
           <h3 className="section-label mb-3">{t('monsterForm.sectionAttributes')}</h3>
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {[...SMALL_STATS[0], ...SMALL_STATS[1]].map((stat) => (
               <StatInput key={stat.key} label={stat.title} {...numericField(stat.key)} />
             ))}

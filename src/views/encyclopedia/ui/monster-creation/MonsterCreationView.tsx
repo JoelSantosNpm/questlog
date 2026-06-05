@@ -14,7 +14,7 @@ export function MonsterCreationView() {
       <div className="absolute left-4 top-4 z-10">
         <button
           onClick={() => setIsCreatingNew(false)}
-          className="flex items-center gap-1 text-xs text-neutral-400 transition-colors hover:text-neutral-200"
+          className="flex items-center gap-1 rounded-md bg-black/50 px-2 py-1 text-xs text-neutral-400 backdrop-blur-sm transition-colors hover:text-neutral-200"
         >
           <ArrowLeft className="size-3.5" />
           {t('monsterForm.backButton')}
