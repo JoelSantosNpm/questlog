@@ -4,7 +4,7 @@ import { MonsterTemplate, Prisma } from '@prisma/client'
 import { Camera } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import Image from 'next/image'
-import { forwardRef, type InputHTMLAttributes } from 'react'
+import { type InputHTMLAttributes, type Ref } from 'react'
 import { useForm } from 'react-hook-form'
 import { sileo } from 'sileo'
 import ImageUploader from '@/shared/ui/image-uploader/ImageUploader'
@@ -50,23 +50,25 @@ const DEFAULT_VALUES: MonsterFormFields = {
   perception: 10,
 }
 
-const StatInput = forwardRef<
-  HTMLInputElement,
-  { label: string } & InputHTMLAttributes<HTMLInputElement>
->(({ label, ...props }, ref) => (
-  <label className="flex flex-col gap-1">
-    <span className="truncate text-[10px] font-bold uppercase tracking-widest text-neutral-500">
-      {label}
-    </span>
-    <input
-      type="number"
-      ref={ref}
-      {...props}
-      className="input-encyclopedia w-full text-center font-mono font-bold text-neutral-200"
-    />
-  </label>
-))
-StatInput.displayName = 'StatInput'
+function StatInput({
+  label,
+  ref,
+  ...props
+}: { label: string; ref?: Ref<HTMLInputElement> } & InputHTMLAttributes<HTMLInputElement>) {
+  return (
+    <label className="flex flex-col gap-1">
+      <span className="truncate text-[10px] font-bold uppercase tracking-widest text-neutral-500">
+        {label}
+      </span>
+      <input
+        type="number"
+        ref={ref}
+        {...props}
+        className="input-encyclopedia w-full text-center font-mono font-bold text-neutral-200"
+      />
+    </label>
+  )
+}
 
 export function MonsterForm({ mode = 'create', initialData, onSuccess }: MonsterFormProps) {
   const t = useTranslations('Encyclopedia')
