@@ -1,9 +1,7 @@
 'use client'
 
 import { ToggleButton } from '@/shared/ui'
-import ImageUploader from '@/shared/ui/image-uploader/ImageUploader'
 import { MonsterTemplate, Prisma } from '@prisma/client'
-import { Camera } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { type InputHTMLAttributes, type Ref } from 'react'
 import { FormProvider, useForm, useWatch } from 'react-hook-form'
@@ -11,8 +9,8 @@ import { sileo } from 'sileo'
 import { useCreateMonster } from '../../api/encyclopedia-mutations'
 import { MAIN_STATS, SMALL_STATS, type NumericStatKey } from '../../lib/stats'
 import { useSetIsCreatingNew, useSetSelectedItemId } from '../../model/encyclopediaStore'
-import { PortraitFrame } from '../PortraitFrame'
 import { MonsterAvatarPanel } from './MonsterAvatarPanel'
+import { MonsterPortraitUploader } from './MonsterPortraitUploader'
 
 export type MonsterFormFields = Pick<
   Prisma.MonsterTemplateCreateInput,
@@ -118,7 +116,6 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess }: Monster
   })
 
   const { register, handleSubmit, setValue, control, formState: { isSubmitting } } = methods
-  const portraitUrl = useWatch({ control, name: 'portraitImageUrl' }) as string | undefined
   const isPublic = (useWatch({ control, name: 'isPublic' }) as boolean) ?? false
 
   const onSubmit = async (data: MonsterFormFields) => {
@@ -150,26 +147,11 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess }: Monster
 
           <header>
             <div className='flex flex-col sm:flex-row items-center gap-3 sm:gap-4'>
-              {portraitUrl ? (
-                <div className='shrink-0'>
-                  <PortraitFrame src={portraitUrl} alt='Portrait preview' variant='monster' />
-                </div>
-              ) : (
-                <div className='size-28 shrink-0 rounded-full border-2 border-dashed border-neutral-700 bg-neutral-900/50 flex items-center justify-center'>
-                  <Camera className='size-8 text-neutral-600' />
-                </div>
-              )}
+              <MonsterPortraitUploader />
               <input
                 {...register('name', { required: true })}
                 placeholder={t('monsterForm.namePlaceholder')}
                 className='min-w-0 w-full border-b border-neutral-700 bg-transparent pb-1 text-2xl font-bold text-neutral-100 focus:border-amber-500/50 focus:outline-none font-medieval'
-              />
-            </div>
-            <div className='mt-3'>
-              <ImageUploader
-                storagePath='monsters'
-                label={t('monsterForm.imagePortrait')}
-                onUpload={(url) => setValue('portraitImageUrl', url)}
               />
             </div>
           </header>
