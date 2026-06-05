@@ -6,7 +6,7 @@ import { OctagonAlert } from 'lucide-react'
 import Image from 'next/image'
 import { useLayoutEffect, useState } from 'react'
 import { type EncyclopediaSection } from '../model/encyclopediaStore'
-import { EncyclopediaItem } from '../model/types'
+import { EncyclopediaItem } from '../model/encyclopedia-item'
 
 interface EncyclopediaImageProps {
   item: EncyclopediaItem

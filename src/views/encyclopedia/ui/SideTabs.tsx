@@ -5,7 +5,7 @@ import { m } from 'framer-motion'
 import { Landmark, Skull, Users } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useActiveSection, useSetActiveSection } from '../model/encyclopediaStore'
-import type { SectionConfig } from '../model/types'
+import type { SectionConfig } from '../model/encyclopedia-item'
 
 const SECTIONS: SectionConfig[] = [
   { id: 'bestiary', icon: Skull },

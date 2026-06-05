@@ -3,7 +3,7 @@
 import { cn } from '@/shared/utils/styles'
 import { useTranslations } from 'next-intl'
 import { ALL_STATS, signed } from '../config/stats'
-import { MuseumItem } from '../model/types'
+import { MuseumItem } from '../model/encyclopedia-item'
 import { StatBox } from './StatBox'
 
 interface ItemPropertiesProps {

@@ -1,4 +1,4 @@
-import type { BestiaryItem, CastItem, MuseumItem } from '@/views/encyclopedia/model/types'
+import type { BestiaryItem, CastItem, MuseumItem } from '@/views/encyclopedia/model/encyclopedia-item'
 import { ItemHeader } from '@/views/encyclopedia/ui/ItemHeader'
 import type { Rarity } from '@prisma/client'
 import { fireEvent, render, screen } from '@testing-library/react'

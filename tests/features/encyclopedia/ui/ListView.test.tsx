@@ -1,5 +1,5 @@
 import { useEncyclopediaStore } from '@/views/encyclopedia/model/encyclopediaStore'
-import type { BestiaryItem } from '@/views/encyclopedia/model/types'
+import type { BestiaryItem } from '@/views/encyclopedia/model/encyclopedia-item'
 import { ListView } from '@/views/encyclopedia/ui/ListView'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { act } from 'react'

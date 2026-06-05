@@ -10,7 +10,7 @@ import {
   useSetSelectedItemId,
   type EncyclopediaSection,
 } from '../model/encyclopediaStore'
-import { BestiaryItem, CastItem, EncyclopediaItem, MuseumItem } from '../model/types'
+import { BestiaryItem, CastItem, EncyclopediaItem, MuseumItem } from '../model/encyclopedia-item'
 import { CombatStats } from './CombatStats'
 import { EncyclopediaImage } from './EncyclopediaImage'
 import { ItemHeader } from './ItemHeader'

@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { EncyclopediaSection } from './types'
+import type { EncyclopediaSection } from './encyclopedia-item'
 
 export type { EncyclopediaSection }
 

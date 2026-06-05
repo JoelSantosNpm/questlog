@@ -15,7 +15,7 @@ import type {
   EncyclopediaItem,
   EncyclopediaOwnership,
   EncyclopediaVisibility,
-} from '../model/types'
+} from '../model/encyclopedia-item'
 
 function deriveVisibility(showPublic: boolean, showPrivate: boolean): EncyclopediaVisibility {
   if (showPublic && showPrivate) return 'all'

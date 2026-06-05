@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { EncyclopediaOwnership, EncyclopediaVisibility } from '../model/types'
+import { EncyclopediaOwnership, EncyclopediaVisibility } from '../model/encyclopedia-item'
 import { getBestiaryItems, getCharacterTemplates, getMuseumItems } from './encyclopedia-queries'
 import { ENCYCLOPEDIA_KEYS } from './query-keys'
 

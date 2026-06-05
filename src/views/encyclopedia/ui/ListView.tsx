@@ -11,7 +11,7 @@ import {
   useSetSearchQuery,
   useSetSelectedItemId,
 } from '../model/encyclopediaStore'
-import { EncyclopediaItem } from '../model/types'
+import { EncyclopediaItem } from '../model/encyclopedia-item'
 import { EncyclopediaFilterBar } from './EncyclopediaFilterBar'
 
 interface ListViewProps {

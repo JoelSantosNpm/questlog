@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { EncyclopediaImage } from '@/views/encyclopedia/ui/EncyclopediaImage'
-import type { BestiaryItem, MuseumItem } from '@/views/encyclopedia/model/types'
+import type { BestiaryItem, MuseumItem } from '@/views/encyclopedia/model/encyclopedia-item'
 import type { Rarity } from '@prisma/client'
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
