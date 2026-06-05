@@ -9,10 +9,10 @@ import { useForm } from 'react-hook-form'
 import { sileo } from 'sileo'
 import ImageUploader from '@/shared/ui/image-uploader/ImageUploader'
 import { ToggleButton } from '@/shared/ui'
-import { useCreateMonster } from '../api/encyclopedia-mutations'
-import { MAIN_STATS, SMALL_STATS, type NumericStatKey } from '../config/stats'
-import { useSetIsCreatingNew, useSetSelectedItemId } from '../model/encyclopediaStore'
-import { PortraitFrame } from './PortraitFrame'
+import { useCreateMonster } from '../../api/encyclopedia-mutations'
+import { MAIN_STATS, SMALL_STATS, type NumericStatKey } from '../../config/stats'
+import { useSetIsCreatingNew, useSetSelectedItemId } from '../../model/encyclopediaStore'
+import { PortraitFrame } from '../PortraitFrame'
 
 // Campos escalares del formulario — derivados directamente del tipo Prisma
 type MonsterFormFields = Pick<
@@ -195,7 +195,6 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess }: Monster
         {/* Retrato + nombre (espejo del ItemHeader) */}
         <header>
           <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
-            {/* Previsualización del retrato */}
             {portraitUrl ? (
               <div className="shrink-0">
                 <PortraitFrame src={portraitUrl} alt="Portrait preview" variant="monster" />
@@ -205,7 +204,6 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess }: Monster
                 <Camera className="size-8 text-neutral-600" />
               </div>
             )}
-            {/* Input nombre */}
             <input
               {...register('name', { required: true })}
               placeholder={t('monsterForm.namePlaceholder')}
@@ -213,7 +211,6 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess }: Monster
             />
           </div>
 
-          {/* Uploader de retrato — compacto, bajo el portrait */}
           <div className="mt-3">
             <ImageUploader
               storagePath="monsters"

@@ -2,7 +2,7 @@
 
 import { ArrowLeft } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { useSetIsCreatingNew } from '../model/encyclopediaStore'
+import { useSetIsCreatingNew } from '../../model/encyclopediaStore'
 import { MonsterForm } from './MonsterForm'
 
 export function MonsterCreationView() {

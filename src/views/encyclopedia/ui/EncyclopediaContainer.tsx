@@ -7,7 +7,7 @@ import { useActiveSection, useIsCreatingNew } from '../model/encyclopediaStore'
 import { DetailView } from './DetailView'
 import { ListView } from './ListView'
 import { MobileListDrawer } from './MobileListDrawer'
-import { MonsterCreationView } from './MonsterCreationView'
+import { MonsterCreationView } from './monster-creation/MonsterCreationView'
 
 export function EncyclopediaContainer() {
   const currentItems = useCurrentItems()
