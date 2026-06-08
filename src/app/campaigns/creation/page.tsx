@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default async function CreateCampaignPage() {
   const [messages, t] = await Promise.all([
-    getMessages() as Promise<{ Campaigns: unknown }>,
+    getMessages(),
     getTranslations('Campaigns.creation'),
   ])
   return (

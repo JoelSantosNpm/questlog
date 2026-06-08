@@ -14,7 +14,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function EncyclopediaPage() {
   const queryClient = getQueryClient()
-  const messages = (await getMessages()) as { Encyclopedia: unknown; Common: unknown }
+  const messages = await getMessages()
 
   await prefetchEncyclopediaData(queryClient)
 

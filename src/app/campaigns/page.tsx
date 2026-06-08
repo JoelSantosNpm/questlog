@@ -16,7 +16,7 @@ export const revalidate = 0 // Forzar regeneración dinámica en cada request
 export default async function PortalsPage() {
   const { userId } = await auth()
   const queryClient = getQueryClient()
-  const messages = (await getMessages()) as { Campaigns: unknown }
+  const messages = await getMessages()
 
   await prefetchCampaignList(queryClient, userId ?? undefined)
 
