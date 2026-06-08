@@ -8,8 +8,8 @@ const BUTTON_BASE =
   'flex items-center justify-center rounded-md border border-amber-800/30 bg-amber-950/20 font-bold text-amber-500/70 hover:bg-amber-900/30 hover:text-amber-400 active:bg-amber-800/30 transition-colors leading-none select-none cursor-pointer'
 
 const BUTTON_SIZE: Record<'sm' | 'md', string> = {
-  md: 'h-[20px] w-[23px] text-[19px]',
-  sm: 'h-[18px] w-[22px] text-sm',
+  md: 'h-[23px] w-[26px] text-[19px]',
+  sm: 'h-[20px] w-[23px] text-sm',
 }
 
 export function StatBoxWithControls({
@@ -44,9 +44,9 @@ export function StatBoxWithControls({
   const buttonClassName = `${BUTTON_BASE} ${BUTTON_SIZE[boxSize]}`
 
   return (
-    <div className='flex items-center gap-1'>
+    <div className='flex flex-col items-center gap-1'>
       <EditableStatBox label={label} boxSize={boxSize} title={title} {...fieldProps} />
-      <div className='flex flex-col gap-2'>
+      <div className='flex flex-row gap-3'>
         <button type='button' onClick={() => step(1)} className={buttonClassName}>
           +
         </button>
