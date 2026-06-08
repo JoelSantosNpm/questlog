@@ -32,7 +32,14 @@ export default async function RootLayout({
           almendra.variable,
           'flex min-h-screen flex-col bg-neutral-950 font-sans text-neutral-100 antialiased selection:bg-amber-500/30'
         )}
-        style={{ '--header-h': '4rem', '--footer-h': '5rem' } as React.CSSProperties}
+        style={
+          {
+            '--header-h': '4rem',
+            '--footer-h': '5rem',
+            // Config de Sileo: ancho responsive de los toasts (evita que desborden en pantallas estrechas)
+            '--sileo-width': 'min(350px, calc(100vw - 3rem))',
+          } as React.CSSProperties
+        }
       >
         <AuthProvider>
           {/* Sincronización de Usuario (Lazy Sync) */}
