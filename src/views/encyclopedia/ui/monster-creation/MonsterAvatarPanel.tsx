@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import { useFormContext, useWatch } from 'react-hook-form'
 import { IMAGE_OVERLAY } from '../../lib/image-overlay'
-import type { MonsterFormFields } from './MonsterForm'
+import type { MonsterFormFields } from './monster-form-fields'
 
 export function MonsterAvatarPanel() {
   const t = useTranslations('Encyclopedia')

@@ -1,208 +1,22 @@
 'use client'
 
 import { ToggleButton } from '@/shared/ui'
-import { MonsterTemplate, Prisma } from '@prisma/client'
+import { MonsterTemplate } from '@prisma/client'
 import { useTranslations } from 'next-intl'
-import { type InputHTMLAttributes, type Ref } from 'react'
-import { FormProvider, useForm, useFormContext, useWatch } from 'react-hook-form'
+import { FormProvider, useForm, useWatch } from 'react-hook-form'
 import { sileo } from 'sileo'
 import { useCreateMonster } from '../../api/encyclopedia-mutations'
 import { MAIN_STATS, SMALL_STATS } from '../../lib/stats'
 import { useSetIsCreatingNew, useSetSelectedItemId } from '../../model/encyclopediaStore'
 import { MonsterAvatarPanel } from './MonsterAvatarPanel'
+import { DEFAULT_MONSTER_FORM_VALUES, type MonsterFormFields } from './monster-form-fields'
 import { MonsterPortraitUploader } from './MonsterPortraitUploader'
-
-export type MonsterFormFields = Pick<
-  Prisma.MonsterTemplateCreateInput,
-  | 'name'
-  | 'type'
-  | 'race'
-  | 'characterClass'
-  | 'description'
-  | 'imageUrl'
-  | 'portraitImageUrl'
-  | 'isPublic'
-  | 'maxHp'
-  | 'challenge'
-  | 'ac'
-  | 'speed'
-  | 'strength'
-  | 'dexterity'
-  | 'constitution'
-  | 'intelligence'
-  | 'wisdom'
-  | 'charisma'
-  | 'initiativeBonus'
-  | 'perception'
->
+import { StatBoxWithControls } from './StatBoxWithControls'
 
 interface MonsterFormProps {
   mode?: 'create' | 'edit'
   initialData?: MonsterTemplate
   onSuccess?: () => void
-}
-
-const DEFAULT_VALUES: MonsterFormFields = {
-  name: '',
-  type: '',
-  race: 'Desconocido',
-  characterClass: 'Desconocido',
-  isPublic: false,
-  maxHp: 10,
-  challenge: 1,
-  ac: 10,
-  speed: 30,
-  strength: 10,
-  dexterity: 10,
-  constitution: 10,
-  intelligence: 10,
-  wisdom: 10,
-  charisma: 10,
-  initiativeBonus: 0,
-  perception: 10,
-}
-
-// ── Hexágono editable — misma geometría que StatBox pero con <input> ──────────
-const { cos, sin, PI } = Math
-
-function hexPoints(cx: number, cy: number, r: number) {
-  return Array.from({ length: 6 }, (_, i) => {
-    const a = -PI / 2 + (PI / 3) * i
-    return `${(cx + r * cos(a)).toFixed(2)},${(cy + r * sin(a)).toFixed(2)}`
-  }).join(' ')
-}
-
-function edgeTriangles(cx: number, cy: number, r: number, base: number, height: number) {
-  const apothem = r * cos(PI / 6)
-  return Array.from({ length: 6 }, (_, i) => {
-    const a = -PI / 2 + (PI / 3) * i + PI / 6
-    const mx = cx + apothem * cos(a)
-    const my = cy + apothem * sin(a)
-    const nx = cos(a)
-    const ny = sin(a)
-    const tx = -ny
-    const ty = nx
-    const hb = base / 2
-    return (
-      `M ${(mx + hb * tx).toFixed(2)},${(my + hb * ty).toFixed(2)} ` +
-      `L ${(mx + height * nx).toFixed(2)},${(my + height * ny).toFixed(2)} ` +
-      `L ${(mx - hb * tx).toFixed(2)},${(my - hb * ty).toFixed(2)}`
-    )
-  }).join(' ')
-}
-
-function EditableStatBox({
-  label,
-  boxSize = 'md',
-  title,
-  ref,
-  ...props
-}: {
-  label: string
-  boxSize?: 'sm' | 'md'
-  title?: string
-  ref?: Ref<HTMLInputElement>
-} & InputHTMLAttributes<HTMLInputElement>) {
-  const r = boxSize === 'sm' ? 24 : 33
-  const innerR = boxSize === 'sm' ? 19 : 27
-  const triBase = boxSize === 'sm' ? 15 : 17
-  const triH = boxSize === 'sm' ? 3 : 5
-  const pad = boxSize === 'sm' ? 3 : 4
-  const apothem = r * cos(PI / 6)
-  const svgW = Math.round(2 * (apothem + triH + pad))
-  const svgH = Math.round(2 * (r + pad))
-  const cx = svgW / 2
-  const cy = svgH / 2
-
-  return (
-    <div
-      className='relative flex items-center justify-center'
-      style={{ width: svgW, height: svgH }}
-      title={title}
-    >
-      <svg viewBox={`0 0 ${svgW} ${svgH}`} width={svgW} height={svgH} className='absolute inset-0'>
-        <polygon
-          points={hexPoints(cx, cy, r)}
-          fill='none'
-          stroke='rgba(212,175,55,0.6)'
-          strokeWidth='1.2'
-        />
-        <polygon
-          points={hexPoints(cx, cy, innerR)}
-          fill='rgba(245,158,11,0.04)'
-          stroke='rgba(212,175,55,0.35)'
-          strokeWidth='0.9'
-        />
-        <path
-          d={edgeTriangles(cx, cy, r, triBase, triH)}
-          fill='none'
-          stroke='rgba(212,175,55,0.5)'
-          strokeWidth='1'
-          strokeLinejoin='round'
-          strokeLinecap='round'
-        />
-      </svg>
-      <div className='relative z-10 flex flex-col items-center justify-center gap-y-0.5 leading-none'>
-        <span className='text-[8px] font-bold uppercase tracking-widest text-neutral-500'>
-          {label}
-        </span>
-        <input
-          type='number'
-          ref={ref}
-          {...props}
-          className={`bg-transparent text-center font-mono font-bold text-neutral-400 focus:text-neutral-200 focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none ${boxSize === 'md' ? 'w-10 text-sm' : 'w-8 text-xs'}`}
-        />
-      </div>
-    </div>
-  )
-}
-
-function StatBoxWithControls({
-  fieldKey,
-  label,
-  boxSize = 'md',
-  title,
-  min,
-  required,
-}: {
-  fieldKey: keyof MonsterFormFields
-  label: string
-  boxSize?: 'sm' | 'md'
-  title?: string
-  min?: number
-  required?: boolean
-}) {
-  const { register, setValue, getValues } = useFormContext<MonsterFormFields>()
-  const fieldProps = register(fieldKey, {
-    valueAsNumber: true,
-    ...(min !== undefined && { min }),
-    ...(required && { required }),
-  })
-
-  const step = (delta: number) => {
-    const current = Number(getValues(fieldKey)) || 0
-    const next = current + delta
-    if (min !== undefined && next < min) return
-    setValue(fieldKey, next as never, { shouldDirty: true })
-  }
-
-  const btnBase =
-    'flex items-center justify-center rounded-md border border-amber-800/30 bg-amber-950/20 font-bold text-amber-500/70 hover:bg-amber-900/30 hover:text-amber-400 active:bg-amber-800/30 transition-colors leading-none select-none cursor-pointer'
-  const btnSize = boxSize === 'md' ? 'h-[20px] w-[23px] text-[19px]' : 'h-[18px] w-[22px] text-sm'
-
-  return (
-    <div className='flex items-center gap-1'>
-      <EditableStatBox label={label} boxSize={boxSize} title={title} {...fieldProps} />
-      <div className='flex flex-col gap-2'>
-        <button type='button' onClick={() => step(1)} className={`${btnBase} ${btnSize}`}>
-          +
-        </button>
-        <button type='button' onClick={() => step(-1)} className={`${btnBase} ${btnSize}`}>
-          −
-        </button>
-      </div>
-    </div>
-  )
 }
 
 export function MonsterForm({ mode = 'create', initialData, onSuccess }: MonsterFormProps) {
@@ -235,7 +49,7 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess }: Monster
           initiativeBonus: initialData.initiativeBonus,
           perception: initialData.perception,
         }
-      : DEFAULT_VALUES,
+      : DEFAULT_MONSTER_FORM_VALUES,
   })
 
   const {

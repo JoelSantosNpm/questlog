@@ -4,7 +4,7 @@ import { useImageUploader } from '@/shared/ui/image-uploader/hooks/useImageUploa
 import { Camera, RefreshCcw, Upload } from 'lucide-react'
 import { useFormContext, useWatch } from 'react-hook-form'
 import { PortraitFrame } from '../PortraitFrame'
-import type { MonsterFormFields } from './MonsterForm'
+import type { MonsterFormFields } from './monster-form-fields'
 
 export function MonsterPortraitUploader() {
   const { setValue, control } = useFormContext<MonsterFormFields>()
