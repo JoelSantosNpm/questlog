@@ -135,6 +135,8 @@
       "createButton": "Nuevo monstruo",
       "backButton": "Volver",
       "creatingIndicator": "Creando monstruo",
+      "guestNoticeTitle": "No has iniciado sesión",
+      "guestNoticeDesc": "Puedes explorar el formulario, pero necesitarás iniciar sesión para guardar tu creación.",
       "imageAvatar": "Imagen principal",
       "imagePortrait": "Retrato / Avatar",
       "namePlaceholder": "Nombre del monstruo",
@@ -269,6 +271,10 @@
     "imageUploader": {
       "selectImage": "Seleccionar Imagen",
       "dragActive": "Invocar Ilustración"
+    },
+    "auth": {
+      "requiredTitle": "Sesión requerida",
+      "requiredDescription": "Debes iniciar sesión para guardar los cambios."
     }
   }
 }

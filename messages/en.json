@@ -135,6 +135,8 @@
       "createButton": "New monster",
       "backButton": "Back",
       "creatingIndicator": "Creating monster",
+      "guestNoticeTitle": "You're not signed in",
+      "guestNoticeDesc": "You can explore the form, but you'll need to sign in to save your creation.",
       "imageAvatar": "Main image",
       "imagePortrait": "Portrait / Avatar",
       "namePlaceholder": "Monster name",
@@ -269,6 +271,10 @@
     "imageUploader": {
       "selectImage": "Select Image",
       "dragActive": "Drop Illustration"
+    },
+    "auth": {
+      "requiredTitle": "Sign-in required",
+      "requiredDescription": "You must sign in to save changes."
     }
   }
 }

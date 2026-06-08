@@ -1,6 +1,8 @@
 'use client'
 
+import { useNotifyAuthRequired } from '@/shared/lib/useNotifyAuthRequired'
 import { ToggleButton } from '@/shared/ui'
+import { useAuth } from '@clerk/nextjs'
 import { MonsterTemplate } from '@prisma/client'
 import { useTranslations } from 'next-intl'
 import { FormProvider, useForm, useWatch } from 'react-hook-form'
@@ -21,6 +23,8 @@ interface MonsterFormProps {
 
 export function MonsterForm({ mode = 'create', initialData, onSuccess }: MonsterFormProps) {
   const t = useTranslations('Encyclopedia')
+  const { userId } = useAuth()
+  const notifyAuthRequired = useNotifyAuthRequired()
   const createMonster = useCreateMonster()
   const setSelectedItemId = useSetSelectedItemId()
   const setIsCreatingNew = useSetIsCreatingNew()
@@ -62,6 +66,10 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess }: Monster
   const isPublic = (useWatch({ control, name: 'isPublic' }) as boolean) ?? false
 
   const onSubmit = async (data: MonsterFormFields) => {
+    if (!userId) {
+      notifyAuthRequired()
+      return
+    }
     try {
       const result = await createMonster.mutateAsync(data)
       if (!result.success || !result.data) {

@@ -1,13 +1,25 @@
 'use client'
 
+import { useAuth } from '@clerk/nextjs'
 import { ArrowLeft, Sparkles } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { useEffect } from 'react'
+import { sileo } from 'sileo'
 import { useSetIsCreatingNew } from '../../model/encyclopediaStore'
 import { MonsterForm } from './MonsterForm'
 
 export function MonsterCreationView() {
   const setIsCreatingNew = useSetIsCreatingNew()
+  const { isLoaded, userId } = useAuth()
   const t = useTranslations('Encyclopedia')
+
+  useEffect(() => {
+    if (!isLoaded || userId) return
+    sileo.warning({
+      title: t('monsterForm.guestNoticeTitle'),
+      description: t('monsterForm.guestNoticeDesc'),
+    })
+  }, [isLoaded, userId, t])
 
   return (
     <main className="relative flex-1 overflow-hidden bg-[radial-gradient(circle_at_top_right,var(--tw-gradient-stops))] from-neutral-900/20 via-transparent to-transparent">

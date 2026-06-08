@@ -50,7 +50,10 @@ export const ListView = ({ items, onSelect }: ListViewProps) => {
         <div className='px-2 pt-2 pb-1 border-b border-neutral-800/50'>
           <button
             type='button'
-            onClick={() => { setIsCreatingNew(true); onSelect?.() }}
+            onClick={() => {
+              setIsCreatingNew(true)
+              onSelect?.()
+            }}
             className='flex w-full cursor-pointer items-center gap-2 rounded-lg border border-dashed border-amber-800/40 px-4 py-2.5 text-sm font-medium text-amber-600/70 transition-all duration-200 hover:border-amber-600/50 hover:bg-amber-950/20 hover:text-amber-500'
           >
             <Plus className='size-4' />
