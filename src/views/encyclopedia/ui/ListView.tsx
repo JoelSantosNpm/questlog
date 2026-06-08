@@ -5,6 +5,7 @@ import { Plus, Search } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import {
   useActiveSection,
+  useIsCreatingNew,
   useSearchQuery,
   useSelectedItemId,
   useSetIsCreatingNew,
@@ -22,6 +23,7 @@ interface ListViewProps {
 export const ListView = ({ items, onSelect }: ListViewProps) => {
   const selectedItemId = useSelectedItemId()
   const setSelectedItemId = useSetSelectedItemId()
+  const isCreatingNew = useIsCreatingNew()
   const searchQuery = useSearchQuery()
   const setSearchQuery = useSetSearchQuery()
   const activeSection = useActiveSection()
@@ -64,11 +66,13 @@ export const ListView = ({ items, onSelect }: ListViewProps) => {
               key={item.id}
               onClick={() => {
                 setSelectedItemId(item.id)
+                setIsCreatingNew(false)
                 onSelect?.()
               }}
               className={cn(
                 'w-full rounded-lg px-4 py-3 text-left transition-all duration-200 cursor-pointer',
-                selectedItemId === item.id || (!selectedItemId && item.id === items[0]?.id)
+                !isCreatingNew &&
+                  (selectedItemId === item.id || (!selectedItemId && item.id === items[0]?.id))
                   ? 'bg-amber-500/10 text-amber-500 ring-1 ring-amber-500/20'
                   : 'text-neutral-400 hover:bg-neutral-800/50 hover:text-neutral-200'
               )}

@@ -33,7 +33,7 @@ export const useEncyclopediaStore = create<EncyclopediaUIState>((set) => ({
     set({ activeSection: section, selectedItemId: null, searchQuery: '', isCreatingNew: false }),
   setSelectedItemId: (id) => set({ selectedItemId: id }),
   setSearchQuery: (query) => set({ searchQuery: query }),
-  setIsCreatingNew: (v) => set({ isCreatingNew: v }),
+  setIsCreatingNew: (v) => set((s) => ({ isCreatingNew: v, selectedItemId: v ? null : s.selectedItemId })),
   // Filtros — por defecto: solo públicos, sub-filtros de privados activos para cuando se habiliten
   showPublic: true,
   showPrivate: true,
