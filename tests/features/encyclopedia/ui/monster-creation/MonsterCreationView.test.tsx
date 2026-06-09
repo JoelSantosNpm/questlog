@@ -47,10 +47,12 @@ describe('MonsterCreationView', () => {
   })
 
   describe('Botón "Volver"', () => {
-    it('llama a setIsCreatingNew(false) al hacer click', () => {
+    it('llama a setIsCreatingNew(false) al hacer click', async () => {
       render(<MonsterCreationView />)
       fireEvent.click(screen.getByRole('button', { name: /Volver/i }))
-      expect(useEncyclopediaStore.getState().isCreatingNew).toBe(false)
+      await waitFor(() => {
+        expect(useEncyclopediaStore.getState().isCreatingNew).toBe(false)
+      })
     })
   })
 

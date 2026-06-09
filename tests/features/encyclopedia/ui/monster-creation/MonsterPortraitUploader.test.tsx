@@ -85,7 +85,7 @@ describe('MonsterPortraitUploader', () => {
     })
   })
 
-  describe('Con preview local seleccionado', () => {
+  describe('Con preview local seleccionado (subida en curso)', () => {
     beforeEach(() => {
       mockUseImageUploader.mockReturnValue({
         ...defaultUploaderState,
@@ -103,21 +103,18 @@ describe('MonsterPortraitUploader', () => {
       expect(screen.getByAltText('Portrait preview')).toBeInTheDocument()
     })
 
-    it('muestra el badge de confirmación de subida', () => {
+    it('siempre hay exactamente dos botones (auto-upload, sin badge manual)', () => {
       render(
         <FormWrapper>
           <MonsterPortraitUploader />
         </FormWrapper>
       )
-      // Con preview activo aparece el tercer botón (badge de upload)
-      const buttons = screen.getAllByRole('button')
-      expect(buttons).toHaveLength(3)
+      expect(screen.getAllByRole('button')).toHaveLength(2)
     })
 
-    it('el badge de confirmación está deshabilitado mientras isUploading', () => {
+    it('el badge izquierdo está deshabilitado y muestra "..." mientras isUploading', () => {
       mockUseImageUploader.mockReturnValue({
         ...defaultUploaderState,
-        preview: 'blob:portrait-preview',
         isUploading: true,
       })
       render(
@@ -126,8 +123,7 @@ describe('MonsterPortraitUploader', () => {
         </FormWrapper>
       )
       const buttons = screen.getAllByRole('button')
-      const uploadBadge = buttons[2]
-      expect(uploadBadge).toBeDisabled()
+      expect(buttons[1]).toBeDisabled()
     })
   })
 
@@ -166,21 +162,15 @@ describe('MonsterPortraitUploader', () => {
       expect(handleClick).toHaveBeenCalled()
     })
 
-    it('click en el badge de confirmación invoca handleUpload', () => {
-      const handleUpload = vi.fn()
-      mockUseImageUploader.mockReturnValue({
-        ...defaultUploaderState,
-        preview: 'blob:portrait-preview',
-        handleUpload,
-      })
+    it('configura useImageUploader con autoUpload: true', () => {
       render(
         <FormWrapper>
           <MonsterPortraitUploader />
         </FormWrapper>
       )
-      const buttons = screen.getAllByRole('button')
-      fireEvent.click(buttons[2])
-      expect(handleUpload).toHaveBeenCalledOnce()
+      expect(mockUseImageUploader).toHaveBeenCalledWith(
+        expect.objectContaining({ autoUpload: true })
+      )
     })
   })
 })

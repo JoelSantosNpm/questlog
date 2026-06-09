@@ -80,28 +80,23 @@ describe('MonsterAvatarPanel', () => {
     })
   })
 
-  describe('Con preview local seleccionado (antes de subir)', () => {
-    beforeEach(() => {
+  describe('Con preview local seleccionado (subida en curso)', () => {
+    it('muestra la imagen de preview en el panel', () => {
       mockUseImageUploader.mockReturnValue({
         ...defaultUploaderState,
         preview: 'blob:preview-url',
-        isSuccess: false,
       })
-    })
-
-    it('muestra el botón "Subir" cuando hay una preview', () => {
       render(
         <FormWrapper>
           <MonsterAvatarPanel />
         </FormWrapper>
       )
-      expect(screen.getByRole('button', { name: /Subir/i })).toBeInTheDocument()
+      expect(screen.getByAltText('preview')).toBeInTheDocument()
     })
 
-    it('"Subir" está deshabilitado mientras isUploading es true', () => {
+    it('el botón está deshabilitado y muestra "..." mientras isUploading es true', () => {
       mockUseImageUploader.mockReturnValue({
         ...defaultUploaderState,
-        preview: 'blob:preview-url',
         isUploading: true,
       })
       render(
@@ -112,13 +107,17 @@ describe('MonsterAvatarPanel', () => {
       expect(screen.getByRole('button', { name: /\.\.\./i })).toBeDisabled()
     })
 
-    it('muestra la imagen de preview en el panel', () => {
+    it('nunca muestra un botón "Subir" manual (auto-upload)', () => {
+      mockUseImageUploader.mockReturnValue({
+        ...defaultUploaderState,
+        preview: 'blob:preview-url',
+      })
       render(
         <FormWrapper>
           <MonsterAvatarPanel />
         </FormWrapper>
       )
-      expect(screen.getByAltText('preview')).toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: /^Subir$/i })).not.toBeInTheDocument()
     })
   })
 
@@ -154,20 +153,15 @@ describe('MonsterAvatarPanel', () => {
       expect(handleClick).toHaveBeenCalledOnce()
     })
 
-    it('click en "Subir" invoca handleUpload', () => {
-      const handleUpload = vi.fn()
-      mockUseImageUploader.mockReturnValue({
-        ...defaultUploaderState,
-        preview: 'blob:preview-url',
-        handleUpload,
-      })
+    it('configura useImageUploader con autoUpload: true', () => {
       render(
         <FormWrapper>
           <MonsterAvatarPanel />
         </FormWrapper>
       )
-      fireEvent.click(screen.getByRole('button', { name: /Subir/i }))
-      expect(handleUpload).toHaveBeenCalledOnce()
+      expect(mockUseImageUploader).toHaveBeenCalledWith(
+        expect.objectContaining({ autoUpload: true })
+      )
     })
 
     it('click en "Cambiar imagen" invoca handleReset', () => {

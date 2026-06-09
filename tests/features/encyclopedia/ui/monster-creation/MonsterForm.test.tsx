@@ -9,9 +9,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // ─── Hoisted mock references ───────────────────────────────────────────────────
 
-const { mockNotifyAuthRequired, mockMutateAsync } = vi.hoisted(() => ({
+const { mockNotifyAuthRequired, mockMutateAsync, mockUpdateAsync } = vi.hoisted(() => ({
   mockNotifyAuthRequired: vi.fn(),
   mockMutateAsync: vi.fn(),
+  mockUpdateAsync: vi.fn(),
 }))
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
@@ -22,6 +23,7 @@ vi.mock('@/shared/lib/useNotifyAuthRequired', () => ({
 
 vi.mock('@/views/encyclopedia/api/encyclopedia-mutations', () => ({
   useCreateMonster: () => ({ mutateAsync: mockMutateAsync }),
+  useUpdateMonster: () => ({ mutateAsync: mockUpdateAsync }),
 }))
 
 vi.mock('@/views/encyclopedia/ui/monster-creation/MonsterAvatarPanel', () => ({
@@ -330,6 +332,94 @@ describe('MonsterForm', () => {
         expect(sileo.error).toHaveBeenCalledWith({
           title: 'Error',
           description: 'No se pudo crear el monstruo',
+        })
+      })
+    })
+  })
+
+  // ─── Submit en modo "edit" ────────────────────────────────────────────────────
+
+  describe('Submit en modo "edit" — mutación exitosa', () => {
+    beforeEach(() => {
+      vi.mocked(useAuth).mockReturnValue({ userId: 'user_123' } as never)
+      mockUpdateAsync.mockResolvedValue({ success: true, data: { id: 'tpl-1' } })
+    })
+
+    it('llama a updateMonster con el id y los datos del formulario', async () => {
+      const { container } = render(
+        <MonsterForm mode="edit" initialData={makeMonsterTemplate({ id: 'tpl-1' })} />
+      )
+
+      fireEvent.change(screen.getByPlaceholderText('Nombre del monstruo'), {
+        target: { value: 'Wyvern Editado' },
+      })
+      fireEvent.submit(container.querySelector('form')!)
+
+      await waitFor(() => expect(mockUpdateAsync).toHaveBeenCalledOnce())
+
+      const [id, data] = mockUpdateAsync.mock.calls[0][0] as [string, unknown]
+      expect(id).toBe('tpl-1')
+      expect((data as { name: string }).name).toBe('Wyvern Editado')
+    })
+
+    it('no llama a createMonster en modo edit', async () => {
+      const { container } = render(
+        <MonsterForm mode="edit" initialData={makeMonsterTemplate()} />
+      )
+
+      fillRequiredFields()
+      fireEvent.submit(container.querySelector('form')!)
+
+      await waitFor(() => expect(mockUpdateAsync).toHaveBeenCalledOnce())
+      expect(mockMutateAsync).not.toHaveBeenCalled()
+    })
+
+    it('muestra el toast de éxito de actualización', async () => {
+      const { container } = render(
+        <MonsterForm mode="edit" initialData={makeMonsterTemplate()} />
+      )
+
+      fillRequiredFields()
+      fireEvent.submit(container.querySelector('form')!)
+
+      await waitFor(() => {
+        expect(sileo.success).toHaveBeenCalledWith({
+          title: 'Monstruo actualizado',
+          description: 'Los cambios han sido guardados en el bestiario',
+        })
+      })
+    })
+
+    it('actualiza el store con el id del monstruo editado', async () => {
+      const { container } = render(
+        <MonsterForm mode="edit" initialData={makeMonsterTemplate({ id: 'tpl-1' })} />
+      )
+
+      fillRequiredFields()
+      fireEvent.submit(container.querySelector('form')!)
+
+      await waitFor(() => {
+        expect(useEncyclopediaStore.getState().selectedItemId).toBe('tpl-1')
+      })
+    })
+  })
+
+  describe('Submit en modo "edit" — mutación devuelve failure', () => {
+    it('muestra toast de error de actualización cuando result.success es false', async () => {
+      vi.mocked(useAuth).mockReturnValue({ userId: 'user_123' } as never)
+      mockUpdateAsync.mockResolvedValueOnce({ success: false, error: 'DB error' })
+
+      const { container } = render(
+        <MonsterForm mode="edit" initialData={makeMonsterTemplate()} />
+      )
+
+      fillRequiredFields()
+      fireEvent.submit(container.querySelector('form')!)
+
+      await waitFor(() => {
+        expect(sileo.error).toHaveBeenCalledWith({
+          title: 'Error',
+          description: 'No se pudo actualizar el monstruo',
         })
       })
     })
