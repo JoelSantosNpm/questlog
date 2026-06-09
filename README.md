@@ -214,7 +214,7 @@ We maintain a two-layer test suite to ensure the "game table" never breaks:
 
 | Layer                  | Tool                       | Scope                                                                                            | Command            |
 | :--------------------- | :------------------------- | :----------------------------------------------------------------------------------------------- | :----------------- |
-| **Unit & Integration** | Vitest 4 + Testing Library | Pure utils, Zustand store, React components (campaigns, encyclopedia) with mocked server actions | `npm run test:run` |
+| **Unit & Integration** | Vitest 4 + Testing Library | Pure utils, Zustand store, React components (campaigns, encyclopedia, monster creation) — global mocks centralized in `vitest.setup.tsx` | `npm run test:run` |
 | **End-to-End**         | Playwright (Chromium)      | Full browser flows: Portal carousel, campaign creation wizard, encyclopedia navigation           | `npm run test:e2e` |
 
 ### Running E2E Tests
