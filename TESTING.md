@@ -9,7 +9,7 @@ Este documento describe las prácticas, herramientas y organización del sistema
 - **Mocks:** Vitest `vi` para servicios y módulos externos.
 - **Coverage:** `@vitest/coverage-v8`.
 
-> **Tests actuales:** 137 tests unitarios pasando (6 carousel utils, 3 storage service, 4 storage schema, 6 useImageUploader, 4 ImageUploader UI, 6 CampaignCreationForm, 9 encyclopediaStore, 17 image-fallbacks, 13 ListView, 22 ItemHeader, 10 EncyclopediaImage, **11 campaign-queries, 9 campaign-hooks, 9 campaign-mutations**) + 11 E2E pasando (3 portal-de-piedra, 8 encyclopedia).
+> **Tests actuales:** ~230 tests unitarios pasando en 18+ archivos (carousel utils, storage schema, storage-actions, useImageUploader, ImageUploader UI, CampaignCreationForm, encyclopediaStore, image-fallbacks, use-encyclopedia-items, ListView, ItemHeader, EncyclopediaImage, **MonsterAvatarPanel, MonsterCreationView, MonsterForm**, useNotifyAuthRequired, campaign-queries, campaign-hooks, campaign-mutations) + 11 E2E pasando (3 portal-de-piedra, 8 encyclopedia).
 
 ---
 
@@ -19,25 +19,35 @@ Adoptamos una estructura centralizada en la carpeta raíz `tests/` para maximiza
 
 ```text
 tests/
+├── mocks/                                         # Utilidades de mock compartidas
+│   └── intl.ts                                    # makeUseTranslations() — lee messages/es.json
 ├── features/    # Tests organizados por funcionalidad (Unit/Integration/UI)
 │   ├── campaigns/
 │   │   ├── api/
-│   │   │   ├── campaign-queries.test.ts   # Filtros, seguridad (null/undefined), errores Prisma
-│   │   │   ├── campaign-hooks.test.ts     # Normalización null→undefined en query keys
-│   │   │   └── campaign-mutations.test.ts # Llamadas a actions + invalidación de caché
+│   │   │   ├── campaign-queries.test.ts           # Filtros, seguridad (null/undefined), errores Prisma
+│   │   │   ├── campaign-hooks.test.ts             # Normalización null→undefined en query keys
+│   │   │   └── campaign-mutations.test.ts         # Llamadas a actions + invalidación de caché
 │   │   └── components/CampaignCreationForm.test.tsx
 │   ├── encyclopedia/
-│   │   ├── lib/image-fallbacks.test.ts
+│   │   ├── lib/
+│   │   │   ├── image-fallbacks.test.ts
+│   │   │   └── use-encyclopedia-items.test.ts     # Hooks de queries de la enciclopedia
 │   │   ├── model/encyclopediaStore.test.ts
 │   │   └── ui/
-│   │       ├── ListView.test.tsx
 │   │       ├── ItemHeader.test.tsx
-│   │       └── EncyclopediaImage.test.tsx
+│   │       ├── ListView.test.tsx
+│   │       ├── EncyclopediaImage.test.tsx
+│   │       └── monster-creation/
+│   │           ├── MonsterForm.test.tsx           # Formulario create/edit + submit + auth
+│   │           ├── MonsterCreationView.test.tsx   # Vista wrapper + toast de invitados
+│   │           └── MonsterAvatarPanel.test.tsx
+│   ├── shared/
+│   │   └── lib/useNotifyAuthRequired.test.ts
 │   ├── storage/
+│   │   ├── actions/storage-actions.test.ts        # Server Action de subida (auth, validaciones)
 │   │   ├── components/ImageUploader.test.tsx
 │   │   ├── hooks/useImageUploader.test.ts
-│   │   ├── schemas/storage-schema.test.ts
-│   │   └── services/storage-service.test.ts
+│   │   └── schemas/storage-schema.test.ts
 │   └── ui/utils/carousel-utils.test.ts
 ├── e2e/         # Tests de extremo a extremo (Playwright)
 │   ├── auth.setup.ts
@@ -84,7 +94,7 @@ Verificamos la comunicación entre nuestra lógica y servicios externos.
 1.  **Tipado Estricto:** Prohibido el uso de `any` en los tests. Usar `unknown` + casting a tipos reales o `ReturnType<typeof ...>` para mocks.
 2.  **Limpieza:** Usar `beforeEach(() => vi.clearAllMocks())` para asegurar que los tests sean independientes.
 3.  **Naming:** Los archivos deben terminar en `.test.ts` o `.test.tsx`.
-4.  **Mocks Globales:** Configurar mocks recurrentes (Clerk, Sileo) en la parte superior del archivo para mantener los tests limpios.
+4.  **Mocks Globales:** Los mocks de módulos externos recurrentes (`next/image`, `next/navigation`, `lucide-react`, `sileo`, `@clerk/nextjs`, `next-intl`) están centralizados en `vitest.setup.tsx`. No redeclarar estos mocks en archivos de test individuales (DRY).
 5.  **Aislamiento:** Un test no debe depender de la ejecución de otro.
 
 ---
@@ -101,9 +111,63 @@ Verificamos la comunicación entre nuestra lógica y servicios externos.
 
 ---
 
-## 🛡️ Infraestructura de Mocks Comunes
+## 🛡️ Infraestructura de Mocks
+
+### Mocks centralizados en `vitest.setup.tsx`
+
+Los módulos externos usados en múltiples tests están registrados una sola vez en `vitest.setup.tsx` (principio DRY). Los archivos de test no deben redeclarar estos mocks.
+
+| Módulo            | Comportamiento por defecto                                                    |
+| :---------------- | :---------------------------------------------------------------------------- |
+| `next/image`      | `<img>` nativo con soporte de `onError`                                       |
+| `next/navigation` | `useRouter` → `{ push: vi.fn() }`                                             |
+| `lucide-react`    | `importOriginal` + `OctagonAlert` e `Info` con `data-testid`                  |
+| `sileo`           | `{ success, error, warning, info }` como `vi.fn()`                            |
+| `@clerk/nextjs`   | `useAuth: vi.fn().mockReturnValue({ userId: null, isLoaded: true })`          |
+| `next-intl`       | `useTranslations` lee `messages/es.json` via `makeUseTranslations()`          |
+
+### Control de `useAuth` por test
+
+El mock global provee estado "no autenticado" por defecto. Para sobrescribirlo en un test concreto:
+
+```typescript
+import { useAuth } from '@clerk/nextjs'
+
+beforeEach(() => {
+  vi.clearAllMocks()
+  vi.mocked(useAuth).mockReturnValue({ userId: null, isLoaded: true } as never)
+})
+
+it('autoriza al usuario', () => {
+  vi.mocked(useAuth).mockReturnValue({ userId: 'user_123' } as never)
+  // ...
+})
+```
+
+El cast `as never` es necesario porque `mockReturnValue` espera el tipo completo `UseAuthReturn` de Clerk. `never` es un tipo bottom que satisface cualquier tipo en TypeScript sin coste en runtime.
+
+> `vi.clearAllMocks()` limpia el historial de llamadas pero **no** resetea `mockReturnValue`. Siempre resetear explícitamente al estado por defecto en `beforeEach`.
+
+### Traducciones: `tests/mocks/intl.ts`
+
+La función `makeUseTranslations()` lee `messages/es.json` directamente, garantizando que los textos en los tests estén siempre sincronizados con los de producción.
+
+```typescript
+// Uso directo (solo si necesitas resolver una clave manualmente):
+import { makeUseTranslations } from '../../mocks/intl'
+const t = makeUseTranslations()('Encyclopedia')
+expect(t('monsterForm.namePlaceholder')).toBe('Nombre del monstruo')
+```
+
+Soporta dos patrones de namespace:
+- Namespace simple + clave dotted: `useTranslations('Encyclopedia')` + `t('monsterForm.namePlaceholder')`
+- Namespace dotted + clave simple: `useTranslations('Encyclopedia.listView')` + `t('searchPlaceholder')`
+
+El mock de `next-intl` se registra globalmente desde `vitest.setup.tsx` — los tests no necesitan hacerlo manualmente.
 
 ### Prisma (ORM de servidor)
+
+Cada test que necesita Prisma declara su propio mock al inicio del archivo:
 
 ```typescript
 vi.mock('@/shared/lib/prisma', () => ({
@@ -116,40 +180,5 @@ vi.mock('@/shared/lib/prisma', () => ({
       delete: vi.fn(),
     },
   },
-}))
-```
-
-### Clerk (Autenticación)
-
-```typescript
-vi.mock('@clerk/nextjs', () => ({
-  useAuth: vi.fn(() => ({
-    userId: 'mock-user',
-    getToken: vi.fn().mockResolvedValue('token'),
-  })),
-}))
-```
-
-### Supabase (Base de datos)
-
-```typescript
-vi.mock('@/shared/lib/supabase/server', () => ({
-  createClient: vi.fn(() => ({
-    from: vi.fn().mockReturnThis(),
-    select: vi.fn().mockReturnThis(),
-    insert: vi.fn().mockReturnThis(),
-    update: vi.fn().mockReturnThis(),
-    delete: vi.fn().mockReturnThis(),
-    eq: vi.fn().mockReturnThis(),
-    single: vi.fn().mockResolvedValue({ data: mockData, error: null }),
-  })),
-}))
-```
-
-### Sileo (Notificaciones)
-
-```typescript
-vi.mock('sileo', () => ({
-  sileo: { success: vi.fn(), error: vi.fn() },
 }))
 ```

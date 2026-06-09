@@ -214,7 +214,7 @@ Mantenemos una suite de pruebas en dos capas para asegurar que la "mesa de juego
 
 | Capa                       | Herramienta                | Ámbito                                                                          | Comando            |
 | :------------------------- | :------------------------- | :------------------------------------------------------------------------------ | :----------------- |
-| **Unitario e Integración** | Vitest 4 + Testing Library | Utils puras, Zustand store, componentes React con server actions mockeadas      | `npm run test:run` |
+| **Unitario e Integración** | Vitest 4 + Testing Library | Utils puras, Zustand store, componentes React (campañas, enciclopedia, creación de monstruos) — mocks globales centralizados en `vitest.setup.tsx` | `npm run test:run` |
 | **End-to-End**             | Playwright (Chromium)      | Flujos reales en navegador: carrusel del Portal + wizard de creación de campaña | `npm run test:e2e` |
 
 ### Ejecutar los tests E2E
