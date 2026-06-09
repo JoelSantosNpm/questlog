@@ -124,6 +124,12 @@ export function useImageUploader({ onUpload, storagePath, autoUpload = false }: 
     clearStates()
   }
 
+  const handleReplace = () => {
+    if (isUploading) return
+    clearStates()
+    fileInputRef.current?.click()
+  }
+
   return {
     file,
     preview,
@@ -135,6 +141,7 @@ export function useImageUploader({ onUpload, storagePath, autoUpload = false }: 
     handleKeyDown,
     handleUpload,
     handleReset,
+    handleReplace,
     processFile,
   }
 }

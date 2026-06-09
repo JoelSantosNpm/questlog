@@ -18,6 +18,7 @@ export function MonsterPortraitUploader({ onUpload }: MonsterPortraitUploaderPro
     fileInputRef,
     handleFileSelect,
     handleClick,
+    handleReplace,
     preview,
     isUploading,
     isSuccess,
@@ -37,7 +38,7 @@ export function MonsterPortraitUploader({ onUpload }: MonsterPortraitUploaderPro
 
   return (
     <div className='relative shrink-0'>
-      <button type='button' onClick={handleClick} disabled={isUploading} className='group block disabled:cursor-not-allowed'>
+      <button type='button' onClick={isSuccess ? handleReplace : handleClick} disabled={isUploading} className='group block disabled:cursor-not-allowed'>
         {previewSrc ? (
           <div className='relative'>
             <PortraitFrame src={previewSrc} alt='Portrait preview' variant='monster' />
@@ -55,7 +56,7 @@ export function MonsterPortraitUploader({ onUpload }: MonsterPortraitUploaderPro
       {/* Badge izquierdo — añadir, cambiar o estado de carga */}
       <button
         type='button'
-        onClick={isSuccess ? undefined : handleClick}
+        onClick={isSuccess ? handleReplace : handleClick}
         disabled={isUploading}
         className={`absolute -bottom-1 -left-1 flex size-7 items-center justify-center rounded-full border transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
           isSuccess

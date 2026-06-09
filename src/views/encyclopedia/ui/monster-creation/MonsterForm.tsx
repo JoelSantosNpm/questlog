@@ -79,6 +79,14 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess, onRegiste
     })
   }, [onRegisterCleanup])
 
+  useEffect(() => {
+    return () => {
+      for (const url of pendingUrls.current) {
+        void deleteAsset(url).catch(() => {})
+      }
+    }
+  }, [])
+
   const makeUploadHandler = (field: 'imageUrl' | 'portraitImageUrl') => (url: string) => {
     const prevUrl = methods.getValues(field)
     if (!url && prevUrl && pendingUrls.current.has(prevUrl)) {

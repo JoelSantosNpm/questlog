@@ -31,6 +31,7 @@ const defaultUploaderState = {
   handleFileSelect: vi.fn(),
   handleClick: vi.fn(),
   handleUpload: vi.fn(),
+  handleReplace: vi.fn(),
   preview: null as string | null,
   isUploading: false,
   isSuccess: false,
@@ -171,6 +172,54 @@ describe('MonsterPortraitUploader', () => {
       expect(mockUseImageUploader).toHaveBeenCalledWith(
         expect.objectContaining({ autoUpload: true })
       )
+    })
+  })
+
+  describe('Tras subida exitosa (isSuccess: true)', () => {
+    beforeEach(() => {
+      mockUseImageUploader.mockReturnValue({
+        ...defaultUploaderState,
+        preview: 'blob:portrait-preview',
+        isSuccess: true,
+      })
+    })
+
+    it('click en el círculo principal invoca handleReplace, no handleClick', () => {
+      const handleClick = vi.fn()
+      const handleReplace = vi.fn()
+      mockUseImageUploader.mockReturnValue({
+        ...defaultUploaderState,
+        isSuccess: true,
+        handleClick,
+        handleReplace,
+      })
+      render(
+        <FormWrapper>
+          <MonsterPortraitUploader />
+        </FormWrapper>
+      )
+      fireEvent.click(screen.getAllByRole('button')[0])
+      expect(handleReplace).toHaveBeenCalled()
+      expect(handleClick).not.toHaveBeenCalled()
+    })
+
+    it('click en el badge izquierdo invoca handleReplace, no handleClick', () => {
+      const handleClick = vi.fn()
+      const handleReplace = vi.fn()
+      mockUseImageUploader.mockReturnValue({
+        ...defaultUploaderState,
+        isSuccess: true,
+        handleClick,
+        handleReplace,
+      })
+      render(
+        <FormWrapper>
+          <MonsterPortraitUploader />
+        </FormWrapper>
+      )
+      fireEvent.click(screen.getAllByRole('button')[1])
+      expect(handleReplace).toHaveBeenCalled()
+      expect(handleClick).not.toHaveBeenCalled()
     })
   })
 })
