@@ -30,7 +30,7 @@ export default async function CreateCampaignPage() {
         <div className='relative'>
           {/* Bordes rústicos simulados para el formulario */}
           <div className='absolute -inset-y-10 left-1/2 -translate-x-1/2 w-full max-w-4xl border-y border-zinc-800/50 pointer-events-none' />
-          <div className='absolute inset-0 bg-gradient-to-b from-zinc-950/0 via-zinc-900/10 to-zinc-950/0 pointer-events-none' />
+          <div className='absolute inset-0 bg-linear-to-b from-zinc-950/0 via-zinc-900/10 to-zinc-950/0 pointer-events-none' />
 
           <NextIntlClientProvider messages={{ Campaigns: messages.Campaigns }}>
             <CampaignCreationProvider />
