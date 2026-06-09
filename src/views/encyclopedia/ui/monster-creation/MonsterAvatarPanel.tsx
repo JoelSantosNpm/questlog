@@ -8,7 +8,11 @@ import { useFormContext, useWatch } from 'react-hook-form'
 import { IMAGE_OVERLAY } from '../../lib/image-overlay'
 import type { MonsterFormFields } from './monster-form-fields'
 
-export function MonsterAvatarPanel() {
+interface MonsterAvatarPanelProps {
+  onUpload?: (url: string) => void
+}
+
+export function MonsterAvatarPanel({ onUpload }: MonsterAvatarPanelProps) {
   const t = useTranslations('Encyclopedia')
   const { setValue, control } = useFormContext<MonsterFormFields>()
   const bgImageUrl = useWatch({ control, name: 'imageUrl' }) as string | undefined
@@ -17,14 +21,20 @@ export function MonsterAvatarPanel() {
     fileInputRef,
     handleFileSelect,
     handleClick,
-    handleUpload,
     handleReset,
     preview,
     isUploading,
     isSuccess,
   } = useImageUploader({
     storagePath: 'monsters',
-    onUpload: (url) => setValue('imageUrl', url || undefined),
+    autoUpload: true,
+    onUpload: (url) => {
+      if (onUpload) {
+        onUpload(url)
+      } else {
+        setValue('imageUrl', url || undefined)
+      }
+    },
   })
 
   const previewSrc = bgImageUrl ?? preview
@@ -68,27 +78,15 @@ export function MonsterAvatarPanel() {
       <div className='absolute inset-x-0 bottom-0 bg-linear-to-t from-black/90 via-black/60 to-transparent p-4 pt-10'>
         <div className='flex gap-2'>
           {!isSuccess ? (
-            <>
-              <button
-                type='button'
-                onClick={handleClick}
-                className='flex flex-1 items-center justify-center gap-2 rounded-md border border-neutral-700 bg-neutral-900/70 px-3 py-2 text-xs text-neutral-300 transition-colors hover:border-amber-600/50 hover:text-amber-400'
-              >
-                <Upload className='size-3.5' />
-                {t('monsterForm.imageAvatar')}
-              </button>
-              {preview && (
-                <button
-                  type='button'
-                  onClick={handleUpload}
-                  disabled={isUploading}
-                  className='flex flex-1 items-center justify-center gap-2 rounded-md bg-amber-700/70 px-3 py-2 text-xs text-amber-200 transition-colors hover:bg-amber-600/70 disabled:opacity-50'
-                >
-                  <Upload className='size-3.5' />
-                  {isUploading ? '...' : 'Subir'}
-                </button>
-              )}
-            </>
+            <button
+              type='button'
+              onClick={handleClick}
+              disabled={isUploading}
+              className='flex flex-1 items-center justify-center gap-2 rounded-md border border-neutral-700 bg-neutral-900/70 px-3 py-2 text-xs text-neutral-300 transition-colors hover:border-amber-600/50 hover:text-amber-400 disabled:opacity-50 disabled:cursor-not-allowed'
+            >
+              <Upload className='size-3.5' />
+              {isUploading ? '...' : t('monsterForm.imageAvatar')}
+            </button>
           ) : (
             <button
               type='button'

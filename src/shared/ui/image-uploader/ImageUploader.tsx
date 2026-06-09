@@ -85,7 +85,7 @@ export default function ImageUploader({
           isUploading={isUploading}
           isSuccess={isSuccess}
           onReset={handleReset}
-          onUpload={handleUpload}
+          onUpload={() => void handleUpload()}
         />
       </div>
 

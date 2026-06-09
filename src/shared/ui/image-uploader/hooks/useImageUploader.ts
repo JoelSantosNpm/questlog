@@ -19,9 +19,10 @@ type StoragePath =
 interface UseImageUploaderProps {
   onUpload: (url: string) => void
   storagePath: StoragePath
+  autoUpload?: boolean
 }
 
-export function useImageUploader({ onUpload, storagePath }: UseImageUploaderProps) {
+export function useImageUploader({ onUpload, storagePath, autoUpload = false }: UseImageUploaderProps) {
   const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [isUploading, setIsUploading] = useState(false)
@@ -51,7 +52,6 @@ export function useImageUploader({ onUpload, storagePath }: UseImageUploaderProp
   const processFile = (selectedFile: File) => {
     clearStates()
 
-    // VALIDACIÓN CON ZOD
     const result = FileValidationSchema.safeParse(selectedFile)
 
     if (!result.success) {
@@ -64,6 +64,8 @@ export function useImageUploader({ onUpload, storagePath }: UseImageUploaderProp
 
     setFile(selectedFile)
     setPreview(URL.createObjectURL(selectedFile))
+
+    if (autoUpload) void handleUpload(selectedFile)
   }
 
   const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
@@ -84,14 +86,15 @@ export function useImageUploader({ onUpload, storagePath }: UseImageUploaderProp
     }
   }
 
-  const handleUpload = async () => {
-    if (!file) return
+  const handleUpload = async (fileOverride?: File) => {
+    const target = fileOverride ?? file
+    if (!target) return
 
     setIsUploading(true)
 
     try {
       const formData = new FormData()
-      formData.append('file', file)
+      formData.append('file', target)
       formData.append('storagePath', storagePath)
 
       const { publicUrl } = await uploadAsset(formData)
@@ -99,10 +102,12 @@ export function useImageUploader({ onUpload, storagePath }: UseImageUploaderProp
       onUpload(publicUrl)
       setIsSuccess(true)
 
-      sileo.success({
-        title: 'Imagen Sellada',
-        description: 'La ilustración ha sido guardada en los archivos de la campaña.',
-      })
+      if (!autoUpload) {
+        sileo.success({
+          title: 'Imagen Sellada',
+          description: 'La ilustración ha sido guardada en los archivos de la campaña.',
+        })
+      }
     } catch (err: unknown) {
       console.error('Upload error:', err)
       sileo.error({

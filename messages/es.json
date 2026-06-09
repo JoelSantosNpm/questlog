@@ -153,8 +153,11 @@
       "submitEdit": "Guardar cambios",
       "toastSuccessTitle": "Monstruo creado",
       "toastSuccessDesc": "El monstruo ha sido añadido al bestiario",
+      "toastUpdateSuccessTitle": "Monstruo actualizado",
+      "toastUpdateSuccessDesc": "Los cambios han sido guardados en el bestiario",
       "toastErrorTitle": "Error",
-      "toastErrorDesc": "No se pudo crear el monstruo"
+      "toastErrorDesc": "No se pudo crear el monstruo",
+      "toastUpdateErrorDesc": "No se pudo actualizar el monstruo"
     }
   },
   "Campaigns": {

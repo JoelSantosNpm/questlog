@@ -1,13 +1,15 @@
 'use client'
 
+import { deleteAsset } from '@/shared/api/storage-actions'
 import { useNotifyAuthRequired } from '@/shared/lib/useNotifyAuthRequired'
 import { ToggleButton } from '@/shared/ui'
 import { useAuth } from '@clerk/nextjs'
 import { MonsterTemplate } from '@prisma/client'
 import { useTranslations } from 'next-intl'
+import { useEffect, useRef } from 'react'
 import { FormProvider, useForm, useWatch } from 'react-hook-form'
 import { sileo } from 'sileo'
-import { useCreateMonster } from '../../api/encyclopedia-mutations'
+import { useCreateMonster, useUpdateMonster } from '../../api/encyclopedia-mutations'
 import { MAIN_STATS, SMALL_STATS } from '../../lib/stats'
 import { useSetIsCreatingNew, useSetSelectedItemId } from '../../model/encyclopediaStore'
 import { MonsterAvatarPanel } from './MonsterAvatarPanel'
@@ -19,15 +21,18 @@ interface MonsterFormProps {
   mode?: 'create' | 'edit'
   initialData?: MonsterTemplate
   onSuccess?: () => void
+  onRegisterCleanup?: (cleanup: () => Promise<void>) => void
 }
 
-export function MonsterForm({ mode = 'create', initialData, onSuccess }: MonsterFormProps) {
+export function MonsterForm({ mode = 'create', initialData, onSuccess, onRegisterCleanup }: MonsterFormProps) {
   const t = useTranslations('Encyclopedia')
   const { userId } = useAuth()
   const notifyAuthRequired = useNotifyAuthRequired()
   const createMonster = useCreateMonster()
+  const updateMonster = useUpdateMonster()
   const setSelectedItemId = useSetSelectedItemId()
   const setIsCreatingNew = useSetIsCreatingNew()
+  const pendingUrls = useRef<Set<string>>(new Set())
 
   const methods = useForm<MonsterFormFields>({
     defaultValues: initialData
@@ -65,31 +70,55 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess }: Monster
   } = methods
   const isPublic = (useWatch({ control, name: 'isPublic' }) as boolean) ?? false
 
+  useEffect(() => {
+    onRegisterCleanup?.(async () => {
+      for (const url of pendingUrls.current) {
+        await deleteAsset(url).catch(() => {})
+      }
+      pendingUrls.current.clear()
+    })
+  }, [onRegisterCleanup])
+
+  const makeUploadHandler = (field: 'imageUrl' | 'portraitImageUrl') => (url: string) => {
+    const prevUrl = methods.getValues(field)
+    if (!url && prevUrl && pendingUrls.current.has(prevUrl)) {
+      void deleteAsset(prevUrl).catch(() => {})
+      pendingUrls.current.delete(prevUrl)
+    }
+    if (url) pendingUrls.current.add(url)
+    setValue(field, url || undefined)
+  }
+
   const onSubmit = async (data: MonsterFormFields) => {
     if (!userId) {
       notifyAuthRequired()
       return
     }
+    const isEdit = mode === 'edit'
     try {
-      const result = await createMonster.mutateAsync(data)
+      const result = isEdit
+        ? await updateMonster.mutateAsync([initialData!.id, data])
+        : await createMonster.mutateAsync(data)
+
       if (!result.success || !result.data) {
         sileo.error({
           title: t('monsterForm.toastErrorTitle'),
-          description: t('monsterForm.toastErrorDesc'),
+          description: t(isEdit ? 'monsterForm.toastUpdateErrorDesc' : 'monsterForm.toastErrorDesc'),
         })
         return
       }
+      pendingUrls.current.clear()
       setSelectedItemId(result.data.id)
       setIsCreatingNew(false)
       sileo.success({
-        title: t('monsterForm.toastSuccessTitle'),
-        description: t('monsterForm.toastSuccessDesc'),
+        title: t(isEdit ? 'monsterForm.toastUpdateSuccessTitle' : 'monsterForm.toastSuccessTitle'),
+        description: t(isEdit ? 'monsterForm.toastUpdateSuccessDesc' : 'monsterForm.toastSuccessDesc'),
       })
       onSuccess?.()
     } catch {
       sileo.error({
         title: t('monsterForm.toastErrorTitle'),
-        description: t('monsterForm.toastErrorDesc'),
+        description: t(isEdit ? 'monsterForm.toastUpdateErrorDesc' : 'monsterForm.toastErrorDesc'),
       })
     }
   }
@@ -100,13 +129,13 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess }: Monster
         onSubmit={handleSubmit(onSubmit)}
         className='flex h-full flex-col overflow-y-auto scrollbar-encyclopedia lg:flex-row lg:overflow-visible'
       >
-        <MonsterAvatarPanel />
+        <MonsterAvatarPanel onUpload={makeUploadHandler('imageUrl')} />
 
         <div className='w-full space-y-6 border-t border-neutral-800/50 bg-neutral-900/30 p-4 backdrop-blur-md lg:max-w-lg lg:border-l lg:border-t-0 lg:overflow-y-auto lg:p-6 scrollbar-encyclopedia'>
           {/* Nombre + retrato */}
           <header>
             <div className='flex flex-col sm:flex-row items-center gap-3 sm:gap-4'>
-              <MonsterPortraitUploader />
+              <MonsterPortraitUploader onUpload={makeUploadHandler('portraitImageUrl')} />
               <input
                 {...register('name', { required: true })}
                 placeholder={t('monsterForm.namePlaceholder')}

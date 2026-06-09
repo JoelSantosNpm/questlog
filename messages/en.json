@@ -153,8 +153,11 @@
       "submitEdit": "Save changes",
       "toastSuccessTitle": "Monster created",
       "toastSuccessDesc": "The monster has been added to the bestiary",
+      "toastUpdateSuccessTitle": "Monster updated",
+      "toastUpdateSuccessDesc": "The changes have been saved to the bestiary",
       "toastErrorTitle": "Error",
-      "toastErrorDesc": "Could not create the monster"
+      "toastErrorDesc": "Could not create the monster",
+      "toastUpdateErrorDesc": "Could not update the monster"
     }
   },
   "Campaigns": {

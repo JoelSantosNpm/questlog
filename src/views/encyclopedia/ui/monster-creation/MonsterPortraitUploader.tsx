@@ -6,7 +6,11 @@ import { useFormContext, useWatch } from 'react-hook-form'
 import { PortraitFrame } from '../PortraitFrame'
 import type { MonsterFormFields } from './monster-form-fields'
 
-export function MonsterPortraitUploader() {
+interface MonsterPortraitUploaderProps {
+  onUpload?: (url: string) => void
+}
+
+export function MonsterPortraitUploader({ onUpload }: MonsterPortraitUploaderProps) {
   const { setValue, control } = useFormContext<MonsterFormFields>()
   const portraitUrl = useWatch({ control, name: 'portraitImageUrl' }) as string | undefined
 
@@ -14,20 +18,26 @@ export function MonsterPortraitUploader() {
     fileInputRef,
     handleFileSelect,
     handleClick,
-    handleUpload,
     preview,
     isUploading,
     isSuccess,
   } = useImageUploader({
     storagePath: 'monsters',
-    onUpload: (url) => setValue('portraitImageUrl', url || undefined),
+    autoUpload: true,
+    onUpload: (url) => {
+      if (onUpload) {
+        onUpload(url)
+      } else {
+        setValue('portraitImageUrl', url || undefined)
+      }
+    },
   })
 
   const previewSrc = portraitUrl ?? preview
 
   return (
     <div className='relative shrink-0'>
-      <button type='button' onClick={handleClick} className='group block'>
+      <button type='button' onClick={handleClick} disabled={isUploading} className='group block disabled:cursor-not-allowed'>
         {previewSrc ? (
           <div className='relative'>
             <PortraitFrame src={previewSrc} alt='Portrait preview' variant='monster' />
@@ -42,33 +52,25 @@ export function MonsterPortraitUploader() {
         )}
       </button>
 
-      {/* Badge izquierdo — pista siempre visible: añadir o cambiar */}
+      {/* Badge izquierdo — añadir, cambiar o estado de carga */}
       <button
         type='button'
-        onClick={handleClick}
-        className={`absolute -bottom-1 -left-1 flex size-7 items-center justify-center rounded-full border transition-colors ${
-          previewSrc
+        onClick={isSuccess ? undefined : handleClick}
+        disabled={isUploading}
+        className={`absolute -bottom-1 -left-1 flex size-7 items-center justify-center rounded-full border transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+          isSuccess
             ? 'border-neutral-600 bg-neutral-800 hover:border-amber-600/50'
             : 'border-amber-800/50 bg-amber-950/60 hover:border-amber-600/50 hover:bg-amber-900/60'
         }`}
       >
-        {previewSrc
-          ? <RefreshCcw className='size-3 text-neutral-400' />
-          : <Upload className='size-3.5 text-amber-500/70' />
-        }
+        {isUploading ? (
+          <span className='text-[9px] text-amber-400'>...</span>
+        ) : isSuccess ? (
+          <RefreshCcw className='size-3 text-neutral-400' />
+        ) : (
+          <Upload className='size-3.5 text-amber-500/70' />
+        )}
       </button>
-
-      {/* Badge derecho — confirmar upload pendiente */}
-      {preview && !isSuccess && (
-        <button
-          type='button'
-          onClick={handleUpload}
-          disabled={isUploading}
-          className='absolute -bottom-1 -right-1 flex size-7 items-center justify-center rounded-full bg-amber-700/80 transition-colors hover:bg-amber-600 disabled:opacity-50'
-        >
-          <Upload className='size-3.5 text-amber-200' />
-        </button>
-      )}
 
       <input
         type='file'
