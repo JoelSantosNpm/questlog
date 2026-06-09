@@ -24,6 +24,7 @@ test('MC-02 – el badge "Creando monstruo" es visible al entrar en modo creaci�
   page,
 }) => {
   await page.goto(URL)
+  await expect(page.getByRole('button', { name: 'Open user menu' })).toBeVisible({ timeout: 10000 })
 
   await page.getByRole('button', { name: 'Nuevo monstruo' }).click()
 
@@ -34,6 +35,7 @@ test('MC-03 – el botón "Volver" cierra el formulario y devuelve la vista de l
   page,
 }) => {
   await page.goto(URL)
+  await expect(page.getByRole('button', { name: 'Open user menu' })).toBeVisible({ timeout: 10000 })
 
   await page.getByRole('button', { name: 'Nuevo monstruo' }).click()
   await expect(page.getByPlaceholder('Nombre del monstruo')).toBeVisible()
