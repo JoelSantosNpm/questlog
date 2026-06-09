@@ -6,10 +6,6 @@ import { db, toBestiaryItem, toCastItem, toMuseumItem } from '../../../mocks/db'
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
-vi.mock('@clerk/nextjs', () => ({
-  useAuth: vi.fn(() => ({ userId: null })),
-}))
-
 vi.mock('@/views/encyclopedia/api/encyclopedia-hooks', () => ({
   useBestiary: vi.fn(),
   useCharacterTemplates: vi.fn(),

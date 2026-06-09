@@ -18,7 +18,7 @@ export function useCreateMonster() {
   return useMutation({
     mutationFn: createMonster,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ENCYCLOPEDIA_KEYS.bestiary() })
+      queryClient.invalidateQueries({ queryKey: ENCYCLOPEDIA_KEYS.bestiaryBase })
     },
   })
 }
@@ -27,7 +27,7 @@ export function useUpdateMonster() {
   return useMutation({
     mutationFn: (args: Parameters<typeof updateMonster>) => updateMonster(args[0], args[1]),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ENCYCLOPEDIA_KEYS.bestiary() })
+      queryClient.invalidateQueries({ queryKey: ENCYCLOPEDIA_KEYS.bestiaryBase })
     },
   })
 }
@@ -36,7 +36,7 @@ export function useDeleteMonster() {
   return useMutation({
     mutationFn: deleteMonster,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ENCYCLOPEDIA_KEYS.bestiary() })
+      queryClient.invalidateQueries({ queryKey: ENCYCLOPEDIA_KEYS.bestiaryBase })
     },
   })
 }
@@ -47,7 +47,7 @@ export function useCreateCharacterTemplate() {
   return useMutation({
     mutationFn: createCharacterTemplate,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ENCYCLOPEDIA_KEYS.cast() })
+      queryClient.invalidateQueries({ queryKey: ENCYCLOPEDIA_KEYS.castBase })
     },
   })
 }
@@ -57,7 +57,7 @@ export function useUpdateCharacterTemplate() {
     mutationFn: (args: Parameters<typeof updateCharacterTemplate>) =>
       updateCharacterTemplate(args[0], args[1]),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ENCYCLOPEDIA_KEYS.cast() })
+      queryClient.invalidateQueries({ queryKey: ENCYCLOPEDIA_KEYS.castBase })
     },
   })
 }
@@ -66,7 +66,7 @@ export function useDeleteCharacterTemplate() {
   return useMutation({
     mutationFn: deleteCharacterTemplate,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ENCYCLOPEDIA_KEYS.cast() })
+      queryClient.invalidateQueries({ queryKey: ENCYCLOPEDIA_KEYS.castBase })
     },
   })
 }
@@ -77,7 +77,7 @@ export function useCreateItemTemplate() {
   return useMutation({
     mutationFn: createItemTemplate,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ENCYCLOPEDIA_KEYS.museum() })
+      queryClient.invalidateQueries({ queryKey: ENCYCLOPEDIA_KEYS.museumBase })
     },
   })
 }
@@ -87,7 +87,7 @@ export function useUpdateItemTemplate() {
     mutationFn: (args: Parameters<typeof updateItemTemplate>) =>
       updateItemTemplate(args[0], args[1]),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ENCYCLOPEDIA_KEYS.museum() })
+      queryClient.invalidateQueries({ queryKey: ENCYCLOPEDIA_KEYS.museumBase })
     },
   })
 }
@@ -96,7 +96,7 @@ export function useDeleteItemTemplate() {
   return useMutation({
     mutationFn: deleteItemTemplate,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ENCYCLOPEDIA_KEYS.museum() })
+      queryClient.invalidateQueries({ queryKey: ENCYCLOPEDIA_KEYS.museumBase })
     },
   })
 }

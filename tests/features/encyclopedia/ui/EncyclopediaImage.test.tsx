@@ -6,15 +6,6 @@ import type { Rarity } from '@prisma/client'
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
-vi.mock('next/image', () => ({
-  default: ({ src, alt, onError }: { src: string; alt: string; onError?: () => void }) => (
-    <img src={src} alt={alt} onError={onError} />
-  ),
-}))
-
-vi.mock('lucide-react', () => ({
-  OctagonAlert: () => <svg data-testid='icon-octagon-alert' />,
-}))
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 

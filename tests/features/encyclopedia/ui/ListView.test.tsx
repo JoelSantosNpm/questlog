@@ -7,25 +7,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
-vi.mock('@clerk/nextjs', () => ({
-  useAuth: vi.fn(() => ({ userId: null })),
-}))
-
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: vi.fn() }),
-}))
-
-vi.mock('next-intl', () => ({
-  useTranslations: (ns: string) => (key: string) => {
-    const map: Record<string, Record<string, string>> = {
-      'Encyclopedia.listView': {
-        searchPlaceholder: 'Buscar...',
-        emptyState: 'No se han encontrado registros.',
-      },
-    }
-    return map[ns]?.[key] ?? key
-  },
-}))
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
@@ -73,6 +54,7 @@ beforeEach(() => {
     useEncyclopediaStore.setState({
       activeSection: 'bestiary',
       selectedItemId: null,
+      isCreatingNew: false,
     })
   })
 })
@@ -168,6 +150,39 @@ describe('ListView', () => {
     it('no muestra items si el array está vacío', () => {
       render(<ListView items={[]} />)
       expect(screen.getByText('No se han encontrado registros.')).toBeInTheDocument()
+    })
+  })
+
+  describe('Creación de monstruo (isCreatingNew)', () => {
+    it('muestra el botón "Nuevo monstruo" en sección bestiary', () => {
+      render(<ListView items={ITEMS} />)
+      expect(screen.getByRole('button', { name: 'Nuevo monstruo' })).toBeInTheDocument()
+    })
+
+    it('click en "Nuevo monstruo" activa isCreatingNew en el store', () => {
+      render(<ListView items={ITEMS} />)
+      fireEvent.click(screen.getByRole('button', { name: 'Nuevo monstruo' }))
+      expect(useEncyclopediaStore.getState().isCreatingNew).toBe(true)
+    })
+
+    it('click en un item desactiva isCreatingNew', () => {
+      act(() => useEncyclopediaStore.setState({ isCreatingNew: true }))
+      render(<ListView items={ITEMS} />)
+      fireEvent.click(screen.getByText('Lobo'))
+      expect(useEncyclopediaStore.getState().isCreatingNew).toBe(false)
+    })
+
+    it('cuando isCreatingNew=true, ningún item lleva el estilo de selección amber', () => {
+      act(() => useEncyclopediaStore.setState({ isCreatingNew: true }))
+      render(<ListView items={ITEMS} />)
+      const firstItemButton = screen.getByText('Lobo').closest('button')
+      expect(firstItemButton?.className).not.toMatch(/amber/)
+    })
+
+    it('no muestra el botón "Nuevo monstruo" en secciones distintas a bestiary', () => {
+      act(() => useEncyclopediaStore.setState({ activeSection: 'cast' }))
+      render(<ListView items={ITEMS} />)
+      expect(screen.queryByRole('button', { name: 'Nuevo monstruo' })).not.toBeInTheDocument()
     })
   })
 })
