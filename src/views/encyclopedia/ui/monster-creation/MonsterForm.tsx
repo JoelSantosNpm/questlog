@@ -6,7 +6,7 @@ import { ToggleButton } from '@/shared/ui'
 import { useAuth } from '@clerk/nextjs'
 import { MonsterTemplate } from '@prisma/client'
 import { useTranslations } from 'next-intl'
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { FormProvider, useForm, useWatch } from 'react-hook-form'
 import { sileo } from 'sileo'
 import { useCreateMonster, useUpdateMonster } from '../../api/encyclopedia-mutations'
@@ -28,8 +28,8 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess, onRegiste
   const t = useTranslations('Encyclopedia')
   const { userId } = useAuth()
   const notifyAuthRequired = useNotifyAuthRequired()
-  const createMonster = useCreateMonster()
-  const updateMonster = useUpdateMonster()
+  const { mutateAsync: createMonsterAsync } = useCreateMonster()
+  const { mutateAsync: updateMonsterAsync } = useUpdateMonster()
   const setSelectedItemId = useSetSelectedItemId()
   const setIsCreatingNew = useSetIsCreatingNew()
   const pendingUrls = useRef<Set<string>>(new Set())
@@ -80,24 +80,35 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess, onRegiste
   }, [onRegisterCleanup])
 
   useEffect(() => {
+    const urls = pendingUrls.current
     return () => {
-      for (const url of pendingUrls.current) {
+      for (const url of urls) {
         void deleteAsset(url).catch(() => {})
       }
     }
   }, [])
 
-  const makeUploadHandler = (field: 'imageUrl' | 'portraitImageUrl') => (url: string) => {
-    const prevUrl = methods.getValues(field)
+  const handleAvatarUpload = useCallback((url: string) => {
+    const prevUrl = methods.getValues('imageUrl')
     if (!url && prevUrl && pendingUrls.current.has(prevUrl)) {
       void deleteAsset(prevUrl).catch(() => {})
       pendingUrls.current.delete(prevUrl)
     }
     if (url) pendingUrls.current.add(url)
-    setValue(field, url || undefined)
-  }
+    setValue('imageUrl', url || undefined)
+  }, [methods, setValue])
 
-  const onSubmit = async (data: MonsterFormFields) => {
+  const handlePortraitUpload = useCallback((url: string) => {
+    const prevUrl = methods.getValues('portraitImageUrl')
+    if (!url && prevUrl && pendingUrls.current.has(prevUrl)) {
+      void deleteAsset(prevUrl).catch(() => {})
+      pendingUrls.current.delete(prevUrl)
+    }
+    if (url) pendingUrls.current.add(url)
+    setValue('portraitImageUrl', url || undefined)
+  }, [methods, setValue])
+
+  const onSubmit = useCallback(async (data: MonsterFormFields) => {
     if (!userId) {
       notifyAuthRequired()
       return
@@ -105,8 +116,8 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess, onRegiste
     const isEdit = mode === 'edit'
     try {
       const result = isEdit
-        ? await updateMonster.mutateAsync([initialData!.id, data])
-        : await createMonster.mutateAsync(data)
+        ? await updateMonsterAsync([initialData!.id, data])
+        : await createMonsterAsync(data)
 
       if (!result.success || !result.data) {
         sileo.error({
@@ -129,21 +140,24 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess, onRegiste
         description: t(isEdit ? 'monsterForm.toastUpdateErrorDesc' : 'monsterForm.toastErrorDesc'),
       })
     }
-  }
+  }, [userId, notifyAuthRequired, mode, initialData, createMonsterAsync, updateMonsterAsync, t, onSuccess, setSelectedItemId, setIsCreatingNew])
+
+  // eslint-disable-next-line react-hooks/refs -- handleSubmit (RHF) nunca invoca onSubmit durante el render; solo lo registra como event handler
+  const formSubmitHandler = handleSubmit(onSubmit)
 
   return (
     <FormProvider {...methods}>
       <form
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={formSubmitHandler}
         className='flex h-full flex-col overflow-y-auto scrollbar-encyclopedia lg:flex-row lg:overflow-visible'
       >
-        <MonsterAvatarPanel onUpload={makeUploadHandler('imageUrl')} />
+        <MonsterAvatarPanel onUpload={handleAvatarUpload} />
 
         <div className='w-full space-y-6 border-t border-neutral-800/50 bg-neutral-900/30 p-4 backdrop-blur-md lg:max-w-lg lg:border-l lg:border-t-0 lg:overflow-y-auto lg:p-6 scrollbar-encyclopedia'>
           {/* Nombre + retrato */}
           <header>
             <div className='flex flex-col sm:flex-row items-center gap-3 sm:gap-4'>
-              <MonsterPortraitUploader onUpload={makeUploadHandler('portraitImageUrl')} />
+              <MonsterPortraitUploader onUpload={handlePortraitUpload} />
               <input
                 {...register('name', { required: true })}
                 placeholder={t('monsterForm.namePlaceholder')}
