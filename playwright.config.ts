@@ -11,6 +11,8 @@ export default defineConfig({
 
   // Llama a clerkSetup() una vez antes de todo (obtiene CLERK_TESTING_TOKEN)
   globalSetup: './tests/e2e/global.setup.ts',
+  // Elimina los datos creados por los tests (campañas con prefijo [E2E])
+  globalTeardown: './tests/e2e/global.teardown.ts',
 
   use: {
     baseURL: 'http://localhost:3000',

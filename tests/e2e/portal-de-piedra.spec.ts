@@ -6,9 +6,19 @@
  *  - Variables de entorno en .env: E2E_CLERK_USER_EMAIL, CLERK_SECRET_KEY.
  *  - El usuario E2E debe existir en Clerk Y en la base de datos (ejecutar la app una vez para el lazy sync).
  */
+import { PrismaClient } from '@prisma/client'
 import { expect, test } from '@playwright/test'
 
 const CAROUSEL_LABEL = 'Selector de Campañas'
+
+test.afterAll(async () => {
+  const prisma = new PrismaClient()
+  try {
+    await prisma.campaign.deleteMany({ where: { name: { startsWith: '[E2E]' } } })
+  } finally {
+    await prisma.$disconnect()
+  }
+})
 
 // ─── AC 3.1 ──────────────────────────────────────────────────────────────────
 test('AC 3.1 – la Home muestra la marca y /campaigns renderiza el Portal de Piedra', async ({
@@ -54,7 +64,7 @@ test('AC 3.3 – flujo completo: crear campaña y verificar que aparece en el ca
 }) => {
   test.setTimeout(120_000)
 
-  const campaignName = `Portal E2E ${Date.now()}`
+  const campaignName = `[E2E] Portal ${Date.now()}`
 
   // 1. Ir al Portal de Piedra y verificar que NO redirige a login
   await page.goto('/campaigns')
