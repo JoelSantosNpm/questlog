@@ -73,7 +73,8 @@
     },
     "mobileDrawer": {
       "openLabel": "Abrir lista",
-      "closeLabel": "Cerrar lista"
+      "closeLabel": "Cerrar lista",
+      "newMonsterLabel": "Nuevo monstruo"
     },
     "itemHeader": {
       "breadcrumbs": {

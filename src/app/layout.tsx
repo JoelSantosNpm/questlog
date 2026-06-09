@@ -61,7 +61,7 @@ export default async function RootLayout({
                   </h1>
                 </Link>
               </div>
-              <div className='flex items-center gap-6'>
+              <div className='flex items-center gap-4 sm:gap-6'>
                 <Link
                   href='/encyclopedia'
                   className='group flex items-center gap-2 text-neutral-400 transition-colors hover:text-amber-500'
@@ -74,10 +74,10 @@ export default async function RootLayout({
                 </Link>
                 <Link
                   href='/campaigns'
-                  className='group flex items-center gap-2 text-neutral-400 transition-colors hover:text-amber-500'
+                  className='hidden sm:flex items-center gap-2 text-neutral-400 transition-colors hover:text-amber-500'
                   title={t('nav.campaigns')}
                 >
-                  <span className='hidden text-sm font-medium sm:block'>{t('nav.campaigns')}</span>
+                  <span className='text-sm font-medium'>{t('nav.campaigns')}</span>
                 </Link>
                 <HeaderAuthActions
                   signInLabel={t('nav.signIn')}

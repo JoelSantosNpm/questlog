@@ -1,10 +1,11 @@
 'use client'
 
 import { AnimatePresence, m } from 'framer-motion'
-import { Menu, X } from 'lucide-react'
+import { Menu, Plus, X } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { EncyclopediaItem } from '../model/encyclopedia-item'
+import { useActiveSection, useSetIsCreatingNew } from '../model/encyclopediaStore'
 import { ListView } from './ListView'
 
 interface MobileListDrawerProps {
@@ -14,9 +15,21 @@ interface MobileListDrawerProps {
 export const MobileListDrawer = ({ items }: MobileListDrawerProps) => {
   const [open, setOpen] = useState(false)
   const t = useTranslations('Encyclopedia.mobileDrawer')
+  const activeSection = useActiveSection()
+  const setIsCreatingNew = useSetIsCreatingNew()
 
   return (
     <div className='lg:hidden'>
+      {activeSection === 'bestiary' && (
+        <button
+          type='button'
+          onClick={() => setIsCreatingNew(true)}
+          className='fixed bottom-36 left-4 z-40 flex size-12 items-center justify-center rounded-full bg-amber-700/80 text-amber-100 shadow-lg transition-colors hover:bg-amber-600'
+          aria-label={t('newMonsterLabel')}
+        >
+          <Plus className='size-5' />
+        </button>
+      )}
       <button
         type='button'
         onClick={() => setOpen(true)}
