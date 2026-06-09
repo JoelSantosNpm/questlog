@@ -1,6 +1,6 @@
 'use client'
 
-import { deleteAsset } from '@/shared/api/storage-actions'
+import { deleteAssetSafe } from '@/shared/api/storage-actions'
 import { useNotifyAuthRequired } from '@/shared/lib/useNotifyAuthRequired'
 import { ToggleButton } from '@/shared/ui'
 import { useAuth } from '@clerk/nextjs'
@@ -73,7 +73,7 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess, onRegiste
   useEffect(() => {
     onRegisterCleanup?.(async () => {
       for (const url of pendingUrls.current) {
-        await deleteAsset(url).catch(() => {})
+        await deleteAssetSafe(url)
       }
       pendingUrls.current.clear()
     })
@@ -83,7 +83,7 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess, onRegiste
     const urls = pendingUrls.current
     return () => {
       for (const url of urls) {
-        void deleteAsset(url).catch(() => {})
+        void deleteAssetSafe(url)
       }
     }
   }, [])
@@ -91,7 +91,7 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess, onRegiste
   const handleAvatarUpload = useCallback((url: string) => {
     const prevUrl = methods.getValues('imageUrl')
     if (!url && prevUrl && pendingUrls.current.has(prevUrl)) {
-      void deleteAsset(prevUrl).catch(() => {})
+      void deleteAssetSafe(prevUrl)
       pendingUrls.current.delete(prevUrl)
     }
     if (url) pendingUrls.current.add(url)
@@ -101,7 +101,7 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess, onRegiste
   const handlePortraitUpload = useCallback((url: string) => {
     const prevUrl = methods.getValues('portraitImageUrl')
     if (!url && prevUrl && pendingUrls.current.has(prevUrl)) {
-      void deleteAsset(prevUrl).catch(() => {})
+      void deleteAssetSafe(prevUrl)
       pendingUrls.current.delete(prevUrl)
     }
     if (url) pendingUrls.current.add(url)

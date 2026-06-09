@@ -55,6 +55,16 @@ export async function uploadAsset(formData: FormData): Promise<{ publicUrl: stri
   return { publicUrl }
 }
 
+export async function deleteAssetSafe(url: string): Promise<void> {
+  try {
+    await deleteAsset(url)
+  } catch {
+    await deleteAsset(url).catch((err: unknown) => {
+      console.error('[storage] deleteAsset permanentFailure', { url, err })
+    })
+  }
+}
+
 export async function deleteAsset(publicUrl: string): Promise<void> {
   const { userId } = await auth()
   if (!userId) throw new Error('No autenticado')
