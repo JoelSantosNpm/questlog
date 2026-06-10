@@ -17,6 +17,15 @@ export default {
       },
       {
         files: [
+          "src/shared/api/storage-actions.ts"
+        ],
+        rules: [
+          "react-doctor/server-auth-actions"
+        ],
+        comments: "deleteAssetSafe delega siempre en deleteAsset, que valida auth() de Clerk y lanza 'No autenticado' si no hay sesión. La regla no sigue llamadas a funciones internas del mismo módulo. Auditado manualmente."
+      },
+      {
+        files: [
           "vitest.setup.tsx"
         ],
         rules: [

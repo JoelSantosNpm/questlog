@@ -114,9 +114,9 @@ export function useImageUploader({ onUpload, storagePath, autoUpload = false }: 
         title: 'Fallo al Guardar',
         description: err instanceof Error ? err.message : 'Error desconocido al subir la imagen.',
       })
-    } finally {
-      setIsUploading(false)
     }
+
+    setIsUploading(false)
   }
 
   const handleReset = (e: MouseEvent) => {

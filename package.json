@@ -17,7 +17,7 @@
     "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
-    "@clerk/nextjs": "^6.38.1",
+    "@clerk/nextjs": "^6.39.5",
     "@clerk/themes": "^2.4.55",
     "@hookform/resolvers": "^5.2.2",
     "@prisma/adapter-pg": "^7.7.0",
