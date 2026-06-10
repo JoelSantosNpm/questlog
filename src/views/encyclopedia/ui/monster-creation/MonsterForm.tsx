@@ -6,7 +6,7 @@ import { ToggleButton } from '@/shared/ui'
 import { useAuth } from '@clerk/nextjs'
 import { MonsterTemplate } from '@prisma/client'
 import { useTranslations } from 'next-intl'
-import { useCallback, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { FormProvider, useForm, useWatch } from 'react-hook-form'
 import { sileo } from 'sileo'
 import { useCreateMonster, useUpdateMonster } from '../../api/encyclopedia-mutations'
@@ -72,9 +72,7 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess, onRegiste
 
   useEffect(() => {
     onRegisterCleanup?.(async () => {
-      for (const url of pendingUrls.current) {
-        await deleteAssetSafe(url)
-      }
+      await Promise.all([...pendingUrls.current].map((url) => deleteAssetSafe(url)))
       pendingUrls.current.clear()
     })
   }, [onRegisterCleanup])
@@ -88,7 +86,7 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess, onRegiste
     }
   }, [])
 
-  const handleAvatarUpload = useCallback((url: string) => {
+  const handleAvatarUpload = (url: string) => {
     const prevUrl = methods.getValues('imageUrl')
     if (!url && prevUrl && pendingUrls.current.has(prevUrl)) {
       void deleteAssetSafe(prevUrl)
@@ -96,9 +94,9 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess, onRegiste
     }
     if (url) pendingUrls.current.add(url)
     setValue('imageUrl', url || undefined)
-  }, [methods, setValue])
+  }
 
-  const handlePortraitUpload = useCallback((url: string) => {
+  const handlePortraitUpload = (url: string) => {
     const prevUrl = methods.getValues('portraitImageUrl')
     if (!url && prevUrl && pendingUrls.current.has(prevUrl)) {
       void deleteAssetSafe(prevUrl)
@@ -106,9 +104,9 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess, onRegiste
     }
     if (url) pendingUrls.current.add(url)
     setValue('portraitImageUrl', url || undefined)
-  }, [methods, setValue])
+  }
 
-  const onSubmit = useCallback(async (data: MonsterFormFields) => {
+  const onSubmit = async (data: MonsterFormFields) => {
     if (!userId) {
       notifyAuthRequired()
       return
@@ -140,7 +138,7 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess, onRegiste
         description: t(isEdit ? 'monsterForm.toastUpdateErrorDesc' : 'monsterForm.toastErrorDesc'),
       })
     }
-  }, [userId, notifyAuthRequired, mode, initialData, createMonsterAsync, updateMonsterAsync, t, onSuccess, setSelectedItemId, setIsCreatingNew])
+  }
 
   // eslint-disable-next-line react-hooks/refs -- handleSubmit (RHF) nunca invoca onSubmit durante el render; solo lo registra como event handler
   const formSubmitHandler = handleSubmit(onSubmit)
@@ -272,7 +270,7 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess, onRegiste
             <button
               type='submit'
               disabled={isSubmitting}
-              className='flex-1 rounded-md bg-amber-600/80 py-2.5 text-sm font-bold text-neutral-100 transition-colors hover:bg-amber-500 disabled:opacity-50'
+              className='flex-1 rounded-md bg-amber-600/80 py-2.5 text-sm font-bold text-neutral-950 transition-colors hover:bg-amber-500 disabled:opacity-50'
             >
               {mode === 'create' ? t('monsterForm.submitCreate') : t('monsterForm.submitEdit')}
             </button>

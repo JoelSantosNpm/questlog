@@ -3,7 +3,10 @@
 import { useFileDrop } from '@/shared/lib/useFileDrop'
 import { cn } from '@/shared/utils/styles'
 import { useImageUploader } from './hooks/useImageUploader'
-import { UploaderActions, UploaderEmptyState, UploaderLabel, UploaderPreview } from './parts'
+import { UploaderActions } from './parts/UploaderActions'
+import { UploaderEmptyState } from './parts/UploaderEmptyState'
+import { UploaderLabel } from './parts/UploaderLabel'
+import { UploaderPreview } from './parts/UploaderPreview'
 
 type StoragePath =
   | 'assets'

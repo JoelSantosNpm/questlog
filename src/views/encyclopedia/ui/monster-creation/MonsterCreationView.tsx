@@ -31,6 +31,7 @@ export function MonsterCreationView() {
     <main className="relative flex-1 overflow-hidden bg-[radial-gradient(circle_at_top_right,var(--tw-gradient-stops))] from-neutral-900/20 via-transparent to-transparent">
       <div className="absolute left-4 top-4 z-10 flex items-center gap-3">
         <button
+          type="button"
           onClick={handleBack}
           className="flex items-center gap-1 rounded-md bg-black/50 px-2 py-1 text-xs text-neutral-400 backdrop-blur-sm transition-colors hover:text-neutral-200"
         >

@@ -68,6 +68,7 @@ export function MonsterAvatarPanel({ onUpload }: MonsterAvatarPanelProps) {
               src={previewSrc}
               alt='preview'
               fill
+              sizes='384px'
               className='object-contain transition-all duration-500'
               unoptimized
             />
@@ -103,6 +104,7 @@ export function MonsterAvatarPanel({ onUpload }: MonsterAvatarPanelProps) {
           ref={fileInputRef}
           onChange={handleFileSelect}
           accept='image/*'
+          aria-label={t('monsterForm.imageAvatar')}
           className='hidden'
         />
       </div>

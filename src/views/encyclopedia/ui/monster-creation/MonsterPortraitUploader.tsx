@@ -2,6 +2,7 @@
 
 import { useImageUploader } from '@/shared/ui/image-uploader/hooks/useImageUploader'
 import { Camera, RefreshCcw, Upload } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useFormContext, useWatch } from 'react-hook-form'
 import { PortraitFrame } from '../PortraitFrame'
 import type { MonsterFormFields } from './monster-form-fields'
@@ -11,6 +12,7 @@ interface MonsterPortraitUploaderProps {
 }
 
 export function MonsterPortraitUploader({ onUpload }: MonsterPortraitUploaderProps) {
+  const t = useTranslations('Encyclopedia')
   const { setValue, control } = useFormContext<MonsterFormFields>()
   const portraitUrl = useWatch({ control, name: 'portraitImageUrl' }) as string | undefined
 
@@ -78,6 +80,7 @@ export function MonsterPortraitUploader({ onUpload }: MonsterPortraitUploaderPro
         ref={fileInputRef}
         onChange={handleFileSelect}
         accept='image/*'
+        aria-label={t('monsterForm.imagePortrait')}
         className='hidden'
       />
     </div>
