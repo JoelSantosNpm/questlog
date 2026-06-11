@@ -2,6 +2,7 @@
 
 import { uploadAsset } from '@/shared/api/storage-actions'
 import { FileValidationSchema } from '@/shared/schemas/storage'
+import { useTranslations } from 'next-intl'
 import { ChangeEvent, KeyboardEvent, MouseEvent, useEffect, useRef, useState } from 'react'
 import { sileo } from 'sileo'
 
@@ -23,6 +24,7 @@ interface UseImageUploaderProps {
 }
 
 export function useImageUploader({ onUpload, storagePath, autoUpload = false }: UseImageUploaderProps) {
+  const t = useTranslations('Common')
   const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [isUploading, setIsUploading] = useState(false)
@@ -55,9 +57,13 @@ export function useImageUploader({ onUpload, storagePath, autoUpload = false }: 
     const result = FileValidationSchema.safeParse(selectedFile)
 
     if (!result.success) {
+      const code = result.error.issues[0].message
       sileo.error({
-        title: 'Anomalía en el Archivo',
-        description: result.error.issues[0].message,
+        title: t('imageUploader.validationErrorTitle'),
+        description:
+          code === 'fileTooLarge'
+            ? t('imageUploader.validationFileTooLarge')
+            : t('imageUploader.validationInvalidFileType'),
       })
       return
     }
@@ -92,28 +98,30 @@ export function useImageUploader({ onUpload, storagePath, autoUpload = false }: 
 
     setIsUploading(true)
 
-    try {
-      const formData = new FormData()
-      formData.append('file', target)
-      formData.append('storagePath', storagePath)
+    const formData = new FormData()
+    formData.append('file', target)
+    formData.append('storagePath', storagePath)
 
-      const { publicUrl } = await uploadAsset(formData)
+    const result = await uploadAsset(formData)
 
-      onUpload(publicUrl)
+    if ('error' in result) {
+      sileo.error({
+        title: t('imageUploader.toastErrorTitle'),
+        description:
+          result.error === 'unauthenticated'
+            ? t('auth.requiredDescription')
+            : t('imageUploader.toastErrorGeneric'),
+      })
+    } else {
+      onUpload(result.publicUrl)
       setIsSuccess(true)
 
       if (!autoUpload) {
         sileo.success({
-          title: 'Imagen Sellada',
-          description: 'La ilustración ha sido guardada en los archivos de la campaña.',
+          title: t('imageUploader.toastSuccessTitle'),
+          description: t('imageUploader.toastSuccessDesc'),
         })
       }
-    } catch (err: unknown) {
-      console.error('Upload error:', err)
-      sileo.error({
-        title: 'Fallo al Guardar',
-        description: err instanceof Error ? err.message : 'Error desconocido al subir la imagen.',
-      })
     }
 
     setIsUploading(false)

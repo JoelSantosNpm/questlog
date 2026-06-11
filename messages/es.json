@@ -274,7 +274,14 @@
     },
     "imageUploader": {
       "selectImage": "Seleccionar Imagen",
-      "dragActive": "Invocar Ilustración"
+      "dragActive": "Invocar Ilustración",
+      "toastSuccessTitle": "Imagen Sellada",
+      "toastSuccessDesc": "La ilustración ha sido guardada en los archivos de la campaña.",
+      "toastErrorTitle": "Fallo al Guardar",
+      "toastErrorGeneric": "No se pudo guardar la imagen. Inténtalo de nuevo.",
+      "validationErrorTitle": "Anomalía en el Archivo",
+      "validationFileTooLarge": "El archivo supera el tamaño máximo de 600kB.",
+      "validationInvalidFileType": "Solo se aceptan archivos .jpg, .jpeg, .png y .webp"
     },
     "auth": {
       "requiredTitle": "Sesión requerida",

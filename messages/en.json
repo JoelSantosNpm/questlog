@@ -274,7 +274,14 @@
     },
     "imageUploader": {
       "selectImage": "Select Image",
-      "dragActive": "Drop Illustration"
+      "dragActive": "Drop Illustration",
+      "toastSuccessTitle": "Image Sealed",
+      "toastSuccessDesc": "The illustration has been saved to the campaign archives.",
+      "toastErrorTitle": "Save Failed",
+      "toastErrorGeneric": "Could not save the image. Please try again.",
+      "validationErrorTitle": "File Anomaly",
+      "validationFileTooLarge": "The file exceeds the maximum size of 600kB.",
+      "validationInvalidFileType": "Only .jpg, .jpeg, .png and .webp files are accepted"
     },
     "auth": {
       "requiredTitle": "Sign-in required",

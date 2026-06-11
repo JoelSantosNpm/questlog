@@ -18,7 +18,7 @@ describe('Storage Feature - FileValidationSchema', () => {
     const result = FileValidationSchema.safeParse(heavyFile)
     expect(result.success).toBe(false)
     if (!result.success) {
-      expect(result.error.issues[0].message).toContain('supera el tamaño máximo de 600kB')
+      expect(result.error.issues[0].message).toBe('fileTooLarge')
     }
   })
 
@@ -27,9 +27,7 @@ describe('Storage Feature - FileValidationSchema', () => {
     const result = FileValidationSchema.safeParse(invalidFile)
     expect(result.success).toBe(false)
     if (!result.success) {
-      expect(result.error.issues[0].message).toContain(
-        'Solo se aceptan archivos .jpg, .jpeg, .png y .webp'
-      )
+      expect(result.error.issues[0].message).toBe('invalidFileType')
     }
   })
 
