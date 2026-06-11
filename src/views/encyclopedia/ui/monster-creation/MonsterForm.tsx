@@ -12,8 +12,8 @@ import { sileo } from 'sileo'
 import { useCreateMonster, useUpdateMonster } from '../../api/encyclopedia-mutations'
 import { MAIN_STATS, SMALL_STATS } from '../../lib/stats'
 import { useSetIsCreatingNew, useSetSelectedItemId } from '../../model/encyclopediaStore'
-import { MonsterAvatarPanel } from './MonsterAvatarPanel'
 import { DEFAULT_MONSTER_FORM_VALUES, type MonsterFormFields } from './monster-form-fields'
+import { MonsterAvatarPanel } from './MonsterAvatarPanel'
 import { MonsterPortraitUploader } from './MonsterPortraitUploader'
 import { StatBoxWithControls } from './StatBoxWithControls'
 
@@ -24,7 +24,12 @@ interface MonsterFormProps {
   onRegisterCleanup?: (cleanup: () => Promise<void>) => void
 }
 
-export function MonsterForm({ mode = 'create', initialData, onSuccess, onRegisterCleanup }: MonsterFormProps) {
+export function MonsterForm({
+  mode = 'create',
+  initialData,
+  onSuccess,
+  onRegisterCleanup,
+}: MonsterFormProps) {
   const t = useTranslations('Encyclopedia')
   const { userId } = useAuth()
   const notifyAuthRequired = useNotifyAuthRequired()
@@ -120,7 +125,9 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess, onRegiste
       if (!result.success || !result.data) {
         sileo.error({
           title: t('monsterForm.toastErrorTitle'),
-          description: t(isEdit ? 'monsterForm.toastUpdateErrorDesc' : 'monsterForm.toastErrorDesc'),
+          description: t(
+            isEdit ? 'monsterForm.toastUpdateErrorDesc' : 'monsterForm.toastErrorDesc'
+          ),
         })
         return
       }
@@ -129,7 +136,9 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess, onRegiste
       setIsCreatingNew(false)
       sileo.success({
         title: t(isEdit ? 'monsterForm.toastUpdateSuccessTitle' : 'monsterForm.toastSuccessTitle'),
-        description: t(isEdit ? 'monsterForm.toastUpdateSuccessDesc' : 'monsterForm.toastSuccessDesc'),
+        description: t(
+          isEdit ? 'monsterForm.toastUpdateSuccessDesc' : 'monsterForm.toastSuccessDesc'
+        ),
       })
       onSuccess?.()
     } catch {
@@ -270,7 +279,7 @@ export function MonsterForm({ mode = 'create', initialData, onSuccess, onRegiste
             <button
               type='submit'
               disabled={isSubmitting}
-              className='flex-1 rounded-md bg-amber-600/80 py-2.5 text-sm font-bold text-neutral-950 transition-colors hover:bg-amber-500 disabled:opacity-50'
+              className='flex-1 rounded-md bg-amber-600/80 py-2.5 text-sm font-bold text-neutral-100 transition-colors hover:bg-amber-500 disabled:opacity-50'
             >
               {mode === 'create' ? t('monsterForm.submitCreate') : t('monsterForm.submitEdit')}
             </button>

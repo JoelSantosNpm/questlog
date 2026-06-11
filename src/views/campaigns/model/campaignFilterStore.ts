@@ -39,5 +39,3 @@ export const useToggleCampaignPublic = () => useCampaignFilterStore((s) => s.tog
 export const useToggleCampaignPrivate = () => useCampaignFilterStore((s) => s.togglePrivate)
 export const useToggleCampaignOwned = () => useCampaignFilterStore((s) => s.toggleOwned)
 export const useToggleCampaignMember = () => useCampaignFilterStore((s) => s.toggleMember)
-export const useResetCampaignPrivateFilters = () =>
-  useCampaignFilterStore((s) => s.resetPrivateFilters)

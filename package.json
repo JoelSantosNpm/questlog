@@ -19,9 +19,7 @@
   "dependencies": {
     "@clerk/nextjs": "^6.39.5",
     "@clerk/themes": "^2.4.55",
-    "@hookform/resolvers": "^5.2.2",
     "@prisma/adapter-pg": "^7.7.0",
-    "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.99.2",
     "@tanstack/react-query": "^5.99.0",
     "@tanstack/react-query-devtools": "^5.99.0",
@@ -78,6 +76,7 @@
     "msw": "^2.13.4",
     "prettier": "^3.8.1",
     "prisma": "^7.7.0",
+    "react-doctor": "^0.5.1",
     "tailwindcss": "^4.2.0",
     "tsx": "^4.21.0",
     "typescript": "^5",

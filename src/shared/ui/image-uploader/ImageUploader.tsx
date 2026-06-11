@@ -2,6 +2,7 @@
 
 import { useFileDrop } from '@/shared/lib/useFileDrop'
 import { cn } from '@/shared/utils/styles'
+import { useTranslations } from 'next-intl'
 import { useImageUploader } from './hooks/useImageUploader'
 import { UploaderActions } from './parts/UploaderActions'
 import { UploaderEmptyState } from './parts/UploaderEmptyState'
@@ -34,6 +35,8 @@ export default function ImageUploader({
   label,
   className,
 }: ImageUploaderProps) {
+  const t = useTranslations('Common')
+
   const {
     preview,
     isUploading,
@@ -57,14 +60,14 @@ export default function ImageUploader({
       {label && <UploaderLabel label={label} />}
 
       <div className='relative group'>
-        <div
+        <button
+          type='button'
           onClick={handleClick}
           onDragEnter={handleDrag}
           onDragOver={handleDrag}
           onDragLeave={handleDrag}
           onDrop={handleDrop}
           onKeyDown={handleKeyDown}
-          role='button'
           tabIndex={preview ? -1 : 0}
           className={cn(
             'relative flex flex-col items-center justify-center w-full aspect-video border-2 border-dashed rounded-md transition-all overflow-hidden focus:outline-none focus:ring-2 focus:ring-amber-900/40',
@@ -81,7 +84,7 @@ export default function ImageUploader({
           ) : (
             <UploaderEmptyState isDragging={isDragging} />
           )}
-        </div>
+        </button>
 
         <UploaderActions
           preview={preview}
@@ -97,6 +100,7 @@ export default function ImageUploader({
         ref={fileInputRef}
         onChange={handleFileSelect}
         accept='image/*'
+        aria-label={t('imageUploader.selectImage')}
         className='hidden'
       />
     </div>

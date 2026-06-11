@@ -40,6 +40,7 @@ export const ListView = ({ items, onSelect }: ListViewProps) => {
           <input
             type='text'
             placeholder={t('searchPlaceholder')}
+            aria-label={t('searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className='w-full rounded-md border border-neutral-800 bg-neutral-900/50 py-2 pl-10 pr-4 text-sm focus:border-amber-500/50 focus:outline-none focus:ring-1 focus:ring-amber-500/50'

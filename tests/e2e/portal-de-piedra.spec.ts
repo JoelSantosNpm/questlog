@@ -58,9 +58,13 @@ test('AC 3.2 – navega el carrusel con los controles de flecha', async ({ page 
   await prevBtn.click()
   await expect(carousel).toBeVisible()
 
-  // Navegación por teclado (accesibilidad)
-  await carousel.press('ArrowRight')
-  await carousel.press('ArrowLeft')
+  // Navegación por teclado (accesibilidad): los botones Prev/Next son focusables y activables con Enter
+  await nextBtn.focus()
+  await nextBtn.press('Enter')
+  await expect(carousel).toBeVisible()
+
+  await prevBtn.focus()
+  await prevBtn.press('Enter')
   await expect(carousel).toBeVisible()
 })
 
