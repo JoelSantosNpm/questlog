@@ -29,9 +29,7 @@ async function deleteStorageFolder(supabase: ReturnType<typeof createClient>, pr
     await supabase.storage.from('questlog-assets').remove(filePaths)
   }
 
-  for (const folder of folderPrefixes) {
-    await deleteStorageFolder(supabase, folder)
-  }
+  await Promise.all(folderPrefixes.map((folder) => deleteStorageFolder(supabase, folder)))
 }
 
 export async function POST(req: Request) {

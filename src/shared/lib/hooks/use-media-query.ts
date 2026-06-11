@@ -7,6 +7,9 @@
 
 import { useSyncExternalStore } from 'react'
 
+// Valor por defecto "desktop-first" para el render en servidor (sin matchMedia).
+const getServerSnapshot = () => false
+
 export const useMediaQuery = (query: string) => {
   const subscribe = (callback: () => void) => {
     const matchMedia = window.matchMedia(query)
@@ -15,12 +18,6 @@ export const useMediaQuery = (query: string) => {
   }
 
   const getSnapshot = () => window.matchMedia(query).matches
-
-  const getServerSnapshot = () => {
-    // We return a sensible default for the server (e.g., desktop-first)
-    // or handle it with dynamic imports in the component.
-    return false
-  }
 
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
 }

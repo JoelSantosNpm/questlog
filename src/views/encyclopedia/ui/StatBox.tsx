@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { edgeTriangles, hexCanvas, hexPoints } from '../lib/hex-geometry'
 
 interface StatBoxProps {
   label: string
@@ -8,48 +9,13 @@ interface StatBoxProps {
   title?: string
 }
 
-const { cos, sin, PI } = Math
-
-// Puntos de hexágono con punta hacia arriba (pointy-top)
-function hexPoints(cx: number, cy: number, r: number): string {
-  return Array.from({ length: 6 }, (_, i) => {
-    const a = -PI / 2 + (PI / 3) * i
-    return `${(cx + r * cos(a)).toFixed(2)},${(cy + r * sin(a)).toFixed(2)}`
-  }).join(' ')
-}
-
-// Triángulos decorativos centrados en cada arista, apuntando hacia fuera
-function edgeTriangles(cx: number, cy: number, r: number, base: number, height: number): string {
-  const apothem = r * cos(PI / 6)
-  return Array.from({ length: 6 }, (_, i) => {
-    const a = -PI / 2 + (PI / 3) * i + PI / 6 // ángulo del punto medio de la arista
-    const mx = cx + apothem * cos(a)
-    const my = cy + apothem * sin(a)
-    const nx = cos(a)
-    const ny = sin(a) // normal exterior
-    const tx = -ny
-    const ty = nx // tangente a la arista
-    const hb = base / 2
-    return (
-      `M ${(mx + hb * tx).toFixed(2)},${(my + hb * ty).toFixed(2)} ` +
-      `L ${(mx + height * nx).toFixed(2)},${(my + height * ny).toFixed(2)} ` +
-      `L ${(mx - hb * tx).toFixed(2)},${(my - hb * ty).toFixed(2)}`
-    )
-  }).join(' ')
-}
-
 export const StatBox = ({ label, value, icon, size = 'md', title }: StatBoxProps) => {
   const r = size === 'sm' ? 24 : 33
   const innerR = size === 'sm' ? 19 : 27
   const triBase = size === 'sm' ? 15 : 17
   const triH = size === 'sm' ? 3 : 5
   const pad = size === 'sm' ? 3 : 4
-  const apothem = r * cos(PI / 6)
-  // Ancho: los triángulos del eje derecho/izquierdo sobresalen del vértice
-  const svgW = Math.round(2 * (apothem + triH + pad))
-  const svgH = Math.round(2 * (r + pad))
-  const cx = svgW / 2
-  const cy = svgH / 2
+  const { width: svgW, height: svgH, cx, cy } = hexCanvas(r, triH, pad)
   const valStr = String(value)
 
   return (

@@ -32,7 +32,14 @@ export default async function RootLayout({
           almendra.variable,
           'flex min-h-screen flex-col bg-neutral-950 font-sans text-neutral-100 antialiased selection:bg-amber-500/30'
         )}
-        style={{ '--header-h': '4rem', '--footer-h': '5rem' } as React.CSSProperties}
+        style={
+          {
+            '--header-h': '4rem',
+            '--footer-h': '5rem',
+            // Config de Sileo: ancho responsive de los toasts (evita que desborden en pantallas estrechas)
+            '--sileo-width': 'min(350px, calc(100vw - 3rem))',
+          } as React.CSSProperties
+        }
       >
         <AuthProvider>
           {/* Sincronización de Usuario (Lazy Sync) */}
@@ -54,7 +61,7 @@ export default async function RootLayout({
                   </h1>
                 </Link>
               </div>
-              <div className='flex items-center gap-6'>
+              <div className='flex items-center gap-4 sm:gap-6'>
                 <Link
                   href='/encyclopedia'
                   className='group flex items-center gap-2 text-neutral-400 transition-colors hover:text-amber-500'
@@ -67,10 +74,10 @@ export default async function RootLayout({
                 </Link>
                 <Link
                   href='/campaigns'
-                  className='group flex items-center gap-2 text-neutral-400 transition-colors hover:text-amber-500'
+                  className='hidden sm:flex items-center gap-2 text-neutral-400 transition-colors hover:text-amber-500'
                   title={t('nav.campaigns')}
                 >
-                  <span className='hidden text-sm font-medium sm:block'>{t('nav.campaigns')}</span>
+                  <span className='text-sm font-medium'>{t('nav.campaigns')}</span>
                 </Link>
                 <HeaderAuthActions
                   signInLabel={t('nav.signIn')}
@@ -91,7 +98,7 @@ export default async function RootLayout({
 
           {/* Footer */}
           <footer className='border-t border-neutral-800/30 bg-neutral-950/50 h-(--footer-h) flex flex-col items-center justify-center text-center text-xs text-neutral-500'>
-            <p>{t('footer.copyright', { year: new Date().getFullYear() })}</p>
+            <p suppressHydrationWarning>{t('footer.copyright', { year: new Date().getFullYear() })}</p>
             <p className='mt-1 font-medieval text-neutral-600'>{t('footer.tagline')}</p>
           </footer>
         </AuthProvider>

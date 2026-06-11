@@ -76,6 +76,12 @@ body {
   }
 }
 
+@utility input-encyclopedia {
+  @apply rounded-md border border-neutral-800 bg-neutral-900/50 px-3 py-2 text-sm
+         text-neutral-200 focus:border-amber-500/50 focus:outline-none
+         focus:ring-1 focus:ring-amber-500/50;
+}
+
 /* ── Scrollbar temática de la enciclopedia ── */
 @utility scrollbar-encyclopedia {
   scrollbar-width: thin;

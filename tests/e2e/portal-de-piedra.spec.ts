@@ -6,9 +6,25 @@
  *  - Variables de entorno en .env: E2E_CLERK_USER_EMAIL, CLERK_SECRET_KEY.
  *  - El usuario E2E debe existir en Clerk Y en la base de datos (ejecutar la app una vez para el lazy sync).
  */
+import { PrismaPg } from '@prisma/adapter-pg'
+import { PrismaClient } from '@prisma/client'
+import pg from 'pg'
 import { expect, test } from '@playwright/test'
 
 const CAROUSEL_LABEL = 'Selector de Campañas'
+
+test.afterAll(async () => {
+  const connectionString = process.env.DATABASE_URL_REMOTE || process.env.DATABASE_URL
+  const pool = new pg.Pool({ connectionString })
+  const adapter = new PrismaPg(pool)
+  const prisma = new PrismaClient({ adapter })
+  try {
+    await prisma.campaign.deleteMany({ where: { name: { startsWith: '[E2E]' } } })
+  } finally {
+    await prisma.$disconnect()
+    await pool.end()
+  }
+})
 
 // ─── AC 3.1 ──────────────────────────────────────────────────────────────────
 test('AC 3.1 – la Home muestra la marca y /campaigns renderiza el Portal de Piedra', async ({
@@ -42,9 +58,13 @@ test('AC 3.2 – navega el carrusel con los controles de flecha', async ({ page 
   await prevBtn.click()
   await expect(carousel).toBeVisible()
 
-  // Navegación por teclado (accesibilidad)
-  await carousel.press('ArrowRight')
-  await carousel.press('ArrowLeft')
+  // Navegación por teclado (accesibilidad): los botones Prev/Next son focusables y activables con Enter
+  await nextBtn.focus()
+  await nextBtn.press('Enter')
+  await expect(carousel).toBeVisible()
+
+  await prevBtn.focus()
+  await prevBtn.press('Enter')
   await expect(carousel).toBeVisible()
 })
 
@@ -54,7 +74,7 @@ test('AC 3.3 – flujo completo: crear campaña y verificar que aparece en el ca
 }) => {
   test.setTimeout(120_000)
 
-  const campaignName = `Portal E2E ${Date.now()}`
+  const campaignName = `[E2E] Portal ${Date.now()}`
 
   // 1. Ir al Portal de Piedra y verificar que NO redirige a login
   await page.goto('/campaigns')

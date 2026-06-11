@@ -4,9 +4,9 @@ import { cn } from '@/shared/utils/styles'
 import { getEntityFallbacks } from '@/views/encyclopedia/lib/image-fallbacks'
 import { OctagonAlert } from 'lucide-react'
 import Image from 'next/image'
-import { useLayoutEffect, useState } from 'react'
+import { useEffectEvent, useLayoutEffect, useState } from 'react'
 import { type EncyclopediaSection } from '../model/encyclopediaStore'
-import { EncyclopediaItem } from '../model/types'
+import { EncyclopediaItem } from '../model/encyclopedia-item'
 
 interface EncyclopediaImageProps {
   item: EncyclopediaItem
@@ -39,12 +39,23 @@ export function EncyclopediaImage({
   const src = fallbacks[fallbackIndex]
   const missingImageUrl = fallbackIndex > 0 || fallbacks.length === 1
 
-  useLayoutEffect(() => {
+  const notifyInitialMissing = useEffectEvent(() => {
     onMissingChange?.(missingImageUrl)
-  }, [missingImageUrl, onMissingChange])
+  })
+
+  // Notifica solo el valor inicial al montar: los cambios posteriores se
+  // notifican directamente en handleError, donde ocurre el cambio real, en
+  // vez de re-disparar este efecto.
+  useLayoutEffect(() => {
+    notifyInitialMissing()
+  }, [])
 
   const handleError = () => {
-    setFallbackIndex((i) => (i + 1 < fallbacks.length ? i + 1 : i))
+    setFallbackIndex((i) => {
+      const next = i + 1 < fallbacks.length ? i + 1 : i
+      if (next !== i) onMissingChange?.(true)
+      return next
+    })
   }
 
   return (

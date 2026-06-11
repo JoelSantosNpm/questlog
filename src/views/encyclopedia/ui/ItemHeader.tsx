@@ -5,7 +5,7 @@ import { Info, OctagonAlert } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { type EncyclopediaSection } from '../model/encyclopediaStore'
-import { BestiaryItem, CastItem, EncyclopediaItem } from '../model/types'
+import { BestiaryItem, CastItem, EncyclopediaItem } from '../model/encyclopedia-item'
 import { PortraitFrame } from './PortraitFrame'
 
 const SECTION_LABELS: Record<EncyclopediaSection, string> = {

@@ -19,8 +19,12 @@ async function main() {
   }
 
   // Obtener o crear usuarios
-  let { data: gm } = await supabase.from('User').select('id').eq('email', gmEmail).single()
-  let { data: player } = await supabase.from('User').select('id').eq('email', playerEmail).single()
+  const [gmResult, playerResult] = await Promise.all([
+    supabase.from('User').select('id').eq('email', gmEmail).single(),
+    supabase.from('User').select('id').eq('email', playerEmail).single(),
+  ])
+  let gm = gmResult.data
+  let player = playerResult.data
 
   if (!gm) {
     console.log(`--- Creando Usuario GM (${gmEmail}) ---`)
@@ -57,16 +61,20 @@ async function main() {
   }
 
   console.log('--- Limpiando Base de Datos ---')
-  await supabase.from('AccessGrant').delete().neq('id', '')
-  await supabase.from('Item').delete().neq('id', '')
-  await supabase.from('ItemTemplate').delete().neq('id', '')
-  await supabase.from('ActiveMonster').delete().neq('id', '')
-  await supabase.from('MonsterTemplate').delete().neq('id', '')
-  await supabase.from('Character').delete().neq('id', '')
-  await supabase.from('CharacterTemplate').delete().neq('id', '')
-  await supabase.from('SessionNote').delete().neq('id', '')
-  await supabase.from('Quest').delete().neq('id', '')
-  await supabase.from('Campaign').delete().neq('id', '')
+  // Todas las relaciones de estas tablas son onDelete: Cascade o SetNull (ver schema.prisma),
+  // por lo que el orden de borrado es irrelevante y pueden ejecutarse en paralelo.
+  await Promise.all([
+    supabase.from('AccessGrant').delete().neq('id', ''),
+    supabase.from('Item').delete().neq('id', ''),
+    supabase.from('ItemTemplate').delete().neq('id', ''),
+    supabase.from('ActiveMonster').delete().neq('id', ''),
+    supabase.from('MonsterTemplate').delete().neq('id', ''),
+    supabase.from('Character').delete().neq('id', ''),
+    supabase.from('CharacterTemplate').delete().neq('id', ''),
+    supabase.from('SessionNote').delete().neq('id', ''),
+    supabase.from('Quest').delete().neq('id', ''),
+    supabase.from('Campaign').delete().neq('id', ''),
+  ])
 
   console.log('--- Creando Campaña ---')
   const { data: campaign, error: campaignError } = await supabase

@@ -7,10 +7,14 @@ import { revalidatePath } from 'next/cache'
 
 /* --- MONSTRUOS (BESTIARY) --- */
 
-export async function createMonster(data: Prisma.MonsterTemplateCreateInput) {
+export async function createMonster(data: Prisma.MonsterTemplateUncheckedCreateInput) {
   try {
-    const userId = await requireUserId()
-    const monster = await withRLS(userId, (db) => db.monsterTemplate.create({ data }))
+    const clerkId = await requireUserId()
+    const monster = await withRLS(clerkId, async (db) => {
+      const user = await db.user.findUnique({ where: { clerkId } })
+      if (!user) throw new Error('Usuario no sincronizado en la base de datos')
+      return db.monsterTemplate.create({ data: { ...data, authorId: user.id } })
+    })
     revalidatePath('/encyclopedia')
     return { success: true, data: monster }
   } catch (error) {
@@ -47,10 +51,14 @@ export async function deleteMonster(id: string) {
 
 /* --- PERSONAJES (CAST) --- */
 
-export async function createCharacterTemplate(data: Prisma.CharacterTemplateCreateInput) {
+export async function createCharacterTemplate(data: Prisma.CharacterTemplateUncheckedCreateInput) {
   try {
-    const userId = await requireUserId()
-    const character = await withRLS(userId, (db) => db.characterTemplate.create({ data }))
+    const clerkId = await requireUserId()
+    const character = await withRLS(clerkId, async (db) => {
+      const user = await db.user.findUnique({ where: { clerkId } })
+      if (!user) throw new Error('Usuario no sincronizado en la base de datos')
+      return db.characterTemplate.create({ data: { ...data, authorId: user.id } })
+    })
     revalidatePath('/encyclopedia')
     return { success: true, data: character }
   } catch (error) {
@@ -90,10 +98,14 @@ export async function deleteCharacterTemplate(id: string) {
 
 /* --- ÍTEMS (MUSEUM) --- */
 
-export async function createItemTemplate(data: Prisma.ItemTemplateCreateInput) {
+export async function createItemTemplate(data: Prisma.ItemTemplateUncheckedCreateInput) {
   try {
-    const userId = await requireUserId()
-    const item = await withRLS(userId, (db) => db.itemTemplate.create({ data }))
+    const clerkId = await requireUserId()
+    const item = await withRLS(clerkId, async (db) => {
+      const user = await db.user.findUnique({ where: { clerkId } })
+      if (!user) throw new Error('Usuario no sincronizado en la base de datos')
+      return db.itemTemplate.create({ data: { ...data, creatorId: user.id } })
+    })
     revalidatePath('/encyclopedia')
     return { success: true, data: item }
   } catch (error) {
