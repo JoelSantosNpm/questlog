@@ -1,12 +1,12 @@
 ﻿# Estado del Proyecto: Questlog
 
-**Última actualización:** 11 de Mayo de 2026
-**Rama actual:** a03-control-acceso-rbac-acl
+**Última actualización:** 9 de Junio de 2026
+**Rama actual:** m3-03-form-bestiario
 
 ## 📌 Resumen de Progreso
 
 Arquitectura base y **Milestone M1 (Auth & Infra)** completados. **M2 (Gestión de Campañas)** completado al 100%.
-Hemos completado **M3-01 (Reestructuración de Datos)**: migración a columnas atómicas de stats, nuevas tablas `ItemTemplate` y `AccessGrant`, enum `Rarity`, y documentación del schema bilingüe. Hemos completado también **A02 (Eliminar Prisma)**: la app usa ahora Prisma directamente como ORM de runtime con cliente ligero. **M3-02** completado: enciclopedia con navegación por pestañas, vista de detalle animada, cadena de fallback de imágenes con indicadores visuales, y suite completa de tests unitarios y E2E. **Refactorización a Feature-Sliced Design (FSD) completada**: estructura de `src/` reorganizada con capas canónicas, imports públicos a través de `index.ts` de cada slice, y código de dominio reubicado fuera de `shared/`. **Refactorización a Server Actions (Prisma)**: todas las queries y mutations de campañas y enciclopedia usan Prisma con server actions, sin route handlers. **Control de acceso por visibilidad**: campañas públicas accesibles sin autenticación; campañas privadas solo para su dueño (404 para el resto). **Suite de tests de campañas ampliada**: 29 nuevos tests cubriendo queries, hooks y mutations. **A03 (Control de Acceso RBAC/ACL + Storage RLS)**: RLS completo en todas las tablas con funciones SECURITY DEFINER para evitar recursión, políticas de Storage con rutas tipadas, subida de imágenes via Server Action con `service_role`, y limpieza de assets al eliminar usuarios.
+Hemos completado **M3-01 (Reestructuración de Datos)**: migración a columnas atómicas de stats, nuevas tablas `ItemTemplate` y `AccessGrant`, enum `Rarity`, y documentación del schema bilingüe. Hemos completado también **A02 (Eliminar Prisma)**: la app usa ahora Prisma directamente como ORM de runtime con cliente ligero. **M3-02** completado: enciclopedia con navegación por pestañas, vista de detalle animada, cadena de fallback de imágenes con indicadores visuales, y suite completa de tests unitarios y E2E. **Refactorización a Feature-Sliced Design (FSD) completada**: estructura de `src/` reorganizada con capas canónicas, imports públicos a través de `index.ts` de cada slice, y código de dominio reubicado fuera de `shared/`. **Refactorización a Server Actions (Prisma)**: todas las queries y mutations de campañas y enciclopedia usan Prisma con server actions, sin route handlers. **Control de acceso por visibilidad**: campañas públicas accesibles sin autenticación; campañas privadas solo para su dueño (404 para el resto). **Suite de tests de campañas ampliada**: 29 nuevos tests cubriendo queries, hooks y mutations. **A03 (Control de Acceso RBAC/ACL + Storage RLS)**: RLS completo en todas las tablas con funciones SECURITY DEFINER para evitar recursión, políticas de Storage con rutas tipadas, subida de imágenes via Server Action con `service_role`, y limpieza de assets al eliminar usuarios. **M3-03 completado**: formulario create/edit de monstruos (`MonsterForm`, `MonsterCreationView`, `MonsterAvatarPanel`, `MonsterPortraitUploader`, `StatBoxWithControls`), hooks `useCreateMonster`/`useUpdateMonster`, auto-upload de imágenes, delete-on-change y delete-on-abandon, `deleteAsset` server action. 235 tests pasando. Mocks centralizados en `vitest.setup.tsx` + `tests/mocks/intl.ts`.
 
 ---
 
@@ -19,8 +19,8 @@ Hemos completado **M3-01 (Reestructuración de Datos)**: migración a columnas a
 - **Estilos:** Tailwind CSS v4 + `cn()` utility para gestión de clases condicionales.
 - **Fuentes:** Google Fonts (`Inter` para UI, `MedievalSharp` para títulos).
 - **Animaciones:** Framer Motion (`AnimatePresence`, `motion`).
-- **Testing (Unit/Integration):** Vitest 4.x + Testing Library. Config: `vitest.config.ts`. Setup: `vitest.setup.ts`.
-  - Tests centralizados en `tests/features/`. **144 tests pasando** en 16 archivos: carousel utils (6), storage schema (4), useImageUploader (6), ImageUploader UI (4), storage-actions (7), CampaignCreationForm (6), encyclopediaStore (9), image-fallbacks (17), ListView (13), ItemHeader (22), EncyclopediaImage (10), **campaign-queries (11)**, **campaign-hooks (9)**, **campaign-mutations (9)**.
+- **Testing (Unit/Integration):** Vitest 4.x + Testing Library. Config: `vitest.config.ts`. Setup: `vitest.setup.tsx` (`.tsx` para soporte JSX en mocks globales). Mocks centralizados en `vitest.setup.tsx`; traducciones de test vía `tests/mocks/intl.ts` (lee `messages/es.json`).
+  - Tests centralizados en `tests/features/`. **~230 tests pasando** en 18+ archivos: carousel utils (6), storage schema (4), storage-actions (7), useImageUploader (6), ImageUploader UI (4), CampaignCreationForm (6), encyclopediaStore (9), image-fallbacks (17), use-encyclopedia-items, ListView (13), ItemHeader (22), EncyclopediaImage (10), **MonsterAvatarPanel, MonsterCreationView, MonsterForm**, useNotifyAuthRequired, **campaign-queries (11)**, **campaign-hooks (9)**, **campaign-mutations (9)**.
 - **Testing (E2E):** Playwright con auth via `@clerk/testing`. Config: `playwright.config.ts`. Tests: `e2e/portal-de-piedra.spec.ts` (3 tests: AC 3.1, 3.2, 3.3), `e2e/encyclopedia.spec.ts` (8 tests, 1 skip). Requiere `E2E_CLERK_USER_EMAIL` en `.env`.
 - **Auth & DB:** Clerk (Auth), Supabase/PostgreSQL (host). **Prisma Client** como ORM de runtime para todas las queries y mutations (server actions). `schema.prisma` es la única fuente de verdad: tipos TypeScript via `prisma generate`, migraciones SQL via CLI, y queries en runtime. `@supabase/supabase-js` se usa para operaciones de **Storage** (imágenes) vía Server Action con `service_role`.
 
@@ -137,8 +137,7 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
 ## 📍 Estado Actual
 
 **Milestone:** M3: La Forja de la Enciclopedia (Datos, Imágenes y Estructuras)
-**Tarea completada:** M3-02: Hub de la Enciclopedia y Navegación + Control de acceso público/privado de campañas
-**En curso:** M3-03: Bestiario y Fichas de Monstruos
+**Última tarea completada:** M3-03 (Bestiario y Fichas de Monstruos) — formulario create/edit completo con auto-upload de imágenes, cleanup en cambio/abandono y 235 tests pasando.
 
 ---
 
@@ -268,9 +267,20 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
   - _AC 2:_ ✅ Las imágenes se suben a `{clerkId}/{storagePath}/` sin errores de UUID.
   - _AC 3:_ ✅ Al borrar un usuario en Clerk, su carpeta de assets se elimina automáticamente.
 
-- [ ] **M3-03: Bestiario y Fichas de Monstruos**
-  - _Tarea:_ Formulario unificado para `MonsterTemplate` (Librería) y `ActiveMonster` (Instancia de Campaña) con stats atómicos y upload de imagen.
-  - _AC:_ El DM puede crear y editar una ficha de monstruo con stats atómicos y asociarla a una campaña; la imagen se sube y se muestra correctamente.
+- [x] **M3-03: Bestiario y Fichas de Monstruos** [COMPLETADO]
+  - _Tarea:_ Formulario unificado para `MonsterTemplate` (Librería) con stats atómicos y upload de imagen.
+  - _Avance:_
+    - ✅ `MonsterCreationView`: wrapper con botón "Volver" (con cleanup de uploads), badge de estado, toast de aviso a invitados, callback `onSuccess`.
+    - ✅ `MonsterForm`: formulario create/edit, bifurca entre `useCreateMonster` y `useUpdateMonster` según `mode`. Campos `name`, `type`, stats atómicos, imágenes, toggle de visibilidad pública.
+    - ✅ `MonsterAvatarPanel`: auto-upload al seleccionar archivo (sin botón manual).
+    - ✅ `MonsterPortraitUploader`: auto-upload al seleccionar archivo (sin botón manual).
+    - ✅ `deleteAsset` (server action): elimina un asset de Storage por URL pública.
+    - ✅ `makeUploadHandler` + `pendingUrls`: delete-on-change (borra la subida anterior al cambiar imagen) y delete-on-abandon (borra al pulsar "Volver" sin guardar).
+    - ✅ `StatBoxWithControls`: caja reutilizable de stat con controles de incremento/decremento.
+    - ✅ `useCreateMonster` / `useUpdateMonster`: mutation hooks con Prisma server actions.
+    - ✅ Suite de tests completa (235 tests pasando): `MonsterForm` (create/edit/auth/submit create+edit), `MonsterCreationView`, `MonsterAvatarPanel`, `MonsterPortraitUploader`, `StatBoxWithControls`.
+    - ✅ E2E teardown: `globalTeardown` + `afterAll` por spec con prefijo `[E2E]`.
+  - _AC:_ ✅ El DM puede crear y editar una ficha de monstruo con stats atómicos; la imagen se sube automáticamente al seleccionarla, se limpia si se cambia o se abandona el formulario, y se muestra correctamente en la enciclopedia.
 
 - [ ] **M3-04: Módulo de Inventario y Museo**
   - _Tarea:_ CRUD de objetos con visualización temática según rareza y gestión de posesión (Personaje vs Mundo).
@@ -311,11 +321,9 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
 
 ## 📝 Siguientes Pasos Inmediatos
 
-1. **M3-03: Bestiario y Fichas de Monstruos**
+1. **M3-04: Módulo de Inventario y Museo** ← *siguiente*
 
-2. **M3-04: Módulo de Inventario y Museo**
-
-3. **M3-05: Registro de Personajes (Template & Instance)**
+2. **M3-05: Registro de Personajes (Template & Instance)**
 
 4. **M3-02: Filtros de la Enciclopedia** (backlog menor)
    - Implementar filtros: Mis Creaciones | Públicos | Compartidos.

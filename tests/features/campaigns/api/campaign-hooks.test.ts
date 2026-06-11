@@ -5,10 +5,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
-vi.mock('@clerk/nextjs', () => ({
-  useAuth: vi.fn(),
-}))
-
 vi.mock('@/views/campaigns/api/campaign-queries', () => ({
   getCampaigns: vi.fn().mockResolvedValue([]),
   getCampaignById: vi.fn().mockResolvedValue(null),

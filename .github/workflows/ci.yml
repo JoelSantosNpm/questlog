@@ -16,6 +16,12 @@ on:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
+# Cancela cualquier ejecución en curso para la misma PR en cuanto llega un
+# nuevo commit, para no malgastar minutos de CI en runs ya obsoletos.
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   ci:
     name: CI Pipeline

@@ -1,20 +1,11 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { EncyclopediaImage } from '@/views/encyclopedia/ui/EncyclopediaImage'
-import type { BestiaryItem, MuseumItem } from '@/views/encyclopedia/model/types'
+import type { BestiaryItem, MuseumItem } from '@/views/encyclopedia/model/encyclopedia-item'
 import type { Rarity } from '@prisma/client'
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
-vi.mock('next/image', () => ({
-  default: ({ src, alt, onError }: { src: string; alt: string; onError?: () => void }) => (
-    <img src={src} alt={alt} onError={onError} />
-  ),
-}))
-
-vi.mock('lucide-react', () => ({
-  OctagonAlert: () => <svg data-testid='icon-octagon-alert' />,
-}))
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 

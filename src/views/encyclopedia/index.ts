@@ -21,6 +21,6 @@ export type {
   EncyclopediaSection,
   MuseumItem,
   SectionConfig,
-} from './model/types'
+} from './model/encyclopedia-item'
 export { EncyclopediaContainer } from './ui/EncyclopediaContainer'
 export { SideTabs } from './ui/SideTabs'

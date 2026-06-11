@@ -7,7 +7,6 @@ import { AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import Image from 'next/image'
-import { useEffect, useRef } from 'react'
 import { useCarousel } from '../lib/use-carousel'
 import { PortalCard } from './portal-card'
 
@@ -16,7 +15,6 @@ interface PortalCarouselProps {
 }
 
 export const PortalCarousel = ({ campaigns }: PortalCarouselProps) => {
-  const containerRef = useRef<HTMLDivElement>(null)
   const t = useTranslations('Campaigns.carousel')
 
   // Responsive logic for carousel items - now using useSyncExternalStore
@@ -41,31 +39,11 @@ export const PortalCarousel = ({ campaigns }: PortalCarouselProps) => {
     canGoPrev,
   } = useCarousel(campaigns, { visibleRange: getVisibleRange() })
 
-  // Focus inicial para permitir navegación por teclado inmediata
-  useEffect(() => {
-    containerRef.current?.focus()
-  }, [])
-
-  // Manejador de teclado para accesibilidad
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'ArrowLeft' && canGoPrev) {
-      e.preventDefault()
-      handlePrev()
-    } else if (e.key === 'ArrowRight' && canGoNext) {
-      e.preventDefault()
-      handleNext()
-    }
-  }
-
   return (
     <section
-      ref={containerRef}
-      className='relative flex w-full flex-1 flex-col items-center justify-center gap-4 overflow-hidden py-4 outline-none sm:gap-8 sm:py-6'
+      className='relative flex w-full flex-1 flex-col items-center justify-center gap-4 overflow-hidden py-4 sm:gap-8 sm:py-6'
       style={{ isolation: 'isolate' }}
-      onKeyDown={handleKeyDown}
-      tabIndex={0}
       aria-label={t('ariaLabel')}
-      role='region'
       aria-roledescription='carousel'
     >
       {/* Background */}
@@ -82,10 +60,9 @@ export const PortalCarousel = ({ campaigns }: PortalCarouselProps) => {
       <div className='pointer-events-none absolute inset-0 -z-5 bg-black/70' aria-hidden />
 
       {/* 3D Scene Container - Responsive height */}
-      <div
+      <menu
         className='relative flex w-full min-h-[300px] h-[50vh] max-h-[600px] items-center justify-center'
         style={{ perspective: '1000px' }}
-        role='list'
       >
         <AnimatePresence>
           {visibleItems.map((item) => (
@@ -97,7 +74,7 @@ export const PortalCarousel = ({ campaigns }: PortalCarouselProps) => {
             />
           ))}
         </AnimatePresence>
-      </div>
+      </menu>
 
       {/* Navigation Controls */}
       <div className='flex flex-col items-center gap-6'>

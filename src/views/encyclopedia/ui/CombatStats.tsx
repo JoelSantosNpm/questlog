@@ -1,8 +1,8 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { MAIN_STATS, SMALL_STATS, signed } from '../config/stats'
-import { BestiaryItem, CastItem } from '../model/types'
+import { MAIN_STATS, SMALL_STATS, signed } from '../lib/stats'
+import { BestiaryItem, CastItem } from '../model/encyclopedia-item'
 import { StatBox } from './StatBox'
 
 interface CombatStatsProps {

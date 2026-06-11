@@ -1,4 +1,4 @@
-import type { BestiaryItem, CastItem, MuseumItem } from '@/views/encyclopedia/model/types'
+import type { BestiaryItem, CastItem, MuseumItem } from '@/views/encyclopedia/model/encyclopedia-item'
 import { ItemHeader } from '@/views/encyclopedia/ui/ItemHeader'
 import type { Rarity } from '@prisma/client'
 import { fireEvent, render, screen } from '@testing-library/react'
@@ -6,30 +6,6 @@ import { describe, expect, it, vi } from 'vitest'
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
-vi.mock('next/image', () => ({
-  default: ({ src, alt, onError }: { src: string; alt: string; onError?: () => void }) => (
-    <img src={src} alt={alt} onError={onError} />
-  ),
-}))
-
-vi.mock('lucide-react', () => ({
-  Info: () => <svg data-testid='icon-info' />,
-  OctagonAlert: () => <svg data-testid='icon-octagon-alert' />,
-}))
-
-vi.mock('next-intl', () => ({
-  useTranslations: (ns: string) => (key: string) => {
-    const map: Record<string, Record<string, string>> = {
-      'Encyclopedia.itemHeader': {
-        'breadcrumbs.bestiary': 'Bestiario',
-        'breadcrumbs.cast': 'Elenco',
-        'breadcrumbs.museum': 'Museo',
-        avatarUnavailable: 'URL de avatar no disponible',
-      },
-    }
-    return map[ns]?.[key] ?? key
-  },
-}))
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 

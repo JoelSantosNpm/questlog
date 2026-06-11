@@ -8,7 +8,7 @@ import {
   EncyclopediaOwnership,
   EncyclopediaVisibility,
   MuseumItem,
-} from '../model/types'
+} from '../model/encyclopedia-item'
 
 // ES: Obtiene los ids de recursos a los que el usuario tiene acceso por AccessGrant.
 // EN: Returns resource ids accessible to the user via AccessGrant.

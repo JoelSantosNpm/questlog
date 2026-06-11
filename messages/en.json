@@ -73,7 +73,8 @@
     },
     "mobileDrawer": {
       "openLabel": "Open list",
-      "closeLabel": "Close list"
+      "closeLabel": "Close list",
+      "newMonsterLabel": "New monster"
     },
     "itemHeader": {
       "breadcrumbs": {
@@ -130,6 +131,34 @@
         "legendary": "Legendary",
         "artifact": "Artifact"
       }
+    },
+    "monsterForm": {
+      "createButton": "New monster",
+      "backButton": "Back",
+      "creatingIndicator": "Creating monster",
+      "guestNoticeTitle": "You're not signed in",
+      "guestNoticeDesc": "You can explore the form, but you'll need to sign in to save your creation.",
+      "imageAvatar": "Main image",
+      "imagePortrait": "Portrait / Avatar",
+      "namePlaceholder": "Monster name",
+      "typePlaceholder": "Type",
+      "racePlaceholder": "Race",
+      "classPlaceholder": "Class",
+      "descriptionPlaceholder": "Description…",
+      "publicLabel": "Public",
+      "sectionStats": "Stats",
+      "sectionAttributes": "Attributes",
+      "fieldMaxHp": "Hit Points",
+      "fieldChallenge": "Challenge",
+      "submitCreate": "Create monster",
+      "submitEdit": "Save changes",
+      "toastSuccessTitle": "Monster created",
+      "toastSuccessDesc": "The monster has been added to the bestiary",
+      "toastUpdateSuccessTitle": "Monster updated",
+      "toastUpdateSuccessDesc": "The changes have been saved to the bestiary",
+      "toastErrorTitle": "Error",
+      "toastErrorDesc": "Could not create the monster",
+      "toastUpdateErrorDesc": "Could not update the monster"
     }
   },
   "Campaigns": {
@@ -246,6 +275,10 @@
     "imageUploader": {
       "selectImage": "Select Image",
       "dragActive": "Drop Illustration"
+    },
+    "auth": {
+      "requiredTitle": "Sign-in required",
+      "requiredDescription": "You must sign in to save changes."
     }
   }
 }

@@ -3,7 +3,8 @@ import type { CharacterTemplate } from '@prisma/client'
 /** Claves de tipo `number` de T — para la restricción interna. */
 type _NumericKeys<T> = { [K in keyof T]: T[K] extends number ? K : never }[keyof T]
 
-export const STAT_KEYS = [
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- el array solo se usa para derivar NumericStatKey vía `typeof` + `satisfies`
+const STAT_KEYS = [
   'ac',
   'speed',
   'strength',

@@ -14,22 +14,6 @@ import {
 
 // ─── Mocks ───────────────────────────────────────────────────────────────────
 
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: vi.fn() }),
-}))
-
-vi.mock('next-intl', () => ({
-  useTranslations: (ns: string) => (key: string) => {
-    const map: Record<string, Record<string, string>> = {
-      'Campaigns.creation.controls': {
-        skip: 'Saltar este paso',
-        continue: 'Continuar',
-        submit: 'Abrir Portal',
-      },
-    }
-    return map[ns]?.[key] ?? key
-  },
-}))
 
 vi.mock('@/views/campaigns/api/campaign-actions', () => ({
   createCampaign: vi.fn(),

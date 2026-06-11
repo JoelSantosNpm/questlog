@@ -21,7 +21,7 @@
  *   import { toBestiaryItem, toCastItem, toMuseumItem } from '@/tests/mocks/db'
  */
 
-import type { BestiaryItem, CastItem, MuseumItem } from '@/views/encyclopedia/model/types'
+import type { BestiaryItem, CastItem, MuseumItem } from '@/views/encyclopedia/model/encyclopedia-item'
 import { faker } from '@faker-js/faker'
 import { factory, nullable, primaryKey } from '@mswjs/data'
 

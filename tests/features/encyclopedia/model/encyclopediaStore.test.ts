@@ -10,6 +10,7 @@ beforeEach(() => {
       activeSection: 'bestiary',
       selectedItemId: null,
       searchQuery: '',
+      isCreatingNew: false,
     })
   })
 })
@@ -45,6 +46,37 @@ describe('encyclopediaStore (UI State)', () => {
     it('actualiza la consulta de búsqueda', () => {
       act(() => useEncyclopediaStore.getState().setSearchQuery('lobo'))
       expect(useEncyclopediaStore.getState().searchQuery).toBe('lobo')
+    })
+  })
+
+  describe('setIsCreatingNew', () => {
+    it('activa el modo creación', () => {
+      act(() => useEncyclopediaStore.getState().setIsCreatingNew(true))
+      expect(useEncyclopediaStore.getState().isCreatingNew).toBe(true)
+    })
+
+    it('limpia selectedItemId al activar el modo creación', () => {
+      act(() => {
+        useEncyclopediaStore.getState().setSelectedItemId('monster-1')
+        useEncyclopediaStore.getState().setIsCreatingNew(true)
+      })
+      expect(useEncyclopediaStore.getState().selectedItemId).toBeNull()
+    })
+
+    it('desactiva el modo creación', () => {
+      act(() => {
+        useEncyclopediaStore.getState().setIsCreatingNew(true)
+        useEncyclopediaStore.getState().setIsCreatingNew(false)
+      })
+      expect(useEncyclopediaStore.getState().isCreatingNew).toBe(false)
+    })
+
+    it('preserva selectedItemId al desactivar si ya había un id seleccionado', () => {
+      act(() => {
+        useEncyclopediaStore.getState().setSelectedItemId('monster-99')
+        useEncyclopediaStore.getState().setIsCreatingNew(false)
+      })
+      expect(useEncyclopediaStore.getState().selectedItemId).toBe('monster-99')
     })
   })
 })

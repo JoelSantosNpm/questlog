@@ -54,3 +54,27 @@ export async function uploadAsset(formData: FormData): Promise<{ publicUrl: stri
 
   return { publicUrl }
 }
+
+export async function deleteAssetSafe(url: string): Promise<void> {
+  try {
+    await deleteAsset(url)
+  } catch {
+    await deleteAsset(url).catch((err: unknown) => {
+      console.error('[storage] deleteAsset permanentFailure', { url, err })
+    })
+  }
+}
+
+export async function deleteAsset(publicUrl: string): Promise<void> {
+  const { userId } = await auth()
+  if (!userId) throw new Error('No autenticado')
+
+  const bucket = 'questlog-assets'
+  const marker = `/object/public/${bucket}/`
+  const idx = publicUrl.indexOf(marker)
+  if (idx === -1) return
+
+  const filePath = publicUrl.slice(idx + marker.length)
+  const supabase = createClient()
+  await supabase.storage.from(bucket).remove([filePath])
+}

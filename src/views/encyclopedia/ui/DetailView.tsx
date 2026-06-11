@@ -10,7 +10,8 @@ import {
   useSetSelectedItemId,
   type EncyclopediaSection,
 } from '../model/encyclopediaStore'
-import { BestiaryItem, CastItem, EncyclopediaItem, MuseumItem } from '../model/types'
+import { IMAGE_OVERLAY } from '../lib/image-overlay'
+import { BestiaryItem, CastItem, EncyclopediaItem, MuseumItem } from '../model/encyclopedia-item'
 import { CombatStats } from './CombatStats'
 import { EncyclopediaImage } from './EncyclopediaImage'
 import { ItemHeader } from './ItemHeader'
@@ -21,8 +22,6 @@ const SECTION_CONTENT: Record<EncyclopediaSection, (item: EncyclopediaItem) => R
   cast: (item) => <CombatStats item={item as CastItem} />,
   museum: (item) => <ItemProperties item={item as MuseumItem} />,
 }
-
-const IMAGE_OVERLAY = { bottomFromTop: '72%', height: '55%' }
 
 export const DetailView = () => {
   const currentItems = useCurrentItems()

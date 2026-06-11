@@ -73,7 +73,8 @@
     },
     "mobileDrawer": {
       "openLabel": "Abrir lista",
-      "closeLabel": "Cerrar lista"
+      "closeLabel": "Cerrar lista",
+      "newMonsterLabel": "Nuevo monstruo"
     },
     "itemHeader": {
       "breadcrumbs": {
@@ -130,6 +131,34 @@
         "legendary": "Legendaria",
         "artifact": "Artefacto"
       }
+    },
+    "monsterForm": {
+      "createButton": "Nuevo monstruo",
+      "backButton": "Volver",
+      "creatingIndicator": "Creando monstruo",
+      "guestNoticeTitle": "No has iniciado sesión",
+      "guestNoticeDesc": "Puedes explorar el formulario, pero necesitarás iniciar sesión para guardar tu creación.",
+      "imageAvatar": "Imagen principal",
+      "imagePortrait": "Retrato / Avatar",
+      "namePlaceholder": "Nombre del monstruo",
+      "typePlaceholder": "Tipo",
+      "racePlaceholder": "Raza",
+      "classPlaceholder": "Clase",
+      "descriptionPlaceholder": "Descripción…",
+      "publicLabel": "Público",
+      "sectionStats": "Estadísticas",
+      "sectionAttributes": "Atributos",
+      "fieldMaxHp": "Puntos de Golpe",
+      "fieldChallenge": "Desafío",
+      "submitCreate": "Crear monstruo",
+      "submitEdit": "Guardar cambios",
+      "toastSuccessTitle": "Monstruo creado",
+      "toastSuccessDesc": "El monstruo ha sido añadido al bestiario",
+      "toastUpdateSuccessTitle": "Monstruo actualizado",
+      "toastUpdateSuccessDesc": "Los cambios han sido guardados en el bestiario",
+      "toastErrorTitle": "Error",
+      "toastErrorDesc": "No se pudo crear el monstruo",
+      "toastUpdateErrorDesc": "No se pudo actualizar el monstruo"
     }
   },
   "Campaigns": {
@@ -246,6 +275,10 @@
     "imageUploader": {
       "selectImage": "Seleccionar Imagen",
       "dragActive": "Invocar Ilustración"
+    },
+    "auth": {
+      "requiredTitle": "Sesión requerida",
+      "requiredDescription": "Debes iniciar sesión para guardar los cambios."
     }
   }
 }

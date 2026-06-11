@@ -10,12 +10,6 @@ vi.mock('@/shared/api/storage-actions', () => ({
   uploadAsset: vi.fn(),
 }))
 
-vi.mock('sileo', () => ({
-  sileo: {
-    success: vi.fn(),
-    error: vi.fn(),
-  },
-}))
 
 // Mock de URL methods
 global.URL.createObjectURL = vi.fn().mockReturnValue('blob:mock-url')
