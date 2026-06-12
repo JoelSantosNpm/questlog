@@ -1,15 +1,20 @@
 'use client'
 
 import { useAuth } from '@clerk/nextjs'
-import { ArrowLeft, Sparkles } from 'lucide-react'
+import type { MonsterTemplate } from '@prisma/client'
+import { ArrowLeft, Pencil, Sparkles } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useEffect, useRef } from 'react'
 import { sileo } from 'sileo'
-import { useSetIsCreatingNew } from '../../model/encyclopediaStore'
+import { useSelectedItem } from '../../lib/use-encyclopedia-items'
+import { useIsEditing, useSetIsCreatingNew, useSetIsEditing } from '../../model/encyclopediaStore'
 import { MonsterForm } from './MonsterForm'
 
 export function MonsterCreationView() {
   const setIsCreatingNew = useSetIsCreatingNew()
+  const isEditing = useIsEditing()
+  const setIsEditing = useSetIsEditing()
+  const selectedItem = useSelectedItem()
   const { isLoaded, userId } = useAuth()
   const t = useTranslations('Encyclopedia')
   const cleanupRef = useRef<(() => Promise<void>) | null>(null)
@@ -25,6 +30,12 @@ export function MonsterCreationView() {
   const handleBack = async () => {
     await cleanupRef.current?.()
     setIsCreatingNew(false)
+    setIsEditing(false)
+  }
+
+  const handleSuccess = () => {
+    setIsCreatingNew(false)
+    setIsEditing(false)
   }
 
   return (
@@ -39,13 +50,17 @@ export function MonsterCreationView() {
           {t('monsterForm.backButton')}
         </button>
         <span className="flex items-center gap-1.5 rounded-full border border-amber-700/40 bg-amber-950/50 px-3 py-1 text-xs font-medium text-amber-400 backdrop-blur-sm">
-          <Sparkles className="size-3.5" />
-          {t('monsterForm.creatingIndicator')}
+          {isEditing ? <Pencil className="size-3.5" /> : <Sparkles className="size-3.5" />}
+          {isEditing ? t('monsterForm.editingIndicator') : t('monsterForm.creatingIndicator')}
         </span>
       </div>
       <MonsterForm
-        onSuccess={() => setIsCreatingNew(false)}
-        onRegisterCleanup={(fn) => { cleanupRef.current = fn }}
+        mode={isEditing ? 'edit' : 'create'}
+        initialData={isEditing ? (selectedItem as MonsterTemplate | undefined) : undefined}
+        onSuccess={handleSuccess}
+        onRegisterCleanup={(fn) => {
+          cleanupRef.current = fn
+        }}
       />
     </main>
   )

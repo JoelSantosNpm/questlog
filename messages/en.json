@@ -69,7 +69,15 @@
     "detailView": {
       "descriptionLabel": "Description",
       "noDescription": "No description.",
-      "emptySelection": "Select an item to view its details."
+      "emptySelection": "Select an item to view its details.",
+      "editButton": "Edit",
+      "deleteButton": "Delete",
+      "cancelButton": "Cancel",
+      "confirmDeleteButton": "Confirm",
+      "toastDeleteSuccessTitle": "Item deleted",
+      "toastDeleteSuccessDesc": "The item has been removed from the encyclopedia",
+      "toastDeleteErrorTitle": "Error",
+      "toastDeleteErrorDesc": "Could not delete the item"
     },
     "swipeHint": {
       "title": "Tip",
@@ -153,6 +161,7 @@
       "createButton": "New monster",
       "backButton": "Back",
       "creatingIndicator": "Creating monster",
+      "editingIndicator": "Editing monster",
       "guestNoticeTitle": "You're not signed in",
       "guestNoticeDesc": "You can explore the form, but you'll need to sign in to save your creation.",
       "namePlaceholder": "Monster name",
@@ -179,6 +188,7 @@
       "createButton": "New character",
       "backButton": "Back",
       "creatingIndicator": "Creating character",
+      "editingIndicator": "Editing character",
       "guestNoticeTitle": "You're not signed in",
       "guestNoticeDesc": "You can explore the form, but you'll need to sign in to save your creation.",
       "namePlaceholder": "Character name",
@@ -202,6 +212,7 @@
       "createButton": "New item",
       "backButton": "Back",
       "creatingIndicator": "Creating item",
+      "editingIndicator": "Editing item",
       "guestNoticeTitle": "You're not signed in",
       "guestNoticeDesc": "You can explore the form, but you'll need to sign in to save your creation.",
       "namePlaceholder": "Item name",

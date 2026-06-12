@@ -1,14 +1,28 @@
 import { useAuth } from '@clerk/nextjs'
+import { useSelectedItem } from '@/views/encyclopedia/lib/use-encyclopedia-items'
 import { useEncyclopediaStore } from '@/views/encyclopedia/model/encyclopediaStore'
 import { MonsterCreationView } from '@/views/encyclopedia/ui/monster-creation/MonsterCreationView'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { act } from 'react'
 import { sileo } from 'sileo'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { toBestiaryItem } from '../../../../mocks/db'
+
+vi.mock('@/views/encyclopedia/lib/use-encyclopedia-items', () => ({
+  useSelectedItem: vi.fn(() => undefined),
+}))
 
 vi.mock('@/views/encyclopedia/ui/monster-creation/MonsterForm', () => ({
-  MonsterForm: ({ onSuccess }: { onSuccess?: () => void }) => (
-    <div data-testid="monster-form">
+  MonsterForm: ({
+    mode,
+    initialData,
+    onSuccess,
+  }: {
+    mode?: string
+    initialData?: { id: string }
+    onSuccess?: () => void
+  }) => (
+    <div data-testid="monster-form" data-mode={mode} data-initial-id={initialData?.id}>
       <button type="button" onClick={onSuccess}>
         trigger-success
       </button>
@@ -21,8 +35,9 @@ vi.mock('@/views/encyclopedia/ui/monster-creation/MonsterForm', () => ({
 beforeEach(() => {
   vi.clearAllMocks()
   vi.mocked(useAuth).mockReturnValue({ isLoaded: true, userId: null } as never)
+  vi.mocked(useSelectedItem).mockReturnValue(undefined)
   act(() => {
-    useEncyclopediaStore.setState({ isCreatingNew: true, selectedItemId: null })
+    useEncyclopediaStore.setState({ isCreatingNew: true, isEditing: false, selectedItemId: null })
   })
 })
 
@@ -88,6 +103,47 @@ describe('MonsterCreationView', () => {
       render(<MonsterCreationView />)
       fireEvent.click(screen.getByRole('button', { name: 'trigger-success' }))
       expect(useEncyclopediaStore.getState().isCreatingNew).toBe(false)
+    })
+  })
+
+  describe('Modo edición', () => {
+    const MONSTER = toBestiaryItem({ name: 'Lobo Editable' }, true)
+
+    beforeEach(() => {
+      vi.mocked(useSelectedItem).mockReturnValue(MONSTER)
+      act(() => {
+        useEncyclopediaStore.setState({
+          isCreatingNew: false,
+          isEditing: true,
+          selectedItemId: MONSTER.id,
+        })
+      })
+    })
+
+    it('muestra el badge "Editando monstruo"', () => {
+      render(<MonsterCreationView />)
+      expect(screen.getByText('Editando monstruo')).toBeInTheDocument()
+    })
+
+    it('pasa mode="edit" e initialData al MonsterForm', () => {
+      render(<MonsterCreationView />)
+      const form = screen.getByTestId('monster-form')
+      expect(form).toHaveAttribute('data-mode', 'edit')
+      expect(form).toHaveAttribute('data-initial-id', MONSTER.id)
+    })
+
+    it('el botón "Volver" desactiva isEditing', async () => {
+      render(<MonsterCreationView />)
+      fireEvent.click(screen.getByRole('button', { name: /Volver/i }))
+      await waitFor(() => {
+        expect(useEncyclopediaStore.getState().isEditing).toBe(false)
+      })
+    })
+
+    it('onSuccess desactiva isEditing', () => {
+      render(<MonsterCreationView />)
+      fireEvent.click(screen.getByRole('button', { name: 'trigger-success' }))
+      expect(useEncyclopediaStore.getState().isEditing).toBe(false)
     })
   })
 })

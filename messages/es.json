@@ -69,7 +69,15 @@
     "detailView": {
       "descriptionLabel": "Descripción",
       "noDescription": "Sin descripción.",
-      "emptySelection": "Selecciona un elemento para ver sus detalles."
+      "emptySelection": "Selecciona un elemento para ver sus detalles.",
+      "editButton": "Editar",
+      "deleteButton": "Eliminar",
+      "cancelButton": "Cancelar",
+      "confirmDeleteButton": "Confirmar",
+      "toastDeleteSuccessTitle": "Elemento eliminado",
+      "toastDeleteSuccessDesc": "El elemento ha sido eliminado de la enciclopedia",
+      "toastDeleteErrorTitle": "Error",
+      "toastDeleteErrorDesc": "No se pudo eliminar el elemento"
     },
     "swipeHint": {
       "title": "Consejo",
@@ -153,6 +161,7 @@
       "createButton": "Nuevo monstruo",
       "backButton": "Volver",
       "creatingIndicator": "Creando monstruo",
+      "editingIndicator": "Editando monstruo",
       "guestNoticeTitle": "No has iniciado sesión",
       "guestNoticeDesc": "Puedes explorar el formulario, pero necesitarás iniciar sesión para guardar tu creación.",
       "namePlaceholder": "Nombre del monstruo",
@@ -179,6 +188,7 @@
       "createButton": "Nuevo personaje",
       "backButton": "Volver",
       "creatingIndicator": "Creando personaje",
+      "editingIndicator": "Editando personaje",
       "guestNoticeTitle": "No has iniciado sesión",
       "guestNoticeDesc": "Puedes explorar el formulario, pero necesitarás iniciar sesión para guardar tu creación.",
       "namePlaceholder": "Nombre del personaje",
@@ -202,6 +212,7 @@
       "createButton": "Nuevo objeto",
       "backButton": "Volver",
       "creatingIndicator": "Creando objeto",
+      "editingIndicator": "Editando objeto",
       "guestNoticeTitle": "No has iniciado sesión",
       "guestNoticeDesc": "Puedes explorar el formulario, pero necesitarás iniciar sesión para guardar tu creación.",
       "namePlaceholder": "Nombre del objeto",

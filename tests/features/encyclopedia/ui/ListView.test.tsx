@@ -39,6 +39,7 @@ const makeMonster = (id: string, name: string, description = ''): BestiaryItem =
   createdAt: new Date(),
   updatedAt: new Date(),
   section: 'bestiary',
+  isOwner: false,
 })
 
 const ITEMS = [

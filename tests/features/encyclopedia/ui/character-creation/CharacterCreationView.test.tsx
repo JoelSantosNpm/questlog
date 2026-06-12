@@ -1,14 +1,28 @@
 import { useAuth } from '@clerk/nextjs'
+import { useSelectedItem } from '@/views/encyclopedia/lib/use-encyclopedia-items'
 import { useEncyclopediaStore } from '@/views/encyclopedia/model/encyclopediaStore'
 import { CharacterCreationView } from '@/views/encyclopedia/ui/character-creation/CharacterCreationView'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { act } from 'react'
 import { sileo } from 'sileo'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { toCastItem } from '../../../../mocks/db'
+
+vi.mock('@/views/encyclopedia/lib/use-encyclopedia-items', () => ({
+  useSelectedItem: vi.fn(() => undefined),
+}))
 
 vi.mock('@/views/encyclopedia/ui/character-creation/CharacterForm', () => ({
-  CharacterForm: ({ onSuccess }: { onSuccess?: () => void }) => (
-    <div data-testid="character-form">
+  CharacterForm: ({
+    mode,
+    initialData,
+    onSuccess,
+  }: {
+    mode?: string
+    initialData?: { id: string }
+    onSuccess?: () => void
+  }) => (
+    <div data-testid="character-form" data-mode={mode} data-initial-id={initialData?.id}>
       <button type="button" onClick={onSuccess}>
         trigger-success
       </button>
@@ -21,8 +35,9 @@ vi.mock('@/views/encyclopedia/ui/character-creation/CharacterForm', () => ({
 beforeEach(() => {
   vi.clearAllMocks()
   vi.mocked(useAuth).mockReturnValue({ isLoaded: true, userId: null } as never)
+  vi.mocked(useSelectedItem).mockReturnValue(undefined)
   act(() => {
-    useEncyclopediaStore.setState({ isCreatingNew: true, selectedItemId: null })
+    useEncyclopediaStore.setState({ isCreatingNew: true, isEditing: false, selectedItemId: null })
   })
 })
 
@@ -88,6 +103,47 @@ describe('CharacterCreationView', () => {
       render(<CharacterCreationView />)
       fireEvent.click(screen.getByRole('button', { name: 'trigger-success' }))
       expect(useEncyclopediaStore.getState().isCreatingNew).toBe(false)
+    })
+  })
+
+  describe('Modo edición', () => {
+    const CHARACTER = toCastItem({ name: 'Valerius Editable' }, true)
+
+    beforeEach(() => {
+      vi.mocked(useSelectedItem).mockReturnValue(CHARACTER)
+      act(() => {
+        useEncyclopediaStore.setState({
+          isCreatingNew: false,
+          isEditing: true,
+          selectedItemId: CHARACTER.id,
+        })
+      })
+    })
+
+    it('muestra el badge "Editando personaje"', () => {
+      render(<CharacterCreationView />)
+      expect(screen.getByText('Editando personaje')).toBeInTheDocument()
+    })
+
+    it('pasa mode="edit" e initialData al CharacterForm', () => {
+      render(<CharacterCreationView />)
+      const form = screen.getByTestId('character-form')
+      expect(form).toHaveAttribute('data-mode', 'edit')
+      expect(form).toHaveAttribute('data-initial-id', CHARACTER.id)
+    })
+
+    it('el botón "Volver" desactiva isEditing', async () => {
+      render(<CharacterCreationView />)
+      fireEvent.click(screen.getByRole('button', { name: /Volver/i }))
+      await waitFor(() => {
+        expect(useEncyclopediaStore.getState().isEditing).toBe(false)
+      })
+    })
+
+    it('onSuccess desactiva isEditing', () => {
+      render(<CharacterCreationView />)
+      fireEvent.click(screen.getByRole('button', { name: 'trigger-success' }))
+      expect(useEncyclopediaStore.getState().isEditing).toBe(false)
     })
   })
 })

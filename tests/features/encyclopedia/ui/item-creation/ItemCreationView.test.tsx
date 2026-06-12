@@ -1,14 +1,28 @@
 import { useAuth } from '@clerk/nextjs'
+import { useSelectedItem } from '@/views/encyclopedia/lib/use-encyclopedia-items'
 import { useEncyclopediaStore } from '@/views/encyclopedia/model/encyclopediaStore'
 import { ItemCreationView } from '@/views/encyclopedia/ui/item-creation/ItemCreationView'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { act } from 'react'
 import { sileo } from 'sileo'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { toMuseumItem } from '../../../../mocks/db'
+
+vi.mock('@/views/encyclopedia/lib/use-encyclopedia-items', () => ({
+  useSelectedItem: vi.fn(() => undefined),
+}))
 
 vi.mock('@/views/encyclopedia/ui/item-creation/ItemForm', () => ({
-  ItemForm: ({ onSuccess }: { onSuccess?: () => void }) => (
-    <div data-testid="item-form">
+  ItemForm: ({
+    mode,
+    initialData,
+    onSuccess,
+  }: {
+    mode?: string
+    initialData?: { id: string }
+    onSuccess?: () => void
+  }) => (
+    <div data-testid="item-form" data-mode={mode} data-initial-id={initialData?.id}>
       <button type="button" onClick={onSuccess}>
         trigger-success
       </button>
@@ -21,8 +35,9 @@ vi.mock('@/views/encyclopedia/ui/item-creation/ItemForm', () => ({
 beforeEach(() => {
   vi.clearAllMocks()
   vi.mocked(useAuth).mockReturnValue({ isLoaded: true, userId: null } as never)
+  vi.mocked(useSelectedItem).mockReturnValue(undefined)
   act(() => {
-    useEncyclopediaStore.setState({ isCreatingNew: true, selectedItemId: null })
+    useEncyclopediaStore.setState({ isCreatingNew: true, isEditing: false, selectedItemId: null })
   })
 })
 
@@ -88,6 +103,47 @@ describe('ItemCreationView', () => {
       render(<ItemCreationView />)
       fireEvent.click(screen.getByRole('button', { name: 'trigger-success' }))
       expect(useEncyclopediaStore.getState().isCreatingNew).toBe(false)
+    })
+  })
+
+  describe('Modo edición', () => {
+    const ITEM = toMuseumItem({ name: 'Espada Editable' }, true)
+
+    beforeEach(() => {
+      vi.mocked(useSelectedItem).mockReturnValue(ITEM)
+      act(() => {
+        useEncyclopediaStore.setState({
+          isCreatingNew: false,
+          isEditing: true,
+          selectedItemId: ITEM.id,
+        })
+      })
+    })
+
+    it('muestra el badge "Editando objeto"', () => {
+      render(<ItemCreationView />)
+      expect(screen.getByText('Editando objeto')).toBeInTheDocument()
+    })
+
+    it('pasa mode="edit" e initialData al ItemForm', () => {
+      render(<ItemCreationView />)
+      const form = screen.getByTestId('item-form')
+      expect(form).toHaveAttribute('data-mode', 'edit')
+      expect(form).toHaveAttribute('data-initial-id', ITEM.id)
+    })
+
+    it('el botón "Volver" desactiva isEditing', async () => {
+      render(<ItemCreationView />)
+      fireEvent.click(screen.getByRole('button', { name: /Volver/i }))
+      await waitFor(() => {
+        expect(useEncyclopediaStore.getState().isEditing).toBe(false)
+      })
+    })
+
+    it('onSuccess desactiva isEditing', () => {
+      render(<ItemCreationView />)
+      fireEvent.click(screen.getByRole('button', { name: 'trigger-success' }))
+      expect(useEncyclopediaStore.getState().isEditing).toBe(false)
     })
   })
 })

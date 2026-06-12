@@ -6,7 +6,7 @@ import { useEffect } from 'react'
 import { sileo, type SileoOptions } from 'sileo'
 import { useCurrentItems } from '../lib/use-encyclopedia-items'
 import type { EncyclopediaSection } from '../model/encyclopedia-item'
-import { useActiveSection, useIsCreatingNew } from '../model/encyclopediaStore'
+import { useActiveSection, useIsCreatingNew, useIsEditing } from '../model/encyclopediaStore'
 import { CharacterCreationView } from './character-creation/CharacterCreationView'
 import { DetailView } from './DetailView'
 import { ItemCreationView } from './item-creation/ItemCreationView'
@@ -23,6 +23,7 @@ const CREATION_VIEWS: Record<EncyclopediaSection, ComponentType> = {
 export function EncyclopediaContainer() {
   const currentItems = useCurrentItems()
   const isCreatingNew = useIsCreatingNew()
+  const isEditing = useIsEditing()
   const activeSection = useActiveSection()
   const t = useTranslations('Encyclopedia.swipeHint')
 
@@ -54,7 +55,7 @@ export function EncyclopediaContainer() {
       {/* Drawer: visible en < md */}
       <MobileListDrawer items={currentItems} />
 
-      {isCreatingNew ? <CreationView /> : <DetailView />}
+      {isCreatingNew || isEditing ? <CreationView /> : <DetailView />}
     </>
   )
 }

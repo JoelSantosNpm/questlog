@@ -1,15 +1,20 @@
 'use client'
 
 import { useAuth } from '@clerk/nextjs'
-import { ArrowLeft, Sparkles } from 'lucide-react'
+import type { ItemTemplate } from '@prisma/client'
+import { ArrowLeft, Pencil, Sparkles } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useEffect, useRef } from 'react'
 import { sileo } from 'sileo'
-import { useSetIsCreatingNew } from '../../model/encyclopediaStore'
+import { useSelectedItem } from '../../lib/use-encyclopedia-items'
+import { useIsEditing, useSetIsCreatingNew, useSetIsEditing } from '../../model/encyclopediaStore'
 import { ItemForm } from './ItemForm'
 
 export function ItemCreationView() {
   const setIsCreatingNew = useSetIsCreatingNew()
+  const isEditing = useIsEditing()
+  const setIsEditing = useSetIsEditing()
+  const selectedItem = useSelectedItem()
   const { isLoaded, userId } = useAuth()
   const t = useTranslations('Encyclopedia')
   const cleanupRef = useRef<(() => Promise<void>) | null>(null)
@@ -25,6 +30,12 @@ export function ItemCreationView() {
   const handleBack = async () => {
     await cleanupRef.current?.()
     setIsCreatingNew(false)
+    setIsEditing(false)
+  }
+
+  const handleSuccess = () => {
+    setIsCreatingNew(false)
+    setIsEditing(false)
   }
 
   return (
@@ -39,13 +50,17 @@ export function ItemCreationView() {
           {t('itemForm.backButton')}
         </button>
         <span className="flex items-center gap-1.5 rounded-full border border-amber-700/40 bg-amber-950/50 px-3 py-1 text-xs font-medium text-amber-400 backdrop-blur-sm">
-          <Sparkles className="size-3.5" />
-          {t('itemForm.creatingIndicator')}
+          {isEditing ? <Pencil className="size-3.5" /> : <Sparkles className="size-3.5" />}
+          {isEditing ? t('itemForm.editingIndicator') : t('itemForm.creatingIndicator')}
         </span>
       </div>
       <ItemForm
-        onSuccess={() => setIsCreatingNew(false)}
-        onRegisterCleanup={(fn) => { cleanupRef.current = fn }}
+        mode={isEditing ? 'edit' : 'create'}
+        initialData={isEditing ? (selectedItem as ItemTemplate | undefined) : undefined}
+        onSuccess={handleSuccess}
+        onRegisterCleanup={(fn) => {
+          cleanupRef.current = fn
+        }}
       />
     </main>
   )
