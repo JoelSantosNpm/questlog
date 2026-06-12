@@ -1,16 +1,16 @@
 'use client'
 
 import { useAuth } from '@clerk/nextjs'
-import type { MonsterTemplate } from '@prisma/client'
+import type { CharacterTemplate } from '@prisma/client'
 import { ArrowLeft, Pencil, Sparkles } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useEffect, useRef } from 'react'
 import { sileo } from 'sileo'
 import { useSelectedItem } from '../../lib/use-encyclopedia-items'
 import { useIsEditing, useSetIsCreatingNew, useSetIsEditing } from '../../model/encyclopediaStore'
-import { MonsterForm } from './MonsterForm'
+import { CharacterForm } from './CharacterForm'
 
-export function MonsterCreationView() {
+export function CharacterCreationView() {
   const setIsCreatingNew = useSetIsCreatingNew()
   const isEditing = useIsEditing()
   const setIsEditing = useSetIsEditing()
@@ -22,8 +22,8 @@ export function MonsterCreationView() {
   useEffect(() => {
     if (!isLoaded || userId) return
     sileo.warning({
-      title: t('monsterForm.guestNoticeTitle'),
-      description: t('monsterForm.guestNoticeDesc'),
+      title: t('characterForm.guestNoticeTitle'),
+      description: t('characterForm.guestNoticeDesc'),
     })
   }, [isLoaded, userId, t])
 
@@ -47,16 +47,16 @@ export function MonsterCreationView() {
           className="flex items-center gap-1 rounded-md bg-black/50 px-2 py-1 text-xs text-neutral-400 backdrop-blur-sm transition-colors hover:text-neutral-200"
         >
           <ArrowLeft className="size-3.5" />
-          {t('monsterForm.backButton')}
+          {t('characterForm.backButton')}
         </button>
         <span className="flex items-center gap-1.5 rounded-full border border-amber-700/40 bg-amber-950/50 px-3 py-1 text-xs font-medium text-amber-400 backdrop-blur-sm">
           {isEditing ? <Pencil className="size-3.5" /> : <Sparkles className="size-3.5" />}
-          {isEditing ? t('monsterForm.editingIndicator') : t('monsterForm.creatingIndicator')}
+          {isEditing ? t('characterForm.editingIndicator') : t('characterForm.creatingIndicator')}
         </span>
       </div>
-      <MonsterForm
+      <CharacterForm
         mode={isEditing ? 'edit' : 'create'}
-        initialData={isEditing ? (selectedItem as MonsterTemplate | undefined) : undefined}
+        initialData={isEditing ? (selectedItem as CharacterTemplate | undefined) : undefined}
         onSuccess={handleSuccess}
         onRegisterCleanup={(fn) => {
           cleanupRef.current = fn

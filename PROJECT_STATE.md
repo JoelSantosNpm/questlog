@@ -1,12 +1,12 @@
 ﻿# Estado del Proyecto: Questlog
 
-**Última actualización:** 9 de Junio de 2026
-**Rama actual:** m3-03-form-bestiario
+**Última actualización:** 12 de Junio de 2026
+**Rama actual:** m3-04-05-forms-enciclopedia
 
 ## 📌 Resumen de Progreso
 
 Arquitectura base y **Milestone M1 (Auth & Infra)** completados. **M2 (Gestión de Campañas)** completado al 100%.
-Hemos completado **M3-01 (Reestructuración de Datos)**: migración a columnas atómicas de stats, nuevas tablas `ItemTemplate` y `AccessGrant`, enum `Rarity`, y documentación del schema bilingüe. Hemos completado también **A02 (Eliminar Prisma)**: la app usa ahora Prisma directamente como ORM de runtime con cliente ligero. **M3-02** completado: enciclopedia con navegación por pestañas, vista de detalle animada, cadena de fallback de imágenes con indicadores visuales, y suite completa de tests unitarios y E2E. **Refactorización a Feature-Sliced Design (FSD) completada**: estructura de `src/` reorganizada con capas canónicas, imports públicos a través de `index.ts` de cada slice, y código de dominio reubicado fuera de `shared/`. **Refactorización a Server Actions (Prisma)**: todas las queries y mutations de campañas y enciclopedia usan Prisma con server actions, sin route handlers. **Control de acceso por visibilidad**: campañas públicas accesibles sin autenticación; campañas privadas solo para su dueño (404 para el resto). **Suite de tests de campañas ampliada**: 29 nuevos tests cubriendo queries, hooks y mutations. **A03 (Control de Acceso RBAC/ACL + Storage RLS)**: RLS completo en todas las tablas con funciones SECURITY DEFINER para evitar recursión, políticas de Storage con rutas tipadas, subida de imágenes via Server Action con `service_role`, y limpieza de assets al eliminar usuarios. **M3-03 completado**: formulario create/edit de monstruos (`MonsterForm`, `MonsterCreationView`, `MonsterAvatarPanel`, `MonsterPortraitUploader`, `StatBoxWithControls`), hooks `useCreateMonster`/`useUpdateMonster`, auto-upload de imágenes, delete-on-change y delete-on-abandon, `deleteAsset` server action. 235 tests pasando. Mocks centralizados en `vitest.setup.tsx` + `tests/mocks/intl.ts`.
+Hemos completado **M3-01 (Reestructuración de Datos)**: migración a columnas atómicas de stats, nuevas tablas `ItemTemplate` y `AccessGrant`, enum `Rarity`, y documentación del schema bilingüe. Hemos completado también **A02 (Eliminar Prisma)**: la app usa ahora Prisma directamente como ORM de runtime con cliente ligero. **M3-02** completado: enciclopedia con navegación por pestañas, vista de detalle animada, cadena de fallback de imágenes con indicadores visuales, y suite completa de tests unitarios y E2E. **Refactorización a Feature-Sliced Design (FSD) completada**: estructura de `src/` reorganizada con capas canónicas, imports públicos a través de `index.ts` de cada slice, y código de dominio reubicado fuera de `shared/`. **Refactorización a Server Actions (Prisma)**: todas las queries y mutations de campañas y enciclopedia usan Prisma con server actions, sin route handlers. **Control de acceso por visibilidad**: campañas públicas accesibles sin autenticación; campañas privadas solo para su dueño (404 para el resto). **Suite de tests de campañas ampliada**: 29 nuevos tests cubriendo queries, hooks y mutations. **A03 (Control de Acceso RBAC/ACL + Storage RLS)**: RLS completo en todas las tablas con funciones SECURITY DEFINER para evitar recursión, políticas de Storage con rutas tipadas, subida de imágenes via Server Action con `service_role`, y limpieza de assets al eliminar usuarios. **M3-03 completado**: formulario create/edit de monstruos (`MonsterForm`, `MonsterCreationView`, `MonsterAvatarPanel`, `MonsterPortraitUploader`, `StatBoxWithControls`), hooks `useCreateMonster`/`useUpdateMonster`, auto-upload de imágenes, delete-on-change y delete-on-abandon, `deleteAsset` server action. **M3-04 y M3-05 en progreso (simultáneo)**: formularios create/edit de objetos (`ItemForm`, `ItemCreationView`) y personajes (`CharacterForm`, `CharacterCreationView`) para `ItemTemplate`/`CharacterTemplate`, reutilizando componentes genéricos extraídos de M3-03 (`AvatarPanel`, `PortraitUploader`, `StatBoxWithControls`, `EditableStatBox`). Visualización de rareza por color en `ItemProperties` (`RARITY_COLORS`). CRUD completo a nivel de API para las 3 secciones (`useCreate/Update/Delete{Monster,CharacterTemplate,ItemTemplate}`), expuesto en la UI vía edición/borrado desde `DetailView`. Además: `LocaleSwitcher` rediseñado como dropdown de ancho fijo, reposicionamiento de toasts (`sileo`) fuera del header, icono de "Iniciar sesión" y panel de tips de imagen scrollable sin solapamientos. **Edición y borrado desde `DetailView` completados** (cross-cutting M3-03/M3-04/M3-05): campo `isOwner` en `EncyclopediaItem`, overlay `ItemActionsOverlay` con botones Editar/Eliminar gateados por `isOwner`, reutilizando `mode='edit'` de los 3 `*Form` y los hooks `useUpdate*`/`useDelete*`. 346 tests pasando. Mocks centralizados en `vitest.setup.tsx` + `tests/mocks/intl.ts`.
 
 ---
 
@@ -20,7 +20,7 @@ Hemos completado **M3-01 (Reestructuración de Datos)**: migración a columnas a
 - **Fuentes:** Google Fonts (`Inter` para UI, `MedievalSharp` para títulos).
 - **Animaciones:** Framer Motion (`AnimatePresence`, `motion`).
 - **Testing (Unit/Integration):** Vitest 4.x + Testing Library. Config: `vitest.config.ts`. Setup: `vitest.setup.tsx` (`.tsx` para soporte JSX en mocks globales). Mocks centralizados en `vitest.setup.tsx`; traducciones de test vía `tests/mocks/intl.ts` (lee `messages/es.json`).
-  - Tests centralizados en `tests/features/`. **~230 tests pasando** en 18+ archivos: carousel utils (6), storage schema (4), storage-actions (7), useImageUploader (6), ImageUploader UI (4), CampaignCreationForm (6), encyclopediaStore (9), image-fallbacks (17), use-encyclopedia-items, ListView (13), ItemHeader (22), EncyclopediaImage (10), **MonsterAvatarPanel, MonsterCreationView, MonsterForm**, useNotifyAuthRequired, **campaign-queries (11)**, **campaign-hooks (9)**, **campaign-mutations (9)**.
+  - Tests centralizados en `tests/features/`. **346 tests pasando** en 29 archivos: carousel utils (6), storage schema (4), storage-actions (7), useImageUploader (7), ImageUploader UI (4), CampaignCreationForm (6), encyclopediaStore (14), image-fallbacks (17), use-encyclopedia-items (13), hex-geometry (13), ListView (19), ItemHeader (22), EncyclopediaImage (10), MonsterForm (24), MonsterCreationView (12), DetailView (11), **ItemForm (30), ItemCreationView (12), CharacterForm (24), CharacterCreationView (12), AvatarPanel (13), PortraitUploader (11), StatBoxWithControls (10), EditableStatBox (6), LocaleSwitcher (5)**, useNotifyAuthRequired (5), campaign-queries (11), campaign-hooks (9), campaign-mutations (9).
 - **Testing (E2E):** Playwright con auth via `@clerk/testing`. Config: `playwright.config.ts`. Tests: `e2e/portal-de-piedra.spec.ts` (3 tests: AC 3.1, 3.2, 3.3), `e2e/encyclopedia.spec.ts` (8 tests, 1 skip). Requiere `E2E_CLERK_USER_EMAIL` en `.env`.
 - **Auth & DB:** Clerk (Auth), Supabase/PostgreSQL (host). **Prisma Client** como ORM de runtime para todas las queries y mutations (server actions). `schema.prisma` es la única fuente de verdad: tipos TypeScript via `prisma generate`, migraciones SQL via CLI, y queries en runtime. `@supabase/supabase-js` se usa para operaciones de **Storage** (imágenes) vía Server Action con `service_role`.
 
@@ -84,10 +84,49 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
 - **`EncyclopediaImage`**: Imagen principal del item con cadena de fallback (`imageUrl` → `portraitImageUrl` → default). Muestra indicador `OctagonAlert` si la URL está vacía o falla al cargar. Notifica al componente padre mediante `onMissingChange`.
 - **`PortraitFrame`**: Marco decorativo circular con variantes de color por sección (rojo bestiario, azul elenco). Acepta `showBadge` para mostrar el indicador de imagen no disponible en el retrato.
 - **`ItemHeader`**: Encabezado del detalle con sección, nombre e imagen de retrato. Muestra `OctagonAlert` en el label de sección en museo cuando `imageMissing` es `true`, y en el `PortraitFrame` cuando el retrato falla o está vacío.
-- **`DetailView`**: Orquestador del panel de detalle. Eleva el estado `imageMissing` desde `EncyclopediaImage` y lo pasa a `ItemHeader` para el indicador del museo.
+- **`DetailView`**: Orquestador del panel de detalle. Eleva el estado `imageMissing` desde `EncyclopediaImage` y lo pasa a `ItemHeader` para el indicador del museo. Renderiza `ItemActionsOverlay` dentro del `<m.div key={item.id}>` de `AnimatePresence`.
 - **`image-fallbacks.ts`**: Funciones puras `getEntityFallbacks` y `getPortraitFallbacks` — construyen la cadena de URLs garantizando siempre al menos el default de sección.
 - **Unit Tests:** `encyclopediaStore.test.ts` (9), `image-fallbacks.test.ts` (17), `ListView.test.tsx` (13), `ItemHeader.test.tsx` (22), `EncyclopediaImage.test.tsx` (10).
 - **E2E Tests:** `encyclopedia.spec.ts` — 8 escenarios (ENC-01 a ENC-08) cubriendo navegación por pestañas, búsqueda, selección de items y vista de detalle.
+
+### 6. Formularios de Creación — Componentes Genéricos (`src/views/encyclopedia/ui/creation/`)
+
+- **`AvatarPanel<TFieldValues>`**: panel de imagen principal (fondo ilustrado + overlay), genérico para Monstruo/Personaje/Objeto vía `storagePath: 'monsters' | 'characters' | 'items'`. Auto-upload al seleccionar archivo (`useImageUploader`), botón "Cambiar imagen" tras éxito. Muestra `ImageTipsPanel` cuando no hay imagen.
+- **`PortraitUploader<TFieldValues>`**: retrato circular (`PortraitFrame`) con botón de cámara superpuesto, auto-upload, variantes `monster`/`cast`.
+- **`ImageTipsPanel`**: consejos de composición de imagen — scrolleable (`scrollbar-encyclopedia`) con padding reservado (`pt-12`/`pb-14`) para no solaparse con la barra "Volver"/"Creando..." ni con el botón de subida.
+- **`StatBoxWithControls<TFieldValues>` / `EditableStatBox`**: hexágono de estadística editable (SVG vía `hex-geometry.ts`) con botones +/-. Extraído de los específicos de monstruo de M3-03 — ahora compartido por `MonsterForm`, `CharacterForm` e `ItemForm`.
+- **Unit Tests:** `AvatarPanel.test.tsx` (13), `PortraitUploader.test.tsx` (11), `StatBoxWithControls.test.tsx` (10), `EditableStatBox.test.tsx` (6), `hex-geometry.test.ts` (13).
+
+### 7. Museo: Objetos (`ItemForm`, `ItemCreationView`)
+
+- **`ItemCreationView`**: wrapper con botón "Volver" (cleanup de uploads pendientes), badge "Creando objeto...", toast de aviso a invitados.
+- **`ItemForm`**: formulario create/edit de `ItemTemplate` — `name`, `description`, `imageUrl`, `category`, `weight`, `value`, `rarity` (select poblado desde `RARITY_VALUES`/`RARITY_LABEL_KEYS`), `isPublic` y 10 modificadores de stat. Bifurca `useCreateItemTemplate`/`useUpdateItemTemplate` según `mode`.
+- **Visualización de rareza:** `ItemProperties` colorea el valor de rareza según `RARITY_COLORS` (7 niveles, de `JUNK` gris a `ARTIFACT` rojo).
+- **Unit Tests:** `ItemForm.test.tsx` (30), `ItemCreationView.test.tsx` (8).
+
+### 8. Elenco: Personajes (`CharacterForm`, `CharacterCreationView`)
+
+- **`CharacterCreationView`**: mismo patrón que `ItemCreationView` (Volver + cleanup, badge "Creando personaje...", toast de invitados).
+- **`CharacterForm`**: formulario create/edit de `CharacterTemplate` — `name`, `race`, `characterClass`, `description`, `imageUrl`, `portraitImageUrl`, `isPublic` y stats atómicos completos (`maxHp`, `ac`, `speed`, 6 atributos, `initiativeBonus`, `perception`). Bifurca `useCreateCharacterTemplate`/`useUpdateCharacterTemplate` según `mode`.
+- **Unit Tests:** `CharacterForm.test.tsx` (24), `CharacterCreationView.test.tsx` (8).
+
+### 9. CRUD completo de plantillas (`encyclopedia-mutations.ts`)
+
+- 9 hooks de mutación: Bestiario (`useCreateMonster`/`useUpdateMonster`/`useDeleteMonster`), Elenco (`useCreate/Update/DeleteCharacterTemplate`), Museo (`useCreate/Update/DeleteItemTemplate`). Todos invalidan la cache vía `ENCYCLOPEDIA_KEYS.{bestiaryBase|castBase|museumBase}`.
+- ✅ `DetailView` expone botones de editar/eliminar vía `ItemActionsOverlay`, gateados por `isOwner` — ver sección 11.
+
+### 10. Selector de Idioma y UX de Toasts
+
+- **`LocaleSwitcher`**: rediseñado de "un pill por idioma" a un dropdown de ancho fijo (`"ES ⌄"` → menú `role='menu'` con `menuitemradio` por locale). Escala a N idiomas sin crecer en layout. Click-fuera cierra el menú; seleccionar otro idioma setea la cookie `NEXT_LOCALE` y llama a `router.refresh()`.
+- **Toasts (`sileo`)**: `<Toaster>` reposicionado para no solapar el header sticky; el toast de swipe-hint tiene `id`/`duration` propios para no competir con los toasts de éxito/error de los formularios.
+- **Icono de "Iniciar sesión":** `CircleUserRound` (lucide-react), mismo patrón icono + label responsive que el resto del header.
+- **Unit Tests:** `LocaleSwitcher.test.tsx` (5).
+
+### 11. Edición y Borrado desde `DetailView`
+
+- **`isOwner`**: campo añadido a `EncyclopediaItem` (bestiario, elenco y museo) — gatea la visibilidad de los botones de editar/eliminar según si el usuario autenticado es el creador del item.
+- **`ItemActionsOverlay`**: overlay de acciones (Editar / Eliminar / Cancelar / Confirmar) extraído de `DetailView`, renderizado dentro del `<m.div key={item.id}>` de `AnimatePresence`. Al cambiar de item el subárbol se desmonta/remonta, por lo que `confirmingDelete` se resetea automáticamente sin `useEffect` ni estado de tracking adicional. "Editar" activa `isEditing` en el store (las `*CreationView` ya soportaban `mode='edit'` + `initialData`); "Eliminar" invoca `useDeleteMonster`/`useDeleteCharacterTemplate`/`useDeleteItemTemplate` según `activeSection`.
+- **Unit Tests:** `DetailView.test.tsx` (11) — empty state, gating por `isOwner`, activación de modo edición, flujo de confirmación de borrado y los 3 caminos de eliminación (éxito/error/excepción). Más 4 tests nuevos en cada `*CreationView` (modo edición) y 6 nuevos en `encyclopediaStore.test.ts` (`isEditing`).
 
 ---
 
@@ -137,7 +176,8 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
 ## 📍 Estado Actual
 
 **Milestone:** M3: La Forja de la Enciclopedia (Datos, Imágenes y Estructuras)
-**Última tarea completada:** M3-03 (Bestiario y Fichas de Monstruos) — formulario create/edit completo con auto-upload de imágenes, cleanup en cambio/abandono y 235 tests pasando.
+**Última tarea completada:** Edición y borrado desde `DetailView` (cross-cutting M3-03/M3-04/M3-05) — botones de editar/eliminar gateados por `isOwner`, extraídos a `ItemActionsOverlay`, reutilizando `mode='edit'` de los 3 `*Form` y los hooks `useUpdate*`/`useDelete*`.
+**En progreso (simultáneo):** M3-04 (Módulo de Inventario y Museo) y M3-05 (Registro de Personajes) — formularios create/edit de `ItemTemplate` y `CharacterTemplate` completos con visualización de rareza y stats atómicos; pendiente la gestión a nivel de instancia (posesión de objetos, nivel/campaña/inventario de personajes). 346 tests pasando.
 
 ---
 
@@ -282,12 +322,23 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
     - ✅ E2E teardown: `globalTeardown` + `afterAll` por spec con prefijo `[E2E]`.
   - _AC:_ ✅ El DM puede crear y editar una ficha de monstruo con stats atómicos; la imagen se sube automáticamente al seleccionarla, se limpia si se cambia o se abandona el formulario, y se muestra correctamente en la enciclopedia.
 
-- [ ] **M3-04: Módulo de Inventario y Museo**
+- [ ] **M3-04: Módulo de Inventario y Museo** [EN PROGRESO]
   - _Tarea:_ CRUD de objetos con visualización temática según rareza y gestión de posesión (Personaje vs Mundo).
+  - _Avance:_
+    - ✅ `ItemForm`/`ItemCreationView`: create/edit de `ItemTemplate` (nombre, descripción, imagen, categoría, peso, valor, rareza, visibilidad, 10 stats).
+    - ✅ Visualización de rareza: `ItemProperties` colorea el valor según `RARITY_COLORS` (7 niveles).
+    - ✅ `useCreateItemTemplate`/`useUpdateItemTemplate`/`useDeleteItemTemplate` implementados y testeados.
+    - ✅ Edición/borrado desde la UI: `DetailView` expone botones de editar/eliminar vía `ItemActionsOverlay`, gateados por `isOwner` (cross-cutting con M3-03 y M3-05 — ver sección 11).
+    - ❌ Gestión de posesión (Personaje vs Mundo): el modelo `Item` (instancia) ya tiene `characterId`/`campaignId` en el schema, pero no hay UI de creación/asignación de instancias `Item` — solo se cubrió la plantilla (`ItemTemplate`).
   - _AC:_ El DM puede crear, editar y eliminar objetos; la rareza se refleja visualmente y la posesión (Personaje o Mundo) es asignable.
 
-- [ ] **M3-05: Registro de Personajes (Template & Instance)**
+- [ ] **M3-05: Registro de Personajes (Template & Instance)** [EN PROGRESO]
   - _Tarea:_ Gestión de NPCs y Héroes con stats completos, nivel y vinculación de inventario inicial.
+  - _Avance:_
+    - ✅ `CharacterForm`/`CharacterCreationView`: create/edit de `CharacterTemplate` (nombre, raza, clase, descripción, imágenes, visibilidad, stats atómicos completos).
+    - ✅ `useCreateCharacterTemplate`/`useUpdateCharacterTemplate`/`useDeleteCharacterTemplate` implementados y testeados.
+    - ✅ Edición/borrado desde la UI: mismo fix que M3-04 (`ItemActionsOverlay` en `DetailView`, ver sección 11).
+    - ❌ `level`, vinculación a campaña (`campaignId`) y asignación de inventario inicial (`inventory: Item[]`): estos campos pertenecen al modelo `Character` (instancia), no a `CharacterTemplate` — solo se cubrió la plantilla.
   - _AC:_ El DM puede crear personajes/NPCs con stats atómicos, vincularlos a una campaña y asignarles un inventario inicial.
 
 ### M4: Las Crónicas del Coliseo (Live Tools) [PENDIENTE]
@@ -321,11 +372,13 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
 
 ## 📝 Siguientes Pasos Inmediatos
 
-1. **M3-04: Módulo de Inventario y Museo** ← *siguiente*
+1. **M3-04: Posesión de objetos (Personaje vs Mundo)** ← *siguiente*
+   - UI para crear/asignar instancias `Item` (no solo `ItemTemplate`), usando `characterId`/`campaignId` ya presentes en el schema.
 
-2. **M3-05: Registro de Personajes (Template & Instance)**
+2. **M3-05: Nivel, vinculación a campaña e inventario inicial**
+   - Extender la gestión de `Character` (instancia): campo `level`, asociar a una `Campaign` (`campaignId`) y asignar `inventory: Item[]` inicial desde objetos del Museo.
 
-4. **M3-02: Filtros de la Enciclopedia** (backlog menor)
+3. **M3-02: Filtros de la Enciclopedia** (backlog menor)
    - Implementar filtros: Mis Creaciones | Públicos | Compartidos.
 
 ---
@@ -341,3 +394,7 @@ Un carrusel circular infinito con efecto de perspectiva 3D para seleccionar camp
 - **Secuencialidad vs Paralelismo:** Promesas que no dependen una de otra como llamadas a `auth()` y extracción de `params` asincrónicos o DB, agruparlas de forma segura en un `Promise.all()`.
 - **Arquitectura de Animaciones (LazyMotion):** Se ha implementado `LazyMotion` global con el paquete `domAnimation`. Esto reduce el bundle en ~30kb al excluir funciones pesadas de Framer Motion (como `drag` físico o `layout animations`) que no son necesarias para la mayoría de la UI.
 - **Drag & Drop Híbrido:** La funcionalidad de arrastrar archivos en `ImageUploader` sigue operativa porque utiliza la **API nativa de HTML5** (`onDrop`, `onDragOver`), delegando en Framer Motion solo el "feedback visual" (escalado, opacidad). Esto combina la robustez del navegador con la fluidez de las animaciones optimizadas.
+- **Componentes genéricos para formularios de creación:** `AvatarPanel<TFieldValues>`, `PortraitUploader<TFieldValues>` y `StatBoxWithControls<TFieldValues>`/`EditableStatBox` se parametrizan por tipo de formulario (genéricos de `react-hook-form`) y `storagePath`, evitando triplicar la lógica de upload/stats entre `MonsterForm`, `CharacterForm` e `ItemForm` (DRY).
+- **Selector de idioma escalable:** un dropdown de ancho fijo (botón "ES ⌄" + menú) escala a N idiomas sin crecer en layout, a diferencia de renderizar un pill por `locale`.
+- **Limitación conocida de `sileo` (v0.1.5):** el `Toaster` usa un único `hoverRef` global — un `mouseenter` en cualquier toast detiene los timers de **todos** los toasts activos. Si el `mouseleave` no se dispara con limpieza (p.ej. un gesto táctil que captura el puntero), un toast puede quedar "atascado" indefinidamente. Mitigado posicionando el `Toaster` fuera del header, pero no resuelto al 100% — pendiente de reportar/parchear en la librería si reaparece.
+- **Reset de estado vía remount en lugar de `useEffect`:** cuando un estado local solo tiene sentido mientras el componente muestra una entidad concreta (ej. `confirmingDelete` en el detalle de un item), extraerlo a un componente hijo renderizado dentro de un nodo con `key={item.id}`. Al cambiar la `key`, React desmonta/remonta el subárbol y el `useState` se reinicia solo — evita el lint `react-hooks/set-state-in-effect` y el error de React Compiler con `try/finally` en el handler.

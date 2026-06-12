@@ -2,7 +2,7 @@ import {
   DEFAULT_MONSTER_FORM_VALUES,
   type MonsterFormFields,
 } from '@/views/encyclopedia/ui/monster-creation/monster-form-fields'
-import { MonsterAvatarPanel } from '@/views/encyclopedia/ui/monster-creation/MonsterAvatarPanel'
+import { AvatarPanel } from '@/views/encyclopedia/ui/creation/AvatarPanel'
 import { fireEvent, render, screen } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
@@ -50,12 +50,12 @@ beforeEach(() => {
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
-describe('MonsterAvatarPanel', () => {
+describe('AvatarPanel', () => {
   describe('Estado inicial (sin preview ni imagen guardada)', () => {
     it('muestra el botón de selección de imagen principal', () => {
       render(
         <FormWrapper>
-          <MonsterAvatarPanel />
+          <AvatarPanel<MonsterFormFields> storagePath='monsters' />
         </FormWrapper>
       )
       expect(screen.getByRole('button', { name: /Imagen principal/i })).toBeInTheDocument()
@@ -64,7 +64,7 @@ describe('MonsterAvatarPanel', () => {
     it('no muestra el botón "Subir" si no hay preview seleccionado', () => {
       render(
         <FormWrapper>
-          <MonsterAvatarPanel />
+          <AvatarPanel<MonsterFormFields> storagePath='monsters' />
         </FormWrapper>
       )
       expect(screen.queryByRole('button', { name: /Subir/i })).not.toBeInTheDocument()
@@ -73,10 +73,43 @@ describe('MonsterAvatarPanel', () => {
     it('renderiza la imagen de fondo del panel', () => {
       render(
         <FormWrapper>
-          <MonsterAvatarPanel />
+          <AvatarPanel<MonsterFormFields> storagePath='monsters' />
         </FormWrapper>
       )
       expect(screen.getByAltText('')).toBeInTheDocument()
+    })
+  })
+
+  describe('Panel de consejos de imagen', () => {
+    it('se muestra cuando no hay preview ni imagen guardada', () => {
+      render(
+        <FormWrapper>
+          <AvatarPanel<MonsterFormFields> storagePath='monsters' />
+        </FormWrapper>
+      )
+      expect(screen.getByText('Consejos para la imagen')).toBeInTheDocument()
+    })
+
+    it('se oculta cuando hay un preview local', () => {
+      mockUseImageUploader.mockReturnValue({
+        ...defaultUploaderState,
+        preview: 'blob:preview-url',
+      })
+      render(
+        <FormWrapper>
+          <AvatarPanel<MonsterFormFields> storagePath='monsters' />
+        </FormWrapper>
+      )
+      expect(screen.queryByText('Consejos para la imagen')).not.toBeInTheDocument()
+    })
+
+    it('se oculta cuando ya hay una imageUrl guardada', () => {
+      render(
+        <FormWrapper imageUrl='https://example.com/avatar.png'>
+          <AvatarPanel<MonsterFormFields> storagePath='monsters' />
+        </FormWrapper>
+      )
+      expect(screen.queryByText('Consejos para la imagen')).not.toBeInTheDocument()
     })
   })
 
@@ -88,7 +121,7 @@ describe('MonsterAvatarPanel', () => {
       })
       render(
         <FormWrapper>
-          <MonsterAvatarPanel />
+          <AvatarPanel<MonsterFormFields> storagePath='monsters' />
         </FormWrapper>
       )
       expect(screen.getByAltText('preview')).toBeInTheDocument()
@@ -101,7 +134,7 @@ describe('MonsterAvatarPanel', () => {
       })
       render(
         <FormWrapper>
-          <MonsterAvatarPanel />
+          <AvatarPanel<MonsterFormFields> storagePath='monsters' />
         </FormWrapper>
       )
       expect(screen.getByRole('button', { name: /\.\.\./i })).toBeDisabled()
@@ -114,7 +147,7 @@ describe('MonsterAvatarPanel', () => {
       })
       render(
         <FormWrapper>
-          <MonsterAvatarPanel />
+          <AvatarPanel<MonsterFormFields> storagePath='monsters' />
         </FormWrapper>
       )
       expect(screen.queryByRole('button', { name: /^Subir$/i })).not.toBeInTheDocument()
@@ -132,7 +165,7 @@ describe('MonsterAvatarPanel', () => {
     it('muestra el botón "Cambiar imagen" en lugar del de subida', () => {
       render(
         <FormWrapper>
-          <MonsterAvatarPanel />
+          <AvatarPanel<MonsterFormFields> storagePath='monsters' />
         </FormWrapper>
       )
       expect(screen.getByRole('button', { name: /Cambiar imagen/i })).toBeInTheDocument()
@@ -146,21 +179,21 @@ describe('MonsterAvatarPanel', () => {
       mockUseImageUploader.mockReturnValue({ ...defaultUploaderState, handleClick })
       render(
         <FormWrapper>
-          <MonsterAvatarPanel />
+          <AvatarPanel<MonsterFormFields> storagePath='monsters' />
         </FormWrapper>
       )
       fireEvent.click(screen.getByRole('button', { name: /Imagen principal/i }))
       expect(handleClick).toHaveBeenCalledOnce()
     })
 
-    it('configura useImageUploader con autoUpload: true', () => {
+    it('configura useImageUploader con autoUpload: true y el storagePath recibido', () => {
       render(
         <FormWrapper>
-          <MonsterAvatarPanel />
+          <AvatarPanel<MonsterFormFields> storagePath='monsters' />
         </FormWrapper>
       )
       expect(mockUseImageUploader).toHaveBeenCalledWith(
-        expect.objectContaining({ autoUpload: true })
+        expect.objectContaining({ autoUpload: true, storagePath: 'monsters' })
       )
     })
 
@@ -173,7 +206,7 @@ describe('MonsterAvatarPanel', () => {
       })
       render(
         <FormWrapper>
-          <MonsterAvatarPanel />
+          <AvatarPanel<MonsterFormFields> storagePath='monsters' />
         </FormWrapper>
       )
       fireEvent.click(screen.getByRole('button', { name: /Cambiar imagen/i }))

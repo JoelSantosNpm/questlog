@@ -35,7 +35,7 @@ export async function getBestiaryItems(
       const data = await withPublicRLS((db) =>
         db.monsterTemplate.findMany({ orderBy: { name: 'asc' } })
       )
-      return data.map((item) => ({ ...item, section: 'bestiary' as const }))
+      return data.map((item) => ({ ...item, section: 'bestiary' as const, isOwner: false }))
     }
 
     if (!clerkId) throw new Error('clerkId required for non-public visibility')
@@ -57,7 +57,8 @@ export async function getBestiaryItems(
       const where: Prisma.MonsterTemplateWhereInput =
         visibility === 'all' ? { OR: [{ isPublic: true }, privateWhere] } : privateWhere
 
-      return db.monsterTemplate.findMany({ where, orderBy: { name: 'asc' } })
+      const items = await db.monsterTemplate.findMany({ where, orderBy: { name: 'asc' } })
+      return items.map((item) => ({ ...item, isOwner: item.authorId === userId }))
     })
 
     return data.map((item) => ({ ...item, section: 'bestiary' as const }))
@@ -78,7 +79,7 @@ export async function getCharacterTemplates(
       const data = await withPublicRLS((db) =>
         db.characterTemplate.findMany({ orderBy: { name: 'asc' } })
       )
-      return data.map((item) => ({ ...item, section: 'cast' as const }))
+      return data.map((item) => ({ ...item, section: 'cast' as const, isOwner: false }))
     }
 
     if (!clerkId) throw new Error('clerkId required for non-public visibility')
@@ -100,7 +101,8 @@ export async function getCharacterTemplates(
       const where: Prisma.CharacterTemplateWhereInput =
         visibility === 'all' ? { OR: [{ isPublic: true }, privateWhere] } : privateWhere
 
-      return db.characterTemplate.findMany({ where, orderBy: { name: 'asc' } })
+      const items = await db.characterTemplate.findMany({ where, orderBy: { name: 'asc' } })
+      return items.map((item) => ({ ...item, isOwner: item.authorId === userId }))
     })
 
     return data.map((item) => ({ ...item, section: 'cast' as const }))
@@ -121,7 +123,7 @@ export async function getMuseumItems(
       const data = await withPublicRLS((db) =>
         db.itemTemplate.findMany({ orderBy: { name: 'asc' } })
       )
-      return data.map((item) => ({ ...item, section: 'museum' as const }))
+      return data.map((item) => ({ ...item, section: 'museum' as const, isOwner: false }))
     }
 
     if (!clerkId) throw new Error('clerkId required for non-public visibility')
@@ -143,7 +145,8 @@ export async function getMuseumItems(
       const where: Prisma.ItemTemplateWhereInput =
         visibility === 'all' ? { OR: [{ isPublic: true }, privateWhere] } : privateWhere
 
-      return db.itemTemplate.findMany({ where, orderBy: { name: 'asc' } })
+      const items = await db.itemTemplate.findMany({ where, orderBy: { name: 'asc' } })
+      return items.map((item) => ({ ...item, isOwner: item.creatorId === userId }))
     })
 
     return data.map((item) => ({ ...item, section: 'museum' as const }))

@@ -4,18 +4,25 @@ import { useImageUploader } from '@/shared/ui/image-uploader/hooks/useImageUploa
 import { RefreshCcw, Upload } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import Image from 'next/image'
+import type { FieldValues, Path } from 'react-hook-form'
 import { useFormContext, useWatch } from 'react-hook-form'
 import { IMAGE_OVERLAY } from '../../lib/image-overlay'
-import type { MonsterFormFields } from './monster-form-fields'
+import { ImageTipsPanel } from './ImageTipsPanel'
 
-interface MonsterAvatarPanelProps {
+interface AvatarPanelProps {
+  storagePath: 'monsters' | 'characters' | 'items'
   onUpload?: (url: string) => void
 }
 
-export function MonsterAvatarPanel({ onUpload }: MonsterAvatarPanelProps) {
-  const t = useTranslations('Encyclopedia')
-  const { setValue, control } = useFormContext<MonsterFormFields>()
-  const bgImageUrl = useWatch({ control, name: 'imageUrl' }) as string | undefined
+export function AvatarPanel<TFieldValues extends FieldValues & { imageUrl?: string | null }>({
+  storagePath,
+  onUpload,
+}: AvatarPanelProps) {
+  const t = useTranslations('Encyclopedia.creation')
+  const { setValue, control } = useFormContext<TFieldValues>()
+  const bgImageUrl = useWatch({ control, name: 'imageUrl' as Path<TFieldValues> }) as
+    | string
+    | undefined
 
   const {
     fileInputRef,
@@ -26,13 +33,13 @@ export function MonsterAvatarPanel({ onUpload }: MonsterAvatarPanelProps) {
     isUploading,
     isSuccess,
   } = useImageUploader({
-    storagePath: 'monsters',
+    storagePath,
     autoUpload: true,
     onUpload: (url) => {
       if (onUpload) {
         onUpload(url)
       } else {
-        setValue('imageUrl', url || undefined)
+        setValue('imageUrl' as Path<TFieldValues>, (url || undefined) as never)
       }
     },
   })
@@ -51,7 +58,7 @@ export function MonsterAvatarPanel({ onUpload }: MonsterAvatarPanelProps) {
       />
       <div className='absolute inset-0 bg-black/60' />
 
-      {previewSrc && (
+      {previewSrc ? (
         <div
           className='absolute w-full max-w-sm'
           style={{
@@ -74,6 +81,8 @@ export function MonsterAvatarPanel({ onUpload }: MonsterAvatarPanelProps) {
             />
           </div>
         </div>
+      ) : (
+        <ImageTipsPanel />
       )}
 
       <div className='absolute inset-x-0 bottom-0 bg-linear-to-t from-black/90 via-black/60 to-transparent p-4 pt-10'>
@@ -86,7 +95,7 @@ export function MonsterAvatarPanel({ onUpload }: MonsterAvatarPanelProps) {
               className='flex flex-1 items-center justify-center gap-2 rounded-md border border-neutral-700 bg-neutral-900/70 px-3 py-2 text-xs text-neutral-300 transition-colors hover:border-amber-600/50 hover:text-amber-400 disabled:opacity-50 disabled:cursor-not-allowed'
             >
               <Upload className='size-3.5' />
-              {isUploading ? '...' : t('monsterForm.imageAvatar')}
+              {isUploading ? '...' : t('imageAvatar')}
             </button>
           ) : (
             <button
@@ -95,7 +104,7 @@ export function MonsterAvatarPanel({ onUpload }: MonsterAvatarPanelProps) {
               className='flex flex-1 items-center justify-center gap-2 rounded-md border border-neutral-700 bg-neutral-900/70 px-3 py-2 text-xs text-neutral-300 transition-colors hover:border-red-600/50 hover:text-red-400'
             >
               <RefreshCcw className='size-3.5' />
-              Cambiar imagen
+              {t('changeImage')}
             </button>
           )}
         </div>
@@ -104,7 +113,7 @@ export function MonsterAvatarPanel({ onUpload }: MonsterAvatarPanelProps) {
           ref={fileInputRef}
           onChange={handleFileSelect}
           accept='image/*'
-          aria-label={t('monsterForm.imageAvatar')}
+          aria-label={t('imageAvatar')}
           className='hidden'
         />
       </div>

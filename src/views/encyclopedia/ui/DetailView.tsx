@@ -5,15 +5,12 @@ import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import { useState, type ReactNode } from 'react'
 import { useCurrentItems, useSelectedItem } from '../lib/use-encyclopedia-items'
-import {
-  useActiveSection,
-  useSetSelectedItemId,
-  type EncyclopediaSection,
-} from '../model/encyclopediaStore'
+import { useActiveSection, useSetSelectedItemId, type EncyclopediaSection } from '../model/encyclopediaStore'
 import { IMAGE_OVERLAY } from '../lib/image-overlay'
 import { BestiaryItem, CastItem, EncyclopediaItem, MuseumItem } from '../model/encyclopedia-item'
 import { CombatStats } from './CombatStats'
 import { EncyclopediaImage } from './EncyclopediaImage'
+import { ItemActionsOverlay } from './ItemActionsOverlay'
 import { ItemHeader } from './ItemHeader'
 import { ItemProperties } from './ItemProperties'
 
@@ -66,6 +63,8 @@ export const DetailView = () => {
               }}
               className='flex flex-col lg:flex-row lg:h-full'
             >
+              <ItemActionsOverlay item={item} />
+
               <div className='relative h-[50vw] min-h-64 shrink-0 overflow-hidden lg:min-w-[60%] lg:h-full lg:flex-1'>
                 <Image
                   src='/bg_biblioteca.png'

@@ -21,7 +21,7 @@
 - **The Stone Portal:** 3D perspective circular carousel to navigate between campaigns, with keyboard support and immersive animations.
 - **Authentication (Clerk):** Secure sign-in/sign-up with automatic profile sync to the database (_Lazy Sync_).
 - **Adventure Creation:** An animated multi-step _wizard_ that weaves your inputs into campaign lore, powered by Zustand + React Hook Form + Framer Motion.
-- **Encyclopedia Hub:** Three-tab knowledge base (Bestiary, Cast, Museum) with animated detail view and section-based navigation.
+- **Encyclopedia Hub:** Three-tab knowledge base (Bestiary, Cast, Museum) with animated detail view, section-based navigation, and create/edit forms for monsters, characters and items — atomic stats, image uploads, and color-coded rarity for museum pieces.
 - **Public Campaign Access:** Campaign detail pages are publicly viewable without login. Private campaigns return a 404 for unauthorized visitors.
 
 ---
@@ -214,7 +214,7 @@ We maintain a two-layer test suite to ensure the "game table" never breaks:
 
 | Layer                  | Tool                       | Scope                                                                                            | Command            |
 | :--------------------- | :------------------------- | :----------------------------------------------------------------------------------------------- | :----------------- |
-| **Unit & Integration** | Vitest 4 + Testing Library | Pure utils, Zustand store, React components (campaigns, encyclopedia, monster creation) — global mocks centralized in `vitest.setup.tsx` | `npm run test:run` |
+| **Unit & Integration** | Vitest 4 + Testing Library | Pure utils, Zustand store, React components (campaigns, encyclopedia, monster/character/item creation forms) — global mocks centralized in `vitest.setup.tsx` | `npm run test:run` |
 | **End-to-End**         | Playwright (Chromium)      | Full browser flows: Portal carousel, campaign creation wizard, encyclopedia navigation           | `npm run test:e2e` |
 
 ### Running E2E Tests

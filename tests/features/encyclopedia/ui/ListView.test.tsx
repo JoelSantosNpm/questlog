@@ -39,6 +39,7 @@ const makeMonster = (id: string, name: string, description = ''): BestiaryItem =
   createdAt: new Date(),
   updatedAt: new Date(),
   section: 'bestiary',
+  isOwner: false,
 })
 
 const ITEMS = [
@@ -179,10 +180,16 @@ describe('ListView', () => {
       expect(firstItemButton?.className).not.toMatch(/amber/)
     })
 
-    it('no muestra el botón "Nuevo monstruo" en secciones distintas a bestiary', () => {
+    it('muestra el botón "Nuevo personaje" en sección cast', () => {
       act(() => useEncyclopediaStore.setState({ activeSection: 'cast' }))
       render(<ListView items={ITEMS} />)
-      expect(screen.queryByRole('button', { name: 'Nuevo monstruo' })).not.toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Nuevo personaje' })).toBeInTheDocument()
+    })
+
+    it('muestra el botón "Nuevo objeto" en sección museum', () => {
+      act(() => useEncyclopediaStore.setState({ activeSection: 'museum' }))
+      render(<ListView items={ITEMS} />)
+      expect(screen.getByRole('button', { name: 'Nuevo objeto' })).toBeInTheDocument()
     })
   })
 })

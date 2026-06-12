@@ -69,12 +69,26 @@
     "detailView": {
       "descriptionLabel": "Descripción",
       "noDescription": "Sin descripción.",
-      "emptySelection": "Selecciona un elemento para ver sus detalles."
+      "emptySelection": "Selecciona un elemento para ver sus detalles.",
+      "editButton": "Editar",
+      "deleteButton": "Eliminar",
+      "cancelButton": "Cancelar",
+      "confirmDeleteButton": "Confirmar",
+      "toastDeleteSuccessTitle": "Elemento eliminado",
+      "toastDeleteSuccessDesc": "El elemento ha sido eliminado de la enciclopedia",
+      "toastDeleteErrorTitle": "Error",
+      "toastDeleteErrorDesc": "No se pudo eliminar el elemento"
+    },
+    "swipeHint": {
+      "title": "Consejo",
+      "description": "← Desliza para cambiar →"
     },
     "mobileDrawer": {
       "openLabel": "Abrir lista",
       "closeLabel": "Cerrar lista",
-      "newMonsterLabel": "Nuevo monstruo"
+      "newMonsterLabel": "Nuevo monstruo",
+      "newCharacterLabel": "Nuevo personaje",
+      "newItemLabel": "Nuevo objeto"
     },
     "itemHeader": {
       "breadcrumbs": {
@@ -132,14 +146,24 @@
         "artifact": "Artefacto"
       }
     },
+    "creation": {
+      "imageAvatar": "Imagen principal",
+      "imagePortrait": "Retrato / Avatar",
+      "changeImage": "Cambiar imagen"
+    },
+    "imageTips": {
+      "heading": "Consejos para la imagen",
+      "noBackground": "Usa una imagen sin fondo (PNG transparente) para que se integre con la escena.",
+      "proportions": "Proporción recomendada: más alta que ancha (aprox. 3:4), para aprovechar el espacio disponible.",
+      "positioning": "Si quieres que la figura repose sobre el pedestal, deja su base cerca del borde inferior de la imagen. Si prefieres que flote, añade un margen debajo."
+    },
     "monsterForm": {
       "createButton": "Nuevo monstruo",
       "backButton": "Volver",
       "creatingIndicator": "Creando monstruo",
+      "editingIndicator": "Editando monstruo",
       "guestNoticeTitle": "No has iniciado sesión",
       "guestNoticeDesc": "Puedes explorar el formulario, pero necesitarás iniciar sesión para guardar tu creación.",
-      "imageAvatar": "Imagen principal",
-      "imagePortrait": "Retrato / Avatar",
       "namePlaceholder": "Nombre del monstruo",
       "typePlaceholder": "Tipo",
       "racePlaceholder": "Raza",
@@ -159,6 +183,50 @@
       "toastErrorTitle": "Error",
       "toastErrorDesc": "No se pudo crear el monstruo",
       "toastUpdateErrorDesc": "No se pudo actualizar el monstruo"
+    },
+    "characterForm": {
+      "createButton": "Nuevo personaje",
+      "backButton": "Volver",
+      "creatingIndicator": "Creando personaje",
+      "editingIndicator": "Editando personaje",
+      "guestNoticeTitle": "No has iniciado sesión",
+      "guestNoticeDesc": "Puedes explorar el formulario, pero necesitarás iniciar sesión para guardar tu creación.",
+      "namePlaceholder": "Nombre del personaje",
+      "racePlaceholder": "Raza",
+      "classPlaceholder": "Clase",
+      "descriptionPlaceholder": "Descripción…",
+      "publicLabel": "Público",
+      "sectionStats": "Estadísticas",
+      "sectionAttributes": "Atributos",
+      "submitCreate": "Crear personaje",
+      "submitEdit": "Guardar cambios",
+      "toastSuccessTitle": "Personaje creado",
+      "toastSuccessDesc": "El personaje ha sido añadido al elenco",
+      "toastUpdateSuccessTitle": "Personaje actualizado",
+      "toastUpdateSuccessDesc": "Los cambios han sido guardados en el elenco",
+      "toastErrorTitle": "Error",
+      "toastErrorDesc": "No se pudo crear el personaje",
+      "toastUpdateErrorDesc": "No se pudo actualizar el personaje"
+    },
+    "itemForm": {
+      "createButton": "Nuevo objeto",
+      "backButton": "Volver",
+      "creatingIndicator": "Creando objeto",
+      "editingIndicator": "Editando objeto",
+      "guestNoticeTitle": "No has iniciado sesión",
+      "guestNoticeDesc": "Puedes explorar el formulario, pero necesitarás iniciar sesión para guardar tu creación.",
+      "namePlaceholder": "Nombre del objeto",
+      "descriptionPlaceholder": "Descripción…",
+      "publicLabel": "Público",
+      "submitCreate": "Crear objeto",
+      "submitEdit": "Guardar cambios",
+      "toastSuccessTitle": "Objeto creado",
+      "toastSuccessDesc": "El objeto ha sido añadido al museo",
+      "toastUpdateSuccessTitle": "Objeto actualizado",
+      "toastUpdateSuccessDesc": "Los cambios han sido guardados en el museo",
+      "toastErrorTitle": "Error",
+      "toastErrorDesc": "No se pudo crear el objeto",
+      "toastUpdateErrorDesc": "No se pudo actualizar el objeto"
     }
   },
   "Campaigns": {
@@ -274,7 +342,14 @@
     },
     "imageUploader": {
       "selectImage": "Seleccionar Imagen",
-      "dragActive": "Invocar Ilustración"
+      "dragActive": "Invocar Ilustración",
+      "toastSuccessTitle": "Imagen Sellada",
+      "toastSuccessDesc": "La ilustración ha sido guardada en los archivos de la campaña.",
+      "toastErrorTitle": "Fallo al Guardar",
+      "toastErrorGeneric": "No se pudo guardar la imagen. Inténtalo de nuevo.",
+      "validationErrorTitle": "Anomalía en el Archivo",
+      "validationFileTooLarge": "El archivo supera el tamaño máximo de 600kB.",
+      "validationInvalidFileType": "Solo se aceptan archivos .jpg, .jpeg, .png y .webp"
     },
     "auth": {
       "requiredTitle": "Sesión requerida",

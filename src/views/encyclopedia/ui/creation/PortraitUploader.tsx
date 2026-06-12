@@ -3,18 +3,24 @@
 import { useImageUploader } from '@/shared/ui/image-uploader/hooks/useImageUploader'
 import { Camera, RefreshCcw, Upload } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import type { FieldValues, Path } from 'react-hook-form'
 import { useFormContext, useWatch } from 'react-hook-form'
 import { PortraitFrame } from '../PortraitFrame'
-import type { MonsterFormFields } from './monster-form-fields'
 
-interface MonsterPortraitUploaderProps {
+interface PortraitUploaderProps {
+  storagePath: 'monsters' | 'characters'
+  variant: 'monster' | 'cast'
   onUpload?: (url: string) => void
 }
 
-export function MonsterPortraitUploader({ onUpload }: MonsterPortraitUploaderProps) {
-  const t = useTranslations('Encyclopedia')
-  const { setValue, control } = useFormContext<MonsterFormFields>()
-  const portraitUrl = useWatch({ control, name: 'portraitImageUrl' }) as string | undefined
+export function PortraitUploader<
+  TFieldValues extends FieldValues & { portraitImageUrl?: string | null },
+>({ storagePath, variant, onUpload }: PortraitUploaderProps) {
+  const t = useTranslations('Encyclopedia.creation')
+  const { setValue, control } = useFormContext<TFieldValues>()
+  const portraitUrl = useWatch({ control, name: 'portraitImageUrl' as Path<TFieldValues> }) as
+    | string
+    | undefined
 
   const {
     fileInputRef,
@@ -25,13 +31,13 @@ export function MonsterPortraitUploader({ onUpload }: MonsterPortraitUploaderPro
     isUploading,
     isSuccess,
   } = useImageUploader({
-    storagePath: 'monsters',
+    storagePath,
     autoUpload: true,
     onUpload: (url) => {
       if (onUpload) {
         onUpload(url)
       } else {
-        setValue('portraitImageUrl', url || undefined)
+        setValue('portraitImageUrl' as Path<TFieldValues>, (url || undefined) as never)
       }
     },
   })
@@ -40,10 +46,15 @@ export function MonsterPortraitUploader({ onUpload }: MonsterPortraitUploaderPro
 
   return (
     <div className='relative shrink-0'>
-      <button type='button' onClick={isSuccess ? handleReplace : handleClick} disabled={isUploading} className='group block disabled:cursor-not-allowed'>
+      <button
+        type='button'
+        onClick={isSuccess ? handleReplace : handleClick}
+        disabled={isUploading}
+        className='group block disabled:cursor-not-allowed'
+      >
         {previewSrc ? (
           <div className='relative'>
-            <PortraitFrame src={previewSrc} alt='Portrait preview' variant='monster' />
+            <PortraitFrame src={previewSrc} alt='Portrait preview' variant={variant} />
             <div className='absolute inset-0 rounded-full bg-black/0 transition-colors group-hover:bg-black/40 flex items-center justify-center'>
               <Camera className='size-5 text-white opacity-0 transition-opacity group-hover:opacity-100' />
             </div>
@@ -55,7 +66,6 @@ export function MonsterPortraitUploader({ onUpload }: MonsterPortraitUploaderPro
         )}
       </button>
 
-      {/* Badge izquierdo — añadir, cambiar o estado de carga */}
       <button
         type='button'
         onClick={isSuccess ? handleReplace : handleClick}
@@ -80,7 +90,7 @@ export function MonsterPortraitUploader({ onUpload }: MonsterPortraitUploaderPro
         ref={fileInputRef}
         onChange={handleFileSelect}
         accept='image/*'
-        aria-label={t('monsterForm.imagePortrait')}
+        aria-label={t('imagePortrait')}
         className='hidden'
       />
     </div>

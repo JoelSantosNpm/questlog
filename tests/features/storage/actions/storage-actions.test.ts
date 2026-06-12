@@ -41,28 +41,28 @@ describe('Storage Feature - uploadAsset Server Action', () => {
     mockGetPublicUrl.mockReturnValue({ data: { publicUrl: 'https://cdn.example.com/img.png' } })
   })
 
-  it('debe lanzar si el usuario no está autenticado', async () => {
+  it('debe devolver { error: "unauthenticated" } si el usuario no está autenticado', async () => {
     vi.mocked(auth).mockResolvedValue({ userId: null } as Awaited<ReturnType<typeof auth>>)
 
     const fd = makeFormData(new File(['x'], 'img.png', { type: 'image/png' }), 'assets')
 
-    await expect(uploadAsset(fd)).rejects.toThrow('No autenticado')
+    await expect(uploadAsset(fd)).resolves.toEqual({ error: 'unauthenticated' })
   })
 
-  it('debe lanzar si no se envía un File', async () => {
+  it('debe devolver { error: "uploadFailed" } si no se envía un File', async () => {
     const fd = new FormData()
     fd.append('file', 'not-a-file')
     fd.append('storagePath', 'assets')
 
-    await expect(uploadAsset(fd)).rejects.toThrow('Archivo inválido')
+    await expect(uploadAsset(fd)).resolves.toEqual({ error: 'uploadFailed' })
   })
 
-  it('debe lanzar si storagePath está vacío', async () => {
+  it('debe devolver { error: "uploadFailed" } si storagePath está vacío', async () => {
     const fd = new FormData()
     fd.append('file', new File(['x'], 'img.png', { type: 'image/png' }))
     fd.append('storagePath', '')
 
-    await expect(uploadAsset(fd)).rejects.toThrow('storagePath requerido')
+    await expect(uploadAsset(fd)).resolves.toEqual({ error: 'uploadFailed' })
   })
 
   it('debe construir el filePath con {userId}/{storagePath}/...', async () => {
@@ -86,12 +86,12 @@ describe('Storage Feature - uploadAsset Server Action', () => {
     expect(calledPath).toMatch(/mi_imagen_de_prueba___\.png$/)
   })
 
-  it('debe propagar el error de Supabase', async () => {
+  it('debe devolver { error: "uploadFailed" } si Supabase falla al subir', async () => {
     mockUpload.mockResolvedValue({ error: new Error('Bucket not found') })
 
     const fd = makeFormData(new File(['x'], 'img.png', { type: 'image/png' }), 'assets')
 
-    await expect(uploadAsset(fd)).rejects.toThrow('Bucket not found')
+    await expect(uploadAsset(fd)).resolves.toEqual({ error: 'uploadFailed' })
   })
 
   it('debe devolver { publicUrl } en el caso exitoso', async () => {

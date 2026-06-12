@@ -21,6 +21,7 @@ const BASE = {
   version: 1,
   createdAt: new Date(),
   updatedAt: new Date(),
+  isOwner: false,
 }
 
 const MONSTER: BestiaryItem = {
