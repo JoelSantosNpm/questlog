@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl'
 import type { ComponentType } from 'react'
 import { useEffect } from 'react'
-import { sileo } from 'sileo'
+import { sileo, type SileoOptions } from 'sileo'
 import { useCurrentItems } from '../lib/use-encyclopedia-items'
 import type { EncyclopediaSection } from '../model/encyclopedia-item'
 import { useActiveSection, useIsCreatingNew } from '../model/encyclopediaStore'
@@ -27,15 +27,19 @@ export function EncyclopediaContainer() {
   const t = useTranslations('Encyclopedia.swipeHint')
 
   useEffect(() => {
+    // `id` no está en SileoOptions pero sileo lo soporta en runtime (por defecto usa
+    // "sileo-default", compartido con los toasts de éxito/error de los formularios).
     sileo.info({
+      id: 'swipe-hint',
       position: 'top-center',
+      duration: 4000,
       title: t('title'),
       description: t('description'),
       styles: {
         title: 'text-gray-300/90!',
         description: 'text-gray-500/90! center',
       },
-    })
+    } as SileoOptions & { id: string })
   }, [t])
 
   const CreationView = CREATION_VIEWS[activeSection]

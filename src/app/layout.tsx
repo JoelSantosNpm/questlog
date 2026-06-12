@@ -93,7 +93,11 @@ export default async function RootLayout({
 
           {/* Main Content */}
           <main className='flex w-full flex-1 flex-col'>
-            <Toaster theme='light' position='top-center' />
+            <Toaster
+              theme='light'
+              position='top-center'
+              offset={{ top: 'calc(var(--header-h))' }}
+            />
             <QueryProvider>
               <FramerMotionProvider>{children}</FramerMotionProvider>
             </QueryProvider>
@@ -101,7 +105,9 @@ export default async function RootLayout({
 
           {/* Footer */}
           <footer className='border-t border-neutral-800/30 bg-neutral-950/50 h-(--footer-h) flex flex-col items-center justify-center text-center text-xs text-neutral-500'>
-            <p suppressHydrationWarning>{t('footer.copyright', { year: new Date().getFullYear() })}</p>
+            <p suppressHydrationWarning>
+              {t('footer.copyright', { year: new Date().getFullYear() })}
+            </p>
             <p className='mt-1 font-medieval text-neutral-600'>{t('footer.tagline')}</p>
           </footer>
         </AuthProvider>
