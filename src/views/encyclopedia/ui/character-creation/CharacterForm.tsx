@@ -151,13 +151,10 @@ export function CharacterForm({
     }
   }
 
-  // eslint-disable-next-line react-hooks/refs -- handleSubmit (RHF) nunca invoca onSubmit durante el render; solo lo registra como event handler
-  const formSubmitHandler = handleSubmit(onSubmit)
-
   return (
     <FormProvider {...methods}>
       <form
-        onSubmit={formSubmitHandler}
+        onSubmit={(event) => void handleSubmit(onSubmit)(event)}
         className='flex h-full flex-col overflow-y-auto scrollbar-encyclopedia lg:flex-row lg:overflow-visible'
       >
         <AvatarPanel<CharacterFormFields> storagePath='characters' onUpload={handleAvatarUpload} />
