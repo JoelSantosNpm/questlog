@@ -71,6 +71,10 @@
       "noDescription": "Sin descripción.",
       "emptySelection": "Selecciona un elemento para ver sus detalles."
     },
+    "swipeHint": {
+      "title": "Consejo",
+      "description": "← Desliza para cambiar →"
+    },
     "mobileDrawer": {
       "openLabel": "Abrir lista",
       "closeLabel": "Cerrar lista",

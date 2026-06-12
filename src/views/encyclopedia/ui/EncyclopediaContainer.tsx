@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import type { ComponentType } from 'react'
+import { useEffect } from 'react'
 import { sileo } from 'sileo'
 import { useCurrentItems } from '../lib/use-encyclopedia-items'
 import type { EncyclopediaSection } from '../model/encyclopedia-item'
@@ -23,18 +24,19 @@ export function EncyclopediaContainer() {
   const currentItems = useCurrentItems()
   const isCreatingNew = useIsCreatingNew()
   const activeSection = useActiveSection()
+  const t = useTranslations('Encyclopedia.swipeHint')
 
   useEffect(() => {
     sileo.info({
       position: 'top-center',
-      title: 'Consejo',
-      description: '← Desliza para ver el siguiente o anterior →',
+      title: t('title'),
+      description: t('description'),
       styles: {
         title: 'text-gray-300/90!',
         description: 'text-gray-500/90! center',
       },
     })
-  }, [])
+  }, [t])
 
   const CreationView = CREATION_VIEWS[activeSection]
 

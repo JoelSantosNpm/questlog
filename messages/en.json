@@ -71,6 +71,10 @@
       "noDescription": "No description.",
       "emptySelection": "Select an item to view its details."
     },
+    "swipeHint": {
+      "title": "Tip",
+      "description": "← Swipe to switch →"
+    },
     "mobileDrawer": {
       "openLabel": "Open list",
       "closeLabel": "Close list",
