@@ -74,7 +74,9 @@
     "mobileDrawer": {
       "openLabel": "Open list",
       "closeLabel": "Close list",
-      "newMonsterLabel": "New monster"
+      "newMonsterLabel": "New monster",
+      "newCharacterLabel": "New character",
+      "newItemLabel": "New item"
     },
     "itemHeader": {
       "breadcrumbs": {
@@ -132,14 +134,23 @@
         "artifact": "Artifact"
       }
     },
+    "creation": {
+      "imageAvatar": "Main image",
+      "imagePortrait": "Portrait / Avatar",
+      "changeImage": "Change image"
+    },
+    "imageTips": {
+      "heading": "Image tips",
+      "noBackground": "Use an image without a background (transparent PNG) so it blends with the scene.",
+      "proportions": "Recommended proportions: taller than wide (about 3:4), to make the most of the available space.",
+      "positioning": "If you want the figure to rest on the pedestal, keep its base close to the bottom edge of the image. If you'd rather have it float, leave a margin below."
+    },
     "monsterForm": {
       "createButton": "New monster",
       "backButton": "Back",
       "creatingIndicator": "Creating monster",
       "guestNoticeTitle": "You're not signed in",
       "guestNoticeDesc": "You can explore the form, but you'll need to sign in to save your creation.",
-      "imageAvatar": "Main image",
-      "imagePortrait": "Portrait / Avatar",
       "namePlaceholder": "Monster name",
       "typePlaceholder": "Type",
       "racePlaceholder": "Race",
@@ -159,6 +170,48 @@
       "toastErrorTitle": "Error",
       "toastErrorDesc": "Could not create the monster",
       "toastUpdateErrorDesc": "Could not update the monster"
+    },
+    "characterForm": {
+      "createButton": "New character",
+      "backButton": "Back",
+      "creatingIndicator": "Creating character",
+      "guestNoticeTitle": "You're not signed in",
+      "guestNoticeDesc": "You can explore the form, but you'll need to sign in to save your creation.",
+      "namePlaceholder": "Character name",
+      "racePlaceholder": "Race",
+      "classPlaceholder": "Class",
+      "descriptionPlaceholder": "Description…",
+      "publicLabel": "Public",
+      "sectionStats": "Stats",
+      "sectionAttributes": "Attributes",
+      "submitCreate": "Create character",
+      "submitEdit": "Save changes",
+      "toastSuccessTitle": "Character created",
+      "toastSuccessDesc": "The character has been added to the cast",
+      "toastUpdateSuccessTitle": "Character updated",
+      "toastUpdateSuccessDesc": "The changes have been saved to the cast",
+      "toastErrorTitle": "Error",
+      "toastErrorDesc": "Could not create the character",
+      "toastUpdateErrorDesc": "Could not update the character"
+    },
+    "itemForm": {
+      "createButton": "New item",
+      "backButton": "Back",
+      "creatingIndicator": "Creating item",
+      "guestNoticeTitle": "You're not signed in",
+      "guestNoticeDesc": "You can explore the form, but you'll need to sign in to save your creation.",
+      "namePlaceholder": "Item name",
+      "descriptionPlaceholder": "Description…",
+      "publicLabel": "Public",
+      "submitCreate": "Create item",
+      "submitEdit": "Save changes",
+      "toastSuccessTitle": "Item created",
+      "toastSuccessDesc": "The item has been added to the museum",
+      "toastUpdateSuccessTitle": "Item updated",
+      "toastUpdateSuccessDesc": "The changes have been saved to the museum",
+      "toastErrorTitle": "Error",
+      "toastErrorDesc": "Could not create the item",
+      "toastUpdateErrorDesc": "Could not update the item"
     }
   },
   "Campaigns": {

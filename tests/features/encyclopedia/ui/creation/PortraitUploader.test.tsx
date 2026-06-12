@@ -2,7 +2,7 @@ import {
   DEFAULT_MONSTER_FORM_VALUES,
   type MonsterFormFields,
 } from '@/views/encyclopedia/ui/monster-creation/monster-form-fields'
-import { MonsterPortraitUploader } from '@/views/encyclopedia/ui/monster-creation/MonsterPortraitUploader'
+import { PortraitUploader } from '@/views/encyclopedia/ui/creation/PortraitUploader'
 import { fireEvent, render, screen } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
@@ -59,12 +59,12 @@ beforeEach(() => {
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
-describe('MonsterPortraitUploader', () => {
+describe('PortraitUploader', () => {
   describe('Sin imagen ni preview', () => {
     it('muestra el círculo placeholder (sin imagen)', () => {
       const { container } = render(
         <FormWrapper>
-          <MonsterPortraitUploader />
+          <PortraitUploader<MonsterFormFields> storagePath='monsters' variant='monster' />
         </FormWrapper>
       )
       // No hay <img> de portrait — sólo el input[type=file] oculto
@@ -75,7 +75,7 @@ describe('MonsterPortraitUploader', () => {
     it('no muestra el badge de confirmación de subida', () => {
       render(
         <FormWrapper>
-          <MonsterPortraitUploader />
+          <PortraitUploader<MonsterFormFields> storagePath='monsters' variant='monster' />
         </FormWrapper>
       )
       // El badge de upload sólo aparece cuando hay preview && !isSuccess
@@ -98,7 +98,7 @@ describe('MonsterPortraitUploader', () => {
     it('muestra el portrait frame con la preview', () => {
       render(
         <FormWrapper>
-          <MonsterPortraitUploader />
+          <PortraitUploader<MonsterFormFields> storagePath='monsters' variant='monster' />
         </FormWrapper>
       )
       expect(screen.getByAltText('Portrait preview')).toBeInTheDocument()
@@ -107,7 +107,7 @@ describe('MonsterPortraitUploader', () => {
     it('siempre hay exactamente dos botones (auto-upload, sin badge manual)', () => {
       render(
         <FormWrapper>
-          <MonsterPortraitUploader />
+          <PortraitUploader<MonsterFormFields> storagePath='monsters' variant='monster' />
         </FormWrapper>
       )
       expect(screen.getAllByRole('button')).toHaveLength(2)
@@ -120,7 +120,7 @@ describe('MonsterPortraitUploader', () => {
       })
       render(
         <FormWrapper>
-          <MonsterPortraitUploader />
+          <PortraitUploader<MonsterFormFields> storagePath='monsters' variant='monster' />
         </FormWrapper>
       )
       const buttons = screen.getAllByRole('button')
@@ -132,7 +132,7 @@ describe('MonsterPortraitUploader', () => {
     it('muestra el portrait frame con la URL guardada', () => {
       render(
         <FormWrapper portraitImageUrl="https://example.com/portrait.jpg">
-          <MonsterPortraitUploader />
+          <PortraitUploader<MonsterFormFields> storagePath='monsters' variant='monster' />
         </FormWrapper>
       )
       expect(screen.getByAltText('Portrait preview')).toBeInTheDocument()
@@ -141,7 +141,7 @@ describe('MonsterPortraitUploader', () => {
     it('no muestra badge de confirmación si no hay preview local pendiente', () => {
       render(
         <FormWrapper portraitImageUrl="https://example.com/portrait.jpg">
-          <MonsterPortraitUploader />
+          <PortraitUploader<MonsterFormFields> storagePath='monsters' variant='monster' />
         </FormWrapper>
       )
       const buttons = screen.getAllByRole('button')
@@ -155,7 +155,7 @@ describe('MonsterPortraitUploader', () => {
       mockUseImageUploader.mockReturnValue({ ...defaultUploaderState, handleClick })
       render(
         <FormWrapper>
-          <MonsterPortraitUploader />
+          <PortraitUploader<MonsterFormFields> storagePath='monsters' variant='monster' />
         </FormWrapper>
       )
       const buttons = screen.getAllByRole('button')
@@ -163,14 +163,14 @@ describe('MonsterPortraitUploader', () => {
       expect(handleClick).toHaveBeenCalled()
     })
 
-    it('configura useImageUploader con autoUpload: true', () => {
+    it('configura useImageUploader con autoUpload: true y el storagePath recibido', () => {
       render(
         <FormWrapper>
-          <MonsterPortraitUploader />
+          <PortraitUploader<MonsterFormFields> storagePath='monsters' variant='monster' />
         </FormWrapper>
       )
       expect(mockUseImageUploader).toHaveBeenCalledWith(
-        expect.objectContaining({ autoUpload: true })
+        expect.objectContaining({ autoUpload: true, storagePath: 'monsters' })
       )
     })
   })
@@ -195,7 +195,7 @@ describe('MonsterPortraitUploader', () => {
       })
       render(
         <FormWrapper>
-          <MonsterPortraitUploader />
+          <PortraitUploader<MonsterFormFields> storagePath='monsters' variant='monster' />
         </FormWrapper>
       )
       fireEvent.click(screen.getAllByRole('button')[0])
@@ -214,7 +214,7 @@ describe('MonsterPortraitUploader', () => {
       })
       render(
         <FormWrapper>
-          <MonsterPortraitUploader />
+          <PortraitUploader<MonsterFormFields> storagePath='monsters' variant='monster' />
         </FormWrapper>
       )
       fireEvent.click(screen.getAllByRole('button')[1])

@@ -74,7 +74,9 @@
     "mobileDrawer": {
       "openLabel": "Abrir lista",
       "closeLabel": "Cerrar lista",
-      "newMonsterLabel": "Nuevo monstruo"
+      "newMonsterLabel": "Nuevo monstruo",
+      "newCharacterLabel": "Nuevo personaje",
+      "newItemLabel": "Nuevo objeto"
     },
     "itemHeader": {
       "breadcrumbs": {
@@ -132,14 +134,23 @@
         "artifact": "Artefacto"
       }
     },
+    "creation": {
+      "imageAvatar": "Imagen principal",
+      "imagePortrait": "Retrato / Avatar",
+      "changeImage": "Cambiar imagen"
+    },
+    "imageTips": {
+      "heading": "Consejos para la imagen",
+      "noBackground": "Usa una imagen sin fondo (PNG transparente) para que se integre con la escena.",
+      "proportions": "Proporción recomendada: más alta que ancha (aprox. 3:4), para aprovechar el espacio disponible.",
+      "positioning": "Si quieres que la figura repose sobre el pedestal, deja su base cerca del borde inferior de la imagen. Si prefieres que flote, añade un margen debajo."
+    },
     "monsterForm": {
       "createButton": "Nuevo monstruo",
       "backButton": "Volver",
       "creatingIndicator": "Creando monstruo",
       "guestNoticeTitle": "No has iniciado sesión",
       "guestNoticeDesc": "Puedes explorar el formulario, pero necesitarás iniciar sesión para guardar tu creación.",
-      "imageAvatar": "Imagen principal",
-      "imagePortrait": "Retrato / Avatar",
       "namePlaceholder": "Nombre del monstruo",
       "typePlaceholder": "Tipo",
       "racePlaceholder": "Raza",
@@ -159,6 +170,48 @@
       "toastErrorTitle": "Error",
       "toastErrorDesc": "No se pudo crear el monstruo",
       "toastUpdateErrorDesc": "No se pudo actualizar el monstruo"
+    },
+    "characterForm": {
+      "createButton": "Nuevo personaje",
+      "backButton": "Volver",
+      "creatingIndicator": "Creando personaje",
+      "guestNoticeTitle": "No has iniciado sesión",
+      "guestNoticeDesc": "Puedes explorar el formulario, pero necesitarás iniciar sesión para guardar tu creación.",
+      "namePlaceholder": "Nombre del personaje",
+      "racePlaceholder": "Raza",
+      "classPlaceholder": "Clase",
+      "descriptionPlaceholder": "Descripción…",
+      "publicLabel": "Público",
+      "sectionStats": "Estadísticas",
+      "sectionAttributes": "Atributos",
+      "submitCreate": "Crear personaje",
+      "submitEdit": "Guardar cambios",
+      "toastSuccessTitle": "Personaje creado",
+      "toastSuccessDesc": "El personaje ha sido añadido al elenco",
+      "toastUpdateSuccessTitle": "Personaje actualizado",
+      "toastUpdateSuccessDesc": "Los cambios han sido guardados en el elenco",
+      "toastErrorTitle": "Error",
+      "toastErrorDesc": "No se pudo crear el personaje",
+      "toastUpdateErrorDesc": "No se pudo actualizar el personaje"
+    },
+    "itemForm": {
+      "createButton": "Nuevo objeto",
+      "backButton": "Volver",
+      "creatingIndicator": "Creando objeto",
+      "guestNoticeTitle": "No has iniciado sesión",
+      "guestNoticeDesc": "Puedes explorar el formulario, pero necesitarás iniciar sesión para guardar tu creación.",
+      "namePlaceholder": "Nombre del objeto",
+      "descriptionPlaceholder": "Descripción…",
+      "publicLabel": "Público",
+      "submitCreate": "Crear objeto",
+      "submitEdit": "Guardar cambios",
+      "toastSuccessTitle": "Objeto creado",
+      "toastSuccessDesc": "El objeto ha sido añadido al museo",
+      "toastUpdateSuccessTitle": "Objeto actualizado",
+      "toastUpdateSuccessDesc": "Los cambios han sido guardados en el museo",
+      "toastErrorTitle": "Error",
+      "toastErrorDesc": "No se pudo crear el objeto",
+      "toastUpdateErrorDesc": "No se pudo actualizar el objeto"
     }
   },
   "Campaigns": {

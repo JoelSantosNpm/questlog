@@ -1,7 +1,7 @@
 import { useAuth } from '@clerk/nextjs'
 import { useEncyclopediaStore } from '@/views/encyclopedia/model/encyclopediaStore'
-import { MonsterForm } from '@/views/encyclopedia/ui/monster-creation/MonsterForm'
-import type { MonsterTemplate } from '@prisma/client'
+import { ItemForm } from '@/views/encyclopedia/ui/item-creation/ItemForm'
+import type { ItemTemplate } from '@prisma/client'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { act } from 'react'
 import { sileo } from 'sileo'
@@ -22,16 +22,12 @@ vi.mock('@/shared/lib/useNotifyAuthRequired', () => ({
 }))
 
 vi.mock('@/views/encyclopedia/api/encyclopedia-mutations', () => ({
-  useCreateMonster: () => ({ mutateAsync: mockMutateAsync }),
-  useUpdateMonster: () => ({ mutateAsync: mockUpdateAsync }),
+  useCreateItemTemplate: () => ({ mutateAsync: mockMutateAsync }),
+  useUpdateItemTemplate: () => ({ mutateAsync: mockUpdateAsync }),
 }))
 
 vi.mock('@/views/encyclopedia/ui/creation/AvatarPanel', () => ({
-  AvatarPanel: () => <div data-testid="monster-avatar-panel" />,
-}))
-
-vi.mock('@/views/encyclopedia/ui/creation/PortraitUploader', () => ({
-  PortraitUploader: () => <div data-testid="monster-portrait-uploader" />,
+  AvatarPanel: () => <div data-testid="avatar-panel" />,
 }))
 
 vi.mock('@/views/encyclopedia/ui/creation/StatBoxWithControls', () => ({
@@ -58,32 +54,27 @@ vi.mock('@/shared/ui', () => ({
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
-const makeMonsterTemplate = (overrides: Partial<MonsterTemplate> = {}): MonsterTemplate => ({
+const makeItemTemplate = (overrides: Partial<ItemTemplate> = {}): ItemTemplate => ({
   id: 'tpl-1',
-  name: 'Lobo Sombrío',
-  description: 'Un lobo que acecha en la oscuridad',
-  type: 'Bestia',
-  race: 'Bestia',
-  characterClass: 'Desconocido',
+  name: 'Espada Larga +1',
+  description: 'Una espada élfica encantada',
   imageUrl: null,
-  portraitImageUrl: null,
-  challenge: 2,
-  maxHp: 20,
-  strength: 14,
-  dexterity: 12,
-  constitution: 10,
-  intelligence: 3,
-  wisdom: 10,
-  charisma: 6,
-  ac: 12,
-  speed: 40,
-  initiativeBonus: 1,
-  perception: 11,
-  abilities: null,
-  authorId: 'user-1',
+  category: 'Arma',
+  weight: 1.5,
+  value: 100,
+  rarity: 'UNCOMMON',
   isPublic: false,
-  price: 0,
-  version: 1,
+  strength: 1,
+  dexterity: 0,
+  constitution: 0,
+  intelligence: 0,
+  wisdom: 0,
+  charisma: 0,
+  ac: 0,
+  speed: 0,
+  initiativeBonus: 0,
+  perception: 0,
+  creatorId: 'user-1',
   createdAt: new Date('2024-01-01'),
   updatedAt: new Date('2024-01-01'),
   ...overrides,
@@ -105,58 +96,92 @@ beforeEach(() => {
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function fillRequiredFields() {
-  fireEvent.change(screen.getByPlaceholderText('Nombre del monstruo'), {
-    target: { value: 'Wyvern' },
-  })
-  fireEvent.change(screen.getByPlaceholderText('Tipo'), {
-    target: { value: 'Bestia' },
+  fireEvent.change(screen.getByPlaceholderText('Nombre del objeto'), {
+    target: { value: 'Daga Sombría' },
   })
 }
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
-describe('MonsterForm', () => {
+describe('ItemForm', () => {
   // ─── Renderizado ─────────────────────────────────────────────────────────────
 
   describe('Renderizado en modo "create"', () => {
     it('muestra el input de nombre con su placeholder', () => {
-      render(<MonsterForm />)
-      expect(screen.getByPlaceholderText('Nombre del monstruo')).toBeInTheDocument()
+      render(<ItemForm />)
+      expect(screen.getByPlaceholderText('Nombre del objeto')).toBeInTheDocument()
     })
 
-    it('muestra el botón de envío con texto "Crear monstruo"', () => {
-      render(<MonsterForm />)
-      expect(screen.getByRole('button', { name: 'Crear monstruo' })).toBeInTheDocument()
+    it('muestra el botón de envío con texto "Crear objeto"', () => {
+      render(<ItemForm />)
+      expect(screen.getByRole('button', { name: 'Crear objeto' })).toBeInTheDocument()
     })
 
-    it('renderiza los paneles de imágenes', () => {
-      render(<MonsterForm />)
-      expect(screen.getByTestId('monster-avatar-panel')).toBeInTheDocument()
-      expect(screen.getByTestId('monster-portrait-uploader')).toBeInTheDocument()
+    it('renderiza el panel de imagen (sin retrato)', () => {
+      render(<ItemForm />)
+      expect(screen.getByTestId('avatar-panel')).toBeInTheDocument()
+      expect(screen.queryByTestId('portrait-uploader')).not.toBeInTheDocument()
     })
 
-    it('renderiza las stat boxes de estadísticas principales', () => {
-      render(<MonsterForm />)
+    it('renderiza las stat boxes de modificadores', () => {
+      render(<ItemForm />)
       expect(screen.getByTestId('stat-ac')).toBeInTheDocument()
       expect(screen.getByTestId('stat-speed')).toBeInTheDocument()
-      expect(screen.getByTestId('stat-maxHp')).toBeInTheDocument()
+      expect(screen.getByTestId('stat-strength')).toBeInTheDocument()
     })
 
     it('renderiza el toggle de visibilidad pública', () => {
-      render(<MonsterForm />)
+      render(<ItemForm />)
       expect(screen.getByRole('button', { name: 'Público' })).toBeInTheDocument()
+    })
+
+    it('muestra los encabezados de Propiedades y Modificadores', () => {
+      render(<ItemForm />)
+      expect(screen.getByText('Propiedades')).toBeInTheDocument()
+      expect(screen.getByText('Modificadores')).toBeInTheDocument()
+    })
+  })
+
+  describe('Campos de Propiedades', () => {
+    it('muestra el campo de categoría con su valor por defecto', () => {
+      render(<ItemForm />)
+      expect(screen.getByDisplayValue('General')).toBeInTheDocument()
+    })
+
+    it('muestra el selector de rareza con todas las opciones', () => {
+      render(<ItemForm />)
+      const select = screen.getByRole('combobox')
+      const options = Array.from(select.querySelectorAll('option')).map((o) => o.textContent)
+      expect(options).toEqual(['Basura', 'Común', 'Infrecuente', 'Rara', 'Épica', 'Legendaria', 'Artefacto'])
+    })
+
+    it('la rareza por defecto es COMMON', () => {
+      render(<ItemForm />)
+      expect(screen.getByRole('combobox')).toHaveValue('COMMON')
+    })
+
+    it('muestra los campos numéricos de valor y peso con sus valores por defecto', () => {
+      render(<ItemForm />)
+      const spinbuttons = screen.getAllByRole('spinbutton')
+      expect(spinbuttons[0]).toHaveValue(0) // value
+      expect(spinbuttons[1]).toHaveValue(0) // weight
     })
   })
 
   describe('Renderizado en modo "edit"', () => {
     it('muestra el botón de envío con texto "Guardar cambios"', () => {
-      render(<MonsterForm mode="edit" initialData={makeMonsterTemplate()} />)
+      render(<ItemForm mode="edit" initialData={makeItemTemplate()} />)
       expect(screen.getByRole('button', { name: 'Guardar cambios' })).toBeInTheDocument()
     })
 
     it('rellena el input de nombre con initialData', () => {
-      render(<MonsterForm initialData={makeMonsterTemplate({ name: 'Dragón Rojo' })} />)
-      expect(screen.getByDisplayValue('Dragón Rojo')).toBeInTheDocument()
+      render(<ItemForm initialData={makeItemTemplate({ name: 'Escudo de Roble' })} />)
+      expect(screen.getByDisplayValue('Escudo de Roble')).toBeInTheDocument()
+    })
+
+    it('rellena la rareza con el valor de initialData', () => {
+      render(<ItemForm initialData={makeItemTemplate({ rarity: 'RARE' })} />)
+      expect(screen.getByRole('combobox')).toHaveValue('RARE')
     })
   })
 
@@ -164,7 +189,7 @@ describe('MonsterForm', () => {
 
   describe('Toggle de visibilidad pública', () => {
     it('comienza con aria-pressed false (isPublic: false por defecto)', () => {
-      render(<MonsterForm />)
+      render(<ItemForm />)
       expect(screen.getByRole('button', { name: 'Público' })).toHaveAttribute(
         'aria-pressed',
         'false'
@@ -172,7 +197,7 @@ describe('MonsterForm', () => {
     })
 
     it('cambia aria-pressed a true al hacer click', async () => {
-      render(<MonsterForm />)
+      render(<ItemForm />)
       fireEvent.click(screen.getByRole('button', { name: 'Público' }))
       await waitFor(() => {
         expect(screen.getByRole('button', { name: 'Público' })).toHaveAttribute(
@@ -188,7 +213,7 @@ describe('MonsterForm', () => {
   describe('Submit sin autenticación (userId null)', () => {
     it('llama a notifyAuthRequired y no llama a mutateAsync', async () => {
       vi.mocked(useAuth).mockReturnValue({ userId: null } as never)
-      const { container } = render(<MonsterForm />)
+      const { container } = render(<ItemForm />)
 
       fillRequiredFields()
       fireEvent.submit(container.querySelector('form')!)
@@ -201,7 +226,7 @@ describe('MonsterForm', () => {
 
     it('no modifica el estado del store al bloquearse por auth', async () => {
       vi.mocked(useAuth).mockReturnValue({ userId: null } as never)
-      const { container } = render(<MonsterForm />)
+      const { container } = render(<ItemForm />)
 
       fillRequiredFields()
       fireEvent.submit(container.querySelector('form')!)
@@ -218,11 +243,11 @@ describe('MonsterForm', () => {
   describe('Submit autenticado — mutación exitosa', () => {
     beforeEach(() => {
       vi.mocked(useAuth).mockReturnValue({ userId: 'user_123' } as never)
-      mockMutateAsync.mockResolvedValue({ success: true, data: { id: 'monster-42' } })
+      mockMutateAsync.mockResolvedValue({ success: true, data: { id: 'item-42' } })
     })
 
     it('llama a mutateAsync con los datos del formulario', async () => {
-      const { container } = render(<MonsterForm />)
+      const { container } = render(<ItemForm />)
 
       fillRequiredFields()
       fireEvent.submit(container.querySelector('form')!)
@@ -230,23 +255,23 @@ describe('MonsterForm', () => {
       await waitFor(() => expect(mockMutateAsync).toHaveBeenCalledOnce())
 
       const callArg = mockMutateAsync.mock.calls[0][0]
-      expect(callArg.name).toBe('Wyvern')
-      expect(callArg.type).toBe('Bestia')
+      expect(callArg.name).toBe('Daga Sombría')
+      expect(callArg.rarity).toBe('COMMON')
     })
 
-    it('actualiza el store con el id del monstruo creado', async () => {
-      const { container } = render(<MonsterForm />)
+    it('actualiza el store con el id del objeto creado', async () => {
+      const { container } = render(<ItemForm />)
 
       fillRequiredFields()
       fireEvent.submit(container.querySelector('form')!)
 
       await waitFor(() => {
-        expect(useEncyclopediaStore.getState().selectedItemId).toBe('monster-42')
+        expect(useEncyclopediaStore.getState().selectedItemId).toBe('item-42')
       })
     })
 
     it('cierra el modo de creación en el store', async () => {
-      const { container } = render(<MonsterForm />)
+      const { container } = render(<ItemForm />)
 
       fillRequiredFields()
       fireEvent.submit(container.querySelector('form')!)
@@ -257,22 +282,22 @@ describe('MonsterForm', () => {
     })
 
     it('muestra el toast de éxito', async () => {
-      const { container } = render(<MonsterForm />)
+      const { container } = render(<ItemForm />)
 
       fillRequiredFields()
       fireEvent.submit(container.querySelector('form')!)
 
       await waitFor(() => {
         expect(sileo.success).toHaveBeenCalledWith({
-          title: 'Monstruo creado',
-          description: 'El monstruo ha sido añadido al bestiario',
+          title: 'Objeto creado',
+          description: 'El objeto ha sido añadido al museo',
         })
       })
     })
 
     it('invoca el callback onSuccess', async () => {
       const mockOnSuccess = vi.fn()
-      const { container } = render(<MonsterForm onSuccess={mockOnSuccess} />)
+      const { container } = render(<ItemForm onSuccess={mockOnSuccess} />)
 
       fillRequiredFields()
       fireEvent.submit(container.querySelector('form')!)
@@ -290,7 +315,7 @@ describe('MonsterForm', () => {
 
     it('muestra toast de error cuando result.success es false', async () => {
       mockMutateAsync.mockResolvedValueOnce({ success: false, error: 'DB error' })
-      const { container } = render(<MonsterForm />)
+      const { container } = render(<ItemForm />)
 
       fillRequiredFields()
       fireEvent.submit(container.querySelector('form')!)
@@ -298,14 +323,14 @@ describe('MonsterForm', () => {
       await waitFor(() => {
         expect(sileo.error).toHaveBeenCalledWith({
           title: 'Error',
-          description: 'No se pudo crear el monstruo',
+          description: 'No se pudo crear el objeto',
         })
       })
     })
 
     it('no modifica el store si la mutación falla', async () => {
       mockMutateAsync.mockResolvedValueOnce({ success: false, error: 'DB error' })
-      const { container } = render(<MonsterForm />)
+      const { container } = render(<ItemForm />)
 
       fillRequiredFields()
       fireEvent.submit(container.querySelector('form')!)
@@ -323,7 +348,7 @@ describe('MonsterForm', () => {
     it('muestra toast de error cuando mutateAsync lanza', async () => {
       vi.mocked(useAuth).mockReturnValue({ userId: 'user_123' } as never)
       mockMutateAsync.mockRejectedValueOnce(new Error('Network error'))
-      const { container } = render(<MonsterForm />)
+      const { container } = render(<ItemForm />)
 
       fillRequiredFields()
       fireEvent.submit(container.querySelector('form')!)
@@ -331,7 +356,7 @@ describe('MonsterForm', () => {
       await waitFor(() => {
         expect(sileo.error).toHaveBeenCalledWith({
           title: 'Error',
-          description: 'No se pudo crear el monstruo',
+          description: 'No se pudo crear el objeto',
         })
       })
     })
@@ -345,13 +370,13 @@ describe('MonsterForm', () => {
       mockUpdateAsync.mockResolvedValue({ success: true, data: { id: 'tpl-1' } })
     })
 
-    it('llama a updateMonster con el id y los datos del formulario', async () => {
+    it('llama a updateItemTemplate con el id y los datos del formulario', async () => {
       const { container } = render(
-        <MonsterForm mode="edit" initialData={makeMonsterTemplate({ id: 'tpl-1' })} />
+        <ItemForm mode="edit" initialData={makeItemTemplate({ id: 'tpl-1' })} />
       )
 
-      fireEvent.change(screen.getByPlaceholderText('Nombre del monstruo'), {
-        target: { value: 'Wyvern Editado' },
+      fireEvent.change(screen.getByPlaceholderText('Nombre del objeto'), {
+        target: { value: 'Espada Editada' },
       })
       fireEvent.submit(container.querySelector('form')!)
 
@@ -359,13 +384,11 @@ describe('MonsterForm', () => {
 
       const [id, data] = mockUpdateAsync.mock.calls[0][0] as [string, unknown]
       expect(id).toBe('tpl-1')
-      expect((data as { name: string }).name).toBe('Wyvern Editado')
+      expect((data as { name: string }).name).toBe('Espada Editada')
     })
 
-    it('no llama a createMonster en modo edit', async () => {
-      const { container } = render(
-        <MonsterForm mode="edit" initialData={makeMonsterTemplate()} />
-      )
+    it('no llama a createItemTemplate en modo edit', async () => {
+      const { container } = render(<ItemForm mode="edit" initialData={makeItemTemplate()} />)
 
       fillRequiredFields()
       fireEvent.submit(container.querySelector('form')!)
@@ -375,24 +398,22 @@ describe('MonsterForm', () => {
     })
 
     it('muestra el toast de éxito de actualización', async () => {
-      const { container } = render(
-        <MonsterForm mode="edit" initialData={makeMonsterTemplate()} />
-      )
+      const { container } = render(<ItemForm mode="edit" initialData={makeItemTemplate()} />)
 
       fillRequiredFields()
       fireEvent.submit(container.querySelector('form')!)
 
       await waitFor(() => {
         expect(sileo.success).toHaveBeenCalledWith({
-          title: 'Monstruo actualizado',
-          description: 'Los cambios han sido guardados en el bestiario',
+          title: 'Objeto actualizado',
+          description: 'Los cambios han sido guardados en el museo',
         })
       })
     })
 
-    it('actualiza el store con el id del monstruo editado', async () => {
+    it('actualiza el store con el id del objeto editado', async () => {
       const { container } = render(
-        <MonsterForm mode="edit" initialData={makeMonsterTemplate({ id: 'tpl-1' })} />
+        <ItemForm mode="edit" initialData={makeItemTemplate({ id: 'tpl-1' })} />
       )
 
       fillRequiredFields()
@@ -409,9 +430,7 @@ describe('MonsterForm', () => {
       vi.mocked(useAuth).mockReturnValue({ userId: 'user_123' } as never)
       mockUpdateAsync.mockResolvedValueOnce({ success: false, error: 'DB error' })
 
-      const { container } = render(
-        <MonsterForm mode="edit" initialData={makeMonsterTemplate()} />
-      )
+      const { container } = render(<ItemForm mode="edit" initialData={makeItemTemplate()} />)
 
       fillRequiredFields()
       fireEvent.submit(container.querySelector('form')!)
@@ -419,7 +438,7 @@ describe('MonsterForm', () => {
       await waitFor(() => {
         expect(sileo.error).toHaveBeenCalledWith({
           title: 'Error',
-          description: 'No se pudo actualizar el monstruo',
+          description: 'No se pudo actualizar el objeto',
         })
       })
     })

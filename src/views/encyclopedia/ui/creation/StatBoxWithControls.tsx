@@ -1,8 +1,8 @@
 'use client'
 
+import type { FieldValues, Path } from 'react-hook-form'
 import { useFormContext } from 'react-hook-form'
 import { EditableStatBox } from './EditableStatBox'
-import type { MonsterFormFields } from './monster-form-fields'
 
 const BUTTON_BASE =
   'flex items-center justify-center rounded-md border border-amber-800/30 bg-amber-950/20 font-bold text-amber-500/70 hover:bg-amber-900/30 hover:text-amber-400 active:bg-amber-800/30 transition-colors leading-none select-none cursor-pointer'
@@ -12,7 +12,7 @@ const BUTTON_SIZE: Record<'sm' | 'md', string> = {
   sm: 'h-[20px] w-[23px] text-sm',
 }
 
-export function StatBoxWithControls({
+export function StatBoxWithControls<TFieldValues extends FieldValues>({
   fieldKey,
   label,
   boxSize = 'md',
@@ -20,14 +20,14 @@ export function StatBoxWithControls({
   min,
   required,
 }: {
-  fieldKey: keyof MonsterFormFields
+  fieldKey: Path<TFieldValues>
   label: string
   boxSize?: 'sm' | 'md'
   title?: string
   min?: number
   required?: boolean
 }) {
-  const { register, setValue, getValues } = useFormContext<MonsterFormFields>()
+  const { register, setValue, getValues } = useFormContext<TFieldValues>()
   const fieldProps = register(fieldKey, {
     valueAsNumber: true,
     ...(min !== undefined && { min }),

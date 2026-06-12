@@ -1,4 +1,5 @@
 export * from './image-uploader'
+export * from './locale-switcher/LocaleSwitcher'
 export * from './MysticBackground'
 export * from './ToastTester'
 export * from './ToggleButton'

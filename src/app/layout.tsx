@@ -2,7 +2,9 @@ import { AuthSync, HeaderAuthActions } from '@/app/auth'
 import { AuthProvider } from '@/app/providers/auth-provider'
 import { FramerMotionProvider } from '@/app/providers/framer-motion-provider'
 import { QueryProvider } from '@/app/providers/query-provider'
+import type { Locale } from '@/i18n/locales'
 import { almendra, inter, medieval } from '@/shared/config/fonts'
+import { LocaleSwitcher } from '@/shared/ui'
 import { cn } from '@/shared/utils/styles'
 import type { Metadata } from 'next'
 import { getLocale, getTranslations } from 'next-intl/server'
@@ -79,6 +81,7 @@ export default async function RootLayout({
                 >
                   <span className='text-sm font-medium'>{t('nav.campaigns')}</span>
                 </Link>
+                <LocaleSwitcher currentLocale={locale as Locale} />
                 <HeaderAuthActions
                   signInLabel={t('nav.signIn')}
                   dashboardLabel={t('nav.dashboard')}

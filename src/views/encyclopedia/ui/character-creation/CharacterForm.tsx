@@ -4,46 +4,45 @@ import { deleteAssetSafe } from '@/shared/api/storage-actions'
 import { useNotifyAuthRequired } from '@/shared/lib/useNotifyAuthRequired'
 import { ToggleButton } from '@/shared/ui'
 import { useAuth } from '@clerk/nextjs'
-import { MonsterTemplate } from '@prisma/client'
+import { CharacterTemplate } from '@prisma/client'
 import { useTranslations } from 'next-intl'
 import { useEffect, useRef } from 'react'
 import { FormProvider, useForm, useWatch } from 'react-hook-form'
 import { sileo } from 'sileo'
-import { useCreateMonster, useUpdateMonster } from '../../api/encyclopedia-mutations'
+import { useCreateCharacterTemplate, useUpdateCharacterTemplate } from '../../api/encyclopedia-mutations'
 import { MAIN_STATS, SMALL_STATS } from '../../lib/stats'
 import { useSetIsCreatingNew, useSetSelectedItemId } from '../../model/encyclopediaStore'
 import { AvatarPanel } from '../creation/AvatarPanel'
 import { PortraitUploader } from '../creation/PortraitUploader'
 import { StatBoxWithControls } from '../creation/StatBoxWithControls'
-import { DEFAULT_MONSTER_FORM_VALUES, type MonsterFormFields } from './monster-form-fields'
+import { DEFAULT_CHARACTER_FORM_VALUES, type CharacterFormFields } from './character-form-fields'
 
-interface MonsterFormProps {
+interface CharacterFormProps {
   mode?: 'create' | 'edit'
-  initialData?: MonsterTemplate
+  initialData?: CharacterTemplate
   onSuccess?: () => void
   onRegisterCleanup?: (cleanup: () => Promise<void>) => void
 }
 
-export function MonsterForm({
+export function CharacterForm({
   mode = 'create',
   initialData,
   onSuccess,
   onRegisterCleanup,
-}: MonsterFormProps) {
+}: CharacterFormProps) {
   const t = useTranslations('Encyclopedia')
   const { userId } = useAuth()
   const notifyAuthRequired = useNotifyAuthRequired()
-  const { mutateAsync: createMonsterAsync } = useCreateMonster()
-  const { mutateAsync: updateMonsterAsync } = useUpdateMonster()
+  const { mutateAsync: createCharacterAsync } = useCreateCharacterTemplate()
+  const { mutateAsync: updateCharacterAsync } = useUpdateCharacterTemplate()
   const setSelectedItemId = useSetSelectedItemId()
   const setIsCreatingNew = useSetIsCreatingNew()
   const pendingUrls = useRef<Set<string>>(new Set())
 
-  const methods = useForm<MonsterFormFields>({
+  const methods = useForm<CharacterFormFields>({
     defaultValues: initialData
       ? {
           name: initialData.name,
-          type: initialData.type,
           race: initialData.race,
           characterClass: initialData.characterClass,
           description: initialData.description,
@@ -51,7 +50,6 @@ export function MonsterForm({
           portraitImageUrl: initialData.portraitImageUrl,
           isPublic: initialData.isPublic,
           maxHp: initialData.maxHp,
-          challenge: initialData.challenge,
           ac: initialData.ac,
           speed: initialData.speed,
           strength: initialData.strength,
@@ -63,7 +61,7 @@ export function MonsterForm({
           initiativeBonus: initialData.initiativeBonus,
           perception: initialData.perception,
         }
-      : DEFAULT_MONSTER_FORM_VALUES,
+      : DEFAULT_CHARACTER_FORM_VALUES,
   })
 
   const {
@@ -111,7 +109,7 @@ export function MonsterForm({
     setValue('portraitImageUrl', url || undefined)
   }
 
-  const onSubmit = async (data: MonsterFormFields) => {
+  const onSubmit = async (data: CharacterFormFields) => {
     if (!userId) {
       notifyAuthRequired()
       return
@@ -119,14 +117,14 @@ export function MonsterForm({
     const isEdit = mode === 'edit'
     try {
       const result = isEdit
-        ? await updateMonsterAsync([initialData!.id, data])
-        : await createMonsterAsync(data)
+        ? await updateCharacterAsync([initialData!.id, data])
+        : await createCharacterAsync(data)
 
       if (!result.success || !result.data) {
         sileo.error({
-          title: t('monsterForm.toastErrorTitle'),
+          title: t('characterForm.toastErrorTitle'),
           description: t(
-            isEdit ? 'monsterForm.toastUpdateErrorDesc' : 'monsterForm.toastErrorDesc'
+            isEdit ? 'characterForm.toastUpdateErrorDesc' : 'characterForm.toastErrorDesc'
           ),
         })
         return
@@ -135,16 +133,20 @@ export function MonsterForm({
       setSelectedItemId(result.data.id)
       setIsCreatingNew(false)
       sileo.success({
-        title: t(isEdit ? 'monsterForm.toastUpdateSuccessTitle' : 'monsterForm.toastSuccessTitle'),
+        title: t(
+          isEdit ? 'characterForm.toastUpdateSuccessTitle' : 'characterForm.toastSuccessTitle'
+        ),
         description: t(
-          isEdit ? 'monsterForm.toastUpdateSuccessDesc' : 'monsterForm.toastSuccessDesc'
+          isEdit ? 'characterForm.toastUpdateSuccessDesc' : 'characterForm.toastSuccessDesc'
         ),
       })
       onSuccess?.()
     } catch {
       sileo.error({
-        title: t('monsterForm.toastErrorTitle'),
-        description: t(isEdit ? 'monsterForm.toastUpdateErrorDesc' : 'monsterForm.toastErrorDesc'),
+        title: t('characterForm.toastErrorTitle'),
+        description: t(
+          isEdit ? 'characterForm.toastUpdateErrorDesc' : 'characterForm.toastErrorDesc'
+        ),
       })
     }
   }
@@ -158,20 +160,20 @@ export function MonsterForm({
         onSubmit={formSubmitHandler}
         className='flex h-full flex-col overflow-y-auto scrollbar-encyclopedia lg:flex-row lg:overflow-visible'
       >
-        <AvatarPanel<MonsterFormFields> storagePath='monsters' onUpload={handleAvatarUpload} />
+        <AvatarPanel<CharacterFormFields> storagePath='characters' onUpload={handleAvatarUpload} />
 
         <div className='w-full space-y-6 border-t border-neutral-800/50 bg-neutral-900/30 p-4 backdrop-blur-md lg:max-w-lg lg:border-l lg:border-t-0 lg:overflow-y-auto lg:p-6 scrollbar-encyclopedia'>
           {/* Nombre + retrato */}
           <header>
             <div className='flex flex-col sm:flex-row items-center gap-3 sm:gap-4'>
-              <PortraitUploader<MonsterFormFields>
-                storagePath='monsters'
-                variant='monster'
+              <PortraitUploader<CharacterFormFields>
+                storagePath='characters'
+                variant='cast'
                 onUpload={handlePortraitUpload}
               />
               <input
                 {...register('name', { required: true })}
-                placeholder={t('monsterForm.namePlaceholder')}
+                placeholder={t('characterForm.namePlaceholder')}
                 className='min-w-0 w-full border-b border-neutral-700 bg-transparent pb-1 text-2xl font-bold text-neutral-100 focus:border-amber-500/50 focus:outline-none font-medieval'
               />
             </div>
@@ -180,17 +182,17 @@ export function MonsterForm({
           {/* Descripción */}
           <textarea
             {...register('description')}
-            placeholder={t('monsterForm.descriptionPlaceholder')}
+            placeholder={t('characterForm.descriptionPlaceholder')}
             rows={3}
             className='input-encyclopedia w-full resize-none'
           />
 
           {/* Estadísticas */}
           <section>
-            <h3 className='section-label mb-3'>{t('monsterForm.sectionStats')}</h3>
+            <h3 className='section-label mb-3'>{t('characterForm.sectionStats')}</h3>
             <div className='flex justify-around'>
               {MAIN_STATS.map((stat) => (
-                <StatBoxWithControls<MonsterFormFields>
+                <StatBoxWithControls<CharacterFormFields>
                   key={stat.key}
                   fieldKey={stat.key}
                   label={stat.label}
@@ -198,7 +200,7 @@ export function MonsterForm({
                   boxSize='md'
                 />
               ))}
-              <StatBoxWithControls<MonsterFormFields>
+              <StatBoxWithControls<CharacterFormFields>
                 fieldKey='maxHp'
                 label={t('combatStats.properties.hitPointsAbbr')}
                 title={t('combatStats.properties.hitPoints')}
@@ -211,12 +213,12 @@ export function MonsterForm({
 
           {/* Atributos */}
           <section>
-            <h3 className='section-label mb-3'>{t('monsterForm.sectionAttributes')}</h3>
+            <h3 className='section-label mb-3'>{t('characterForm.sectionAttributes')}</h3>
             <div className='space-y-1'>
               {SMALL_STATS.map((row, rowIndex) => (
                 <div key={rowIndex} className='flex justify-center gap-2 sm:gap-5'>
                   {row.map((stat) => (
-                    <StatBoxWithControls<MonsterFormFields>
+                    <StatBoxWithControls<CharacterFormFields>
                       key={stat.key}
                       fieldKey={stat.key}
                       label={stat.label}
@@ -229,35 +231,15 @@ export function MonsterForm({
             </div>
           </section>
 
-          {/* Info tiles — mismo grid que CombatStats */}
+          {/* Info tiles — Raza y Clase */}
           <div className='grid grid-cols-2 gap-3'>
-            <div className='rounded-lg border border-amber-800/30 bg-amber-950/20 p-3'>
-              <span className='text-[10px] font-bold uppercase text-amber-600/70'>
-                {t('combatStats.properties.challenge')}
-              </span>
-              <input
-                {...register('challenge', { valueAsNumber: true, min: 0 })}
-                type='number'
-                className='mt-1 block w-full bg-transparent font-mono font-bold text-amber-400 focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none'
-              />
-            </div>
-            <div className='info-tile'>
-              <span className='text-[10px] font-bold uppercase text-neutral-500'>
-                {t('combatStats.properties.type')}
-              </span>
-              <input
-                {...register('type', { required: true })}
-                placeholder={t('monsterForm.typePlaceholder')}
-                className='mt-1 block w-full bg-transparent font-medium capitalize text-neutral-200 focus:outline-none'
-              />
-            </div>
             <div className='info-tile'>
               <span className='text-[10px] font-bold uppercase text-neutral-500'>
                 {t('combatStats.properties.race')}
               </span>
               <input
                 {...register('race')}
-                placeholder={t('monsterForm.racePlaceholder')}
+                placeholder={t('characterForm.racePlaceholder')}
                 className='mt-1 block w-full bg-transparent font-medium capitalize text-neutral-200 focus:outline-none'
               />
             </div>
@@ -267,7 +249,7 @@ export function MonsterForm({
               </span>
               <input
                 {...register('characterClass')}
-                placeholder={t('monsterForm.classPlaceholder')}
+                placeholder={t('characterForm.classPlaceholder')}
                 className='mt-1 block w-full bg-transparent font-medium capitalize text-neutral-200 focus:outline-none'
               />
             </div>
@@ -276,7 +258,7 @@ export function MonsterForm({
           {/* Público + submit */}
           <div className='flex items-center gap-3'>
             <ToggleButton
-              label={t('monsterForm.publicLabel')}
+              label={t('characterForm.publicLabel')}
               isActive={isPublic}
               onToggle={() => setValue('isPublic', !isPublic)}
             />
@@ -285,7 +267,7 @@ export function MonsterForm({
               disabled={isSubmitting}
               className='flex-1 rounded-md bg-amber-600/80 py-2.5 text-sm font-bold text-neutral-100 transition-colors hover:bg-amber-500 disabled:opacity-50'
             >
-              {mode === 'create' ? t('monsterForm.submitCreate') : t('monsterForm.submitEdit')}
+              {mode === 'create' ? t('characterForm.submitCreate') : t('characterForm.submitEdit')}
             </button>
           </div>
         </div>
