@@ -2,7 +2,9 @@ import { AuthSync, HeaderAuthActions } from '@/app/auth'
 import { AuthProvider } from '@/app/providers/auth-provider'
 import { FramerMotionProvider } from '@/app/providers/framer-motion-provider'
 import { QueryProvider } from '@/app/providers/query-provider'
+import type { Locale } from '@/i18n/locales'
 import { almendra, inter, medieval } from '@/shared/config/fonts'
+import { LocaleSwitcher } from '@/shared/ui'
 import { cn } from '@/shared/utils/styles'
 import type { Metadata } from 'next'
 import { getLocale, getTranslations } from 'next-intl/server'
@@ -79,6 +81,7 @@ export default async function RootLayout({
                 >
                   <span className='text-sm font-medium'>{t('nav.campaigns')}</span>
                 </Link>
+                <LocaleSwitcher currentLocale={locale as Locale} />
                 <HeaderAuthActions
                   signInLabel={t('nav.signIn')}
                   dashboardLabel={t('nav.dashboard')}
@@ -90,7 +93,11 @@ export default async function RootLayout({
 
           {/* Main Content */}
           <main className='flex w-full flex-1 flex-col'>
-            <Toaster theme='light' position='top-center' />
+            <Toaster
+              theme='light'
+              position='top-center'
+              offset={{ top: 'calc(var(--header-h))' }}
+            />
             <QueryProvider>
               <FramerMotionProvider>{children}</FramerMotionProvider>
             </QueryProvider>
@@ -98,7 +105,9 @@ export default async function RootLayout({
 
           {/* Footer */}
           <footer className='border-t border-neutral-800/30 bg-neutral-950/50 h-(--footer-h) flex flex-col items-center justify-center text-center text-xs text-neutral-500'>
-            <p suppressHydrationWarning>{t('footer.copyright', { year: new Date().getFullYear() })}</p>
+            <p suppressHydrationWarning>
+              {t('footer.copyright', { year: new Date().getFullYear() })}
+            </p>
             <p className='mt-1 font-medieval text-neutral-600'>{t('footer.tagline')}</p>
           </footer>
         </AuthProvider>

@@ -61,7 +61,7 @@ export const PortalCarousel = ({ campaigns }: PortalCarouselProps) => {
 
       {/* 3D Scene Container - Responsive height */}
       <menu
-        className='relative flex w-full min-h-[300px] h-[50vh] max-h-[600px] items-center justify-center'
+        className='relative flex w-full min-h-75 h-[50vh] max-h-150 items-center justify-center'
         style={{ perspective: '1000px' }}
       >
         <AnimatePresence>

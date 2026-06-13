@@ -2,7 +2,7 @@ import {
   DEFAULT_MONSTER_FORM_VALUES,
   type MonsterFormFields,
 } from '@/views/encyclopedia/ui/monster-creation/monster-form-fields'
-import { StatBoxWithControls } from '@/views/encyclopedia/ui/monster-creation/StatBoxWithControls'
+import { StatBoxWithControls } from '@/views/encyclopedia/ui/creation/StatBoxWithControls'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
@@ -30,7 +30,7 @@ describe('StatBoxWithControls', () => {
     it('muestra el label del stat', () => {
       render(
         <FormWrapper>
-          <StatBoxWithControls fieldKey="strength" label="FUE" />
+          <StatBoxWithControls<MonsterFormFields> fieldKey="strength" label="FUE" />
         </FormWrapper>
       )
       expect(screen.getByText('FUE')).toBeInTheDocument()
@@ -39,7 +39,7 @@ describe('StatBoxWithControls', () => {
     it('renderiza los botones + y −', () => {
       render(
         <FormWrapper>
-          <StatBoxWithControls fieldKey="strength" label="FUE" />
+          <StatBoxWithControls<MonsterFormFields> fieldKey="strength" label="FUE" />
         </FormWrapper>
       )
       expect(screen.getByRole('button', { name: '+' })).toBeInTheDocument()
@@ -49,7 +49,7 @@ describe('StatBoxWithControls', () => {
     it('muestra el valor inicial del campo', () => {
       render(
         <FormWrapper defaultValues={{ strength: 14 }}>
-          <StatBoxWithControls fieldKey="strength" label="FUE" />
+          <StatBoxWithControls<MonsterFormFields> fieldKey="strength" label="FUE" />
         </FormWrapper>
       )
       expect(screen.getByRole('spinbutton')).toHaveValue(14)
@@ -58,7 +58,7 @@ describe('StatBoxWithControls', () => {
     it('aplica el atributo title al contenedor del hex', () => {
       render(
         <FormWrapper>
-          <StatBoxWithControls fieldKey="strength" label="FUE" title="Fuerza" />
+          <StatBoxWithControls<MonsterFormFields> fieldKey="strength" label="FUE" title="Fuerza" />
         </FormWrapper>
       )
       expect(screen.getByTitle('Fuerza')).toBeInTheDocument()
@@ -69,7 +69,7 @@ describe('StatBoxWithControls', () => {
     it('incrementa el valor en 1 al hacer click en +', async () => {
       render(
         <FormWrapper defaultValues={{ strength: 10 }}>
-          <StatBoxWithControls fieldKey="strength" label="FUE" />
+          <StatBoxWithControls<MonsterFormFields> fieldKey="strength" label="FUE" />
         </FormWrapper>
       )
       fireEvent.click(screen.getByRole('button', { name: '+' }))
@@ -79,7 +79,7 @@ describe('StatBoxWithControls', () => {
     it('decrementa el valor en 1 al hacer click en −', async () => {
       render(
         <FormWrapper defaultValues={{ strength: 10 }}>
-          <StatBoxWithControls fieldKey="strength" label="FUE" />
+          <StatBoxWithControls<MonsterFormFields> fieldKey="strength" label="FUE" />
         </FormWrapper>
       )
       fireEvent.click(screen.getByRole('button', { name: '−' }))
@@ -89,7 +89,7 @@ describe('StatBoxWithControls', () => {
     it('clicks consecutivos acumulan el cambio', async () => {
       render(
         <FormWrapper defaultValues={{ strength: 10 }}>
-          <StatBoxWithControls fieldKey="strength" label="FUE" />
+          <StatBoxWithControls<MonsterFormFields> fieldKey="strength" label="FUE" />
         </FormWrapper>
       )
       fireEvent.click(screen.getByRole('button', { name: '+' }))
@@ -103,7 +103,7 @@ describe('StatBoxWithControls', () => {
     it('no permite decrementar por debajo del mínimo', async () => {
       render(
         <FormWrapper defaultValues={{ maxHp: 1 }}>
-          <StatBoxWithControls fieldKey="maxHp" label="PG" min={1} />
+          <StatBoxWithControls<MonsterFormFields> fieldKey="maxHp" label="PG" min={1} />
         </FormWrapper>
       )
       fireEvent.click(screen.getByRole('button', { name: '−' }))
@@ -113,7 +113,7 @@ describe('StatBoxWithControls', () => {
     it('sí permite incrementar desde el mínimo', async () => {
       render(
         <FormWrapper defaultValues={{ maxHp: 1 }}>
-          <StatBoxWithControls fieldKey="maxHp" label="PG" min={1} />
+          <StatBoxWithControls<MonsterFormFields> fieldKey="maxHp" label="PG" min={1} />
         </FormWrapper>
       )
       fireEvent.click(screen.getByRole('button', { name: '+' }))
@@ -123,7 +123,7 @@ describe('StatBoxWithControls', () => {
     it('sin min definido permite valores negativos', async () => {
       render(
         <FormWrapper defaultValues={{ initiativeBonus: 0 }}>
-          <StatBoxWithControls fieldKey="initiativeBonus" label="INI" />
+          <StatBoxWithControls<MonsterFormFields> fieldKey="initiativeBonus" label="INI" />
         </FormWrapper>
       )
       fireEvent.click(screen.getByRole('button', { name: '−' }))

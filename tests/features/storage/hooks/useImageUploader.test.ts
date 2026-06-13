@@ -84,11 +84,11 @@ describe('Storage Feature - useImageUploader hook', () => {
     expect(formData.get('storagePath')).toBe(storagePath)
   })
 
-  it('debe gestionar errores en la subida', async () => {
+  it('debe gestionar errores de autenticación en la subida', async () => {
     const { result } = renderHook(() => useImageUploader({ onUpload: mockOnUpload, storagePath }))
     const file = new File(['dummy'], 'test.png', { type: 'image/png' })
 
-    vi.mocked(uploadAsset).mockRejectedValue(new Error('Fallo de red'))
+    vi.mocked(uploadAsset).mockResolvedValue({ error: 'unauthenticated' })
 
     act(() => {
       result.current.processFile(file)
@@ -103,7 +103,31 @@ describe('Storage Feature - useImageUploader hook', () => {
     expect(sileo.error).toHaveBeenCalledWith(
       expect.objectContaining({
         title: 'Fallo al Guardar',
-        description: 'Fallo de red',
+        description: 'Debes iniciar sesión para guardar los cambios.',
+      })
+    )
+  })
+
+  it('debe gestionar errores genéricos en la subida', async () => {
+    const { result } = renderHook(() => useImageUploader({ onUpload: mockOnUpload, storagePath }))
+    const file = new File(['dummy'], 'test.png', { type: 'image/png' })
+
+    vi.mocked(uploadAsset).mockResolvedValue({ error: 'uploadFailed' })
+
+    act(() => {
+      result.current.processFile(file)
+    })
+
+    await act(async () => {
+      await result.current.handleUpload()
+    })
+
+    expect(result.current.isUploading).toBe(false)
+    expect(result.current.isSuccess).toBe(false)
+    expect(sileo.error).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: 'Fallo al Guardar',
+        description: 'No se pudo guardar la imagen. Inténtalo de nuevo.',
       })
     )
   })

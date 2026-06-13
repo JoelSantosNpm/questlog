@@ -1,4 +1,4 @@
-import { EditableStatBox } from '@/views/encyclopedia/ui/monster-creation/EditableStatBox'
+import { EditableStatBox } from '@/views/encyclopedia/ui/creation/EditableStatBox'
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 

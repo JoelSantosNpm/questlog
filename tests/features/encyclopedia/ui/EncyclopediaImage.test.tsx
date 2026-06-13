@@ -38,6 +38,7 @@ const MONSTER: BestiaryItem = {
   perception: 13,
   abilities: null,
   section: 'bestiary',
+  isOwner: false,
 }
 
 const SWORD: MuseumItem = {
@@ -64,6 +65,7 @@ const SWORD: MuseumItem = {
   createdAt: new Date(),
   updatedAt: new Date(),
   section: 'museum',
+  isOwner: false,
 }
 
 // ─── Tests ────────────────────────────────────────────────────────────────────

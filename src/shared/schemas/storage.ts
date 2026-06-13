@@ -5,10 +5,7 @@ const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/web
 
 export const FileValidationSchema = z
   .instanceof(File)
-  .refine((file) => file.size <= MAX_FILE_SIZE, `El archivo supera el tamaño máximo de 600kB.`)
-  .refine(
-    (file) => ACCEPTED_IMAGE_TYPES.includes(file.type),
-    'Solo se aceptan archivos .jpg, .jpeg, .png y .webp'
-  )
+  .refine((file) => file.size <= MAX_FILE_SIZE, 'fileTooLarge')
+  .refine((file) => ACCEPTED_IMAGE_TYPES.includes(file.type), 'invalidFileType')
 
 export type FileValidation = z.infer<typeof FileValidationSchema>

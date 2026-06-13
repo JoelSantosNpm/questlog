@@ -148,23 +148,26 @@ type ItemOverride = Parameters<typeof db.itemTemplate.create>[0]
 /**
  * Crea un BestiaryItem (MonsterTemplate + section: 'bestiary').
  */
-export const toBestiaryItem = (override?: MonsterOverride): BestiaryItem => ({
+export const toBestiaryItem = (override?: MonsterOverride, isOwner = false): BestiaryItem => ({
   ...(db.monsterTemplate.create(override ?? {}) as unknown as BestiaryItem),
   section: 'bestiary',
+  isOwner,
 })
 
 /**
  * Crea un CastItem (CharacterTemplate + section: 'cast').
  */
-export const toCastItem = (override?: CharacterOverride): CastItem => ({
+export const toCastItem = (override?: CharacterOverride, isOwner = false): CastItem => ({
   ...(db.characterTemplate.create(override ?? {}) as unknown as CastItem),
   section: 'cast',
+  isOwner,
 })
 
 /**
  * Crea un MuseumItem (ItemTemplate + section: 'museum').
  */
-export const toMuseumItem = (override?: ItemOverride): MuseumItem => ({
+export const toMuseumItem = (override?: ItemOverride, isOwner = false): MuseumItem => ({
   ...(db.itemTemplate.create(override ?? {}) as unknown as MuseumItem),
   section: 'museum',
+  isOwner,
 })

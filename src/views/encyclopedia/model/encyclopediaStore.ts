@@ -8,10 +8,12 @@ interface EncyclopediaUIState {
   selectedItemId: string | null
   searchQuery: string
   isCreatingNew: boolean
+  isEditing: boolean
   setActiveSection: (section: EncyclopediaSection) => void
   setSelectedItemId: (id: string | null) => void
   setSearchQuery: (query: string) => void
   setIsCreatingNew: (v: boolean) => void
+  setIsEditing: (v: boolean) => void
   // Filtros de visibilidad y propiedad
   showPublic: boolean
   showPrivate: boolean
@@ -29,11 +31,24 @@ export const useEncyclopediaStore = create<EncyclopediaUIState>((set) => ({
   selectedItemId: null,
   searchQuery: '',
   isCreatingNew: false,
+  isEditing: false,
   setActiveSection: (section) =>
-    set({ activeSection: section, selectedItemId: null, searchQuery: '', isCreatingNew: false }),
+    set({
+      activeSection: section,
+      selectedItemId: null,
+      searchQuery: '',
+      isCreatingNew: false,
+      isEditing: false,
+    }),
   setSelectedItemId: (id) => set({ selectedItemId: id }),
   setSearchQuery: (query) => set({ searchQuery: query }),
-  setIsCreatingNew: (v) => set((s) => ({ isCreatingNew: v, selectedItemId: v ? null : s.selectedItemId })),
+  setIsCreatingNew: (v) =>
+    set((s) => ({
+      isCreatingNew: v,
+      isEditing: v ? false : s.isEditing,
+      selectedItemId: v ? null : s.selectedItemId,
+    })),
+  setIsEditing: (v) => set((s) => ({ isEditing: v, isCreatingNew: v ? false : s.isCreatingNew })),
   // Filtros — por defecto: solo públicos, sub-filtros de privados activos para cuando se habiliten
   showPublic: true,
   showPrivate: true,
@@ -72,3 +87,6 @@ export const useToggleShared = () => useEncyclopediaStore((s) => s.toggleShared)
 
 export const useIsCreatingNew = () => useEncyclopediaStore((s) => s.isCreatingNew)
 export const useSetIsCreatingNew = () => useEncyclopediaStore((s) => s.setIsCreatingNew)
+
+export const useIsEditing = () => useEncyclopediaStore((s) => s.isEditing)
+export const useSetIsEditing = () => useEncyclopediaStore((s) => s.setIsEditing)

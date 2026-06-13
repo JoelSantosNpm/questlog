@@ -20,15 +20,19 @@ import { auth } from '@clerk/nextjs/server'
  *   'campaigns/abc123'    → imagen de campaña (activa RLS de membresía en SELECT/DELETE)
  *   'characters'          → imagen de personaje
  */
-export async function uploadAsset(formData: FormData): Promise<{ publicUrl: string }> {
+export type StorageActionError = 'unauthenticated' | 'uploadFailed'
+
+export async function uploadAsset(
+  formData: FormData
+): Promise<{ publicUrl: string } | { error: StorageActionError }> {
   const { userId } = await auth()
-  if (!userId) throw new Error('No autenticado')
+  if (!userId) return { error: 'unauthenticated' }
 
   const file = formData.get('file')
   const storagePath = formData.get('storagePath')
 
-  if (!(file instanceof File)) throw new Error('Archivo inválido')
-  if (typeof storagePath !== 'string' || !storagePath) throw new Error('storagePath requerido')
+  if (!(file instanceof File)) return { error: 'uploadFailed' }
+  if (typeof storagePath !== 'string' || !storagePath) return { error: 'uploadFailed' }
 
   const supabase = createClient()
 
@@ -46,7 +50,10 @@ export async function uploadAsset(formData: FormData): Promise<{ publicUrl: stri
     upsert: false,
   })
 
-  if (error) throw error
+  if (error) {
+    console.error('[storage] uploadAsset failed', error)
+    return { error: 'uploadFailed' }
+  }
 
   const {
     data: { publicUrl },
@@ -56,25 +63,28 @@ export async function uploadAsset(formData: FormData): Promise<{ publicUrl: stri
 }
 
 export async function deleteAssetSafe(url: string): Promise<void> {
-  try {
-    await deleteAsset(url)
-  } catch {
-    await deleteAsset(url).catch((err: unknown) => {
-      console.error('[storage] deleteAsset permanentFailure', { url, err })
-    })
+  const result = await deleteAsset(url)
+  if ('error' in result) {
+    const retry = await deleteAsset(url)
+    if ('error' in retry) {
+      console.error('[storage] deleteAsset permanentFailure', { url, error: retry.error })
+    }
   }
 }
 
-export async function deleteAsset(publicUrl: string): Promise<void> {
+export async function deleteAsset(
+  publicUrl: string
+): Promise<{ success: true } | { error: StorageActionError }> {
   const { userId } = await auth()
-  if (!userId) throw new Error('No autenticado')
+  if (!userId) return { error: 'unauthenticated' }
 
   const bucket = 'questlog-assets'
   const marker = `/object/public/${bucket}/`
   const idx = publicUrl.indexOf(marker)
-  if (idx === -1) return
+  if (idx === -1) return { success: true }
 
   const filePath = publicUrl.slice(idx + marker.length)
   const supabase = createClient()
   await supabase.storage.from(bucket).remove([filePath])
+  return { success: true }
 }

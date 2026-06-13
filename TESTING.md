@@ -9,7 +9,7 @@ Este documento describe las prácticas, herramientas y organización del sistema
 - **Mocks:** Vitest `vi` para servicios y módulos externos.
 - **Coverage:** `@vitest/coverage-v8`.
 
-> **Tests actuales:** ~230 tests unitarios pasando en 18+ archivos (carousel utils, storage schema, storage-actions, useImageUploader, ImageUploader UI, CampaignCreationForm, encyclopediaStore, image-fallbacks, use-encyclopedia-items, ListView, ItemHeader, EncyclopediaImage, **MonsterAvatarPanel, MonsterCreationView, MonsterForm**, useNotifyAuthRequired, campaign-queries, campaign-hooks, campaign-mutations) + 11 E2E pasando (3 portal-de-piedra, 8 encyclopedia).
+> **Tests actuales:** 346 tests unitarios pasando en 29 archivos (carousel utils, storage schema, storage-actions, useImageUploader, ImageUploader UI, CampaignCreationForm, encyclopediaStore, image-fallbacks, use-encyclopedia-items, hex-geometry, ListView, ItemHeader, EncyclopediaImage, DetailView, MonsterForm, MonsterCreationView, **ItemForm, ItemCreationView, CharacterForm, CharacterCreationView, AvatarPanel, PortraitUploader, StatBoxWithControls, EditableStatBox, LocaleSwitcher**, useNotifyAuthRequired, campaign-queries, campaign-hooks, campaign-mutations) + 11 E2E pasando (3 portal-de-piedra, 8 encyclopedia).
 
 ---
 
@@ -31,18 +31,31 @@ tests/
 │   ├── encyclopedia/
 │   │   ├── lib/
 │   │   │   ├── image-fallbacks.test.ts
-│   │   │   └── use-encyclopedia-items.test.ts     # Hooks de queries de la enciclopedia
+│   │   │   ├── use-encyclopedia-items.test.ts     # Hooks de queries de la enciclopedia
+│   │   │   └── hex-geometry.test.ts               # Geometría SVG de los hexágonos de stat
 │   │   ├── model/encyclopediaStore.test.ts
 │   │   └── ui/
 │   │       ├── ItemHeader.test.tsx
 │   │       ├── ListView.test.tsx
 │   │       ├── EncyclopediaImage.test.tsx
-│   │       └── monster-creation/
-│   │           ├── MonsterForm.test.tsx           # Formulario create/edit + submit + auth
-│   │           ├── MonsterCreationView.test.tsx   # Vista wrapper + toast de invitados
-│   │           └── MonsterAvatarPanel.test.tsx
+│   │       ├── DetailView.test.tsx              # Edición/borrado: isOwner, ItemActionsOverlay
+│   │       ├── creation/                          # Componentes genéricos de los 3 formularios
+│   │       │   ├── AvatarPanel.test.tsx
+│   │       │   ├── PortraitUploader.test.tsx
+│   │       │   ├── StatBoxWithControls.test.tsx
+│   │       │   └── EditableStatBox.test.tsx
+│   │       ├── monster-creation/
+│   │       │   ├── MonsterForm.test.tsx           # Formulario create/edit + submit + auth
+│   │       │   └── MonsterCreationView.test.tsx   # Vista wrapper + toast de invitados
+│   │       ├── character-creation/
+│   │       │   ├── CharacterForm.test.tsx         # Formulario create/edit + submit + auth
+│   │       │   └── CharacterCreationView.test.tsx # Vista wrapper + toast de invitados
+│   │       └── item-creation/
+│   │           ├── ItemForm.test.tsx              # Formulario create/edit + rareza + submit + auth
+│   │           └── ItemCreationView.test.tsx      # Vista wrapper + toast de invitados
 │   ├── shared/
-│   │   └── lib/useNotifyAuthRequired.test.ts
+│   │   ├── lib/useNotifyAuthRequired.test.ts
+│   │   └── ui/locale-switcher/LocaleSwitcher.test.tsx
 │   ├── storage/
 │   │   ├── actions/storage-actions.test.ts        # Server Action de subida (auth, validaciones)
 │   │   ├── components/ImageUploader.test.tsx
