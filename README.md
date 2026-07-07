@@ -96,7 +96,6 @@ src/
 │   └── utils/                  # cn()
 prisma/
 ├── schema.prisma               # Database schema (source of truth for structure)
-├── seed.ts                     # Database seeding script
 └── migrations/                 # SQL migration history
 src/middleware.ts               # Route protection (Clerk, required by Next.js)
 ```
@@ -190,24 +189,6 @@ Every piece of the stack was chosen to serve a specific purpose in the user expe
 
 ---
 
-## 🧪 Development & Seeding
-
-Since this project uses Clerk for authentication, seeding the database requires linking test data to real Clerk users.
-
-1.  **Configure your emails:** Add your development user emails (GM and Player) to `.env`:
-    ```env
-    SEED_GM_EMAIL=your-gm-email@example.com
-    SEED_PLAYER_EMAIL=your-player-email@example.com
-    ```
-2.  **Sync:** Run the app (`npm run dev`) and sign in with those emails to ensure the user records exist in the database (auto-created on login via _Lazy Sync_).
-3.  **Run:** Launch the seed script:
-    ```bash
-    npm run db:seed
-    ```
-    This will populate the database with a test campaign (_Curse of Strahd_) where the GM user is the Master and the Player will have a character assigned.
-
----
-
 ## 🧪 Testing Strategy
 
 We maintain a two-layer test suite to ensure the "game table" never breaks:
@@ -248,7 +229,6 @@ Deletion rules (_Cascade vs SetNull_) are defined at the database level in the m
 | `npm run test:coverage`        | Vitest with v8 coverage report     |
 | `npm run test:e2e`             | Playwright E2E (headless)          |
 | `npm run test:e2e:ui`          | Playwright E2E with interactive UI |
-| `npm run db:seed`              | Seed the database                  |
 | `npx -y react-doctor@latest .` | Audit React project health         |
 
 ## 🔒 Private Project
