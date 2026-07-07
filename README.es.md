@@ -96,7 +96,6 @@ src/
 │   └── utils/                  # cn()
 prisma/
 ├── schema.prisma               # Esquema de la base de datos (fuente de verdad estructural)
-├── seed.ts                     # Script de seeding de la base de datos
 └── migrations/                 # Historial de migraciones SQL
 src/middleware.ts               # Middleware de protección de rutas (Clerk, requerido por Next.js)
 ```
@@ -190,24 +189,6 @@ Cada pieza del stack ha sido elegida para cumplir un propósito específico en l
 
 ---
 
-## 🧪 Desarrollo y Datos de Prueba (Seeding)
-
-Dado que este proyecto utiliza Clerk para la autenticación, poblar la base de datos requiere vincular datos de prueba a usuarios reales de Clerk.
-
-1.  **Configura tus correos:** Añade los emails de tus usuarios de desarrollo (GM y Jugador) al archivo `.env`:
-    ```env
-    SEED_GM_EMAIL=tu-email-de-gm@ejemplo.com
-    SEED_PLAYER_EMAIL=tu-email-de-jugador@ejemplo.com
-    ```
-2.  **Sincronización:** Ejecuta la aplicación (`npm run dev`) e inicia sesión con esos emails para asegurar que los registros de usuario existan en la base de datos (se crean automáticamente al loguearse via _Lazy Sync_).
-3.  **Ejecución:** Lanza el script de seed:
-    ```bash
-    npm run db:seed
-    ```
-    Esto poblará la base de datos con una campaña de prueba (_La Maldición de Strahd_) donde el usuario de GM será el Master y el Jugador tendrá un personaje asignado.
-
----
-
 ## 🧪 Estrategia de Testing
 
 Mantenemos una suite de pruebas en dos capas para asegurar que la "mesa de juego" nunca se rompa:
@@ -248,7 +229,6 @@ Las reglas de borrado (_Cascade vs SetNull_) están definidas a nivel de base de
 | `npm run test:coverage`        | Vitest con informe de cobertura v8      |
 | `npm run test:e2e`             | Playwright E2E (headless)               |
 | `npm run test:e2e:ui`          | Playwright E2E con interfaz interactiva |
-| `npm run db:seed`              | Puebla la base de datos (Seed)          |
 | `npx -y react-doctor@latest .` | Audita la salud del proyecto React      |
 
 ## 🔒 Proyecto Privado
